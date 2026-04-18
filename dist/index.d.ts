@@ -1,6 +1,7 @@
 import { ClassValue } from 'clsx';
 import * as class_variance_authority_types from 'class-variance-authority/types';
 import * as React from 'react';
+import React__default, { FC, ReactNode } from 'react';
 import { VariantProps } from 'class-variance-authority';
 import * as SelectPrimitive from '@radix-ui/react-select';
 import * as react_jsx_runtime from 'react/jsx-runtime';
@@ -13,10 +14,9 @@ import * as TabsPrimitive from '@radix-ui/react-tabs';
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import * as ToastPrimitives from '@radix-ui/react-toast';
-import { DateRange } from 'react-day-picker';
-export { DateRange } from 'react-day-picker';
 import * as SeparatorPrimitive from '@radix-ui/react-separator';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
+import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
 
 declare function cn(...inputs: ClassValue[]): string;
 
@@ -305,12 +305,15 @@ interface ScanInputProps {
 }
 declare function ScanInput({ value, onChange, quantity, onQuantityChange, onScan, placeholder, disabled, className, showQuantity, }: ScanInputProps): react_jsx_runtime.JSX.Element;
 
+type StatusType = "success" | "warning" | "error" | "info" | "default" | "active" | "inactive" | "pending" | "processing" | "completed" | "cancelled" | "shipped" | "delivered" | "returned" | "critical" | "low" | "medium" | "high";
 interface StatusBadgeProps {
-    label?: string;
+    status: string;
     className?: string;
-    status?: string;
+    size?: "sm" | "default" | "lg";
+    statusMapping?: Record<string, StatusType>;
 }
-declare function StatusBadge({ label, className, status }: StatusBadgeProps): react_jsx_runtime.JSX.Element;
+declare function getStatusVariant(status: string, statusMapping?: Record<string, StatusType>): StatusType;
+declare function StatusBadge({ status, className, size, statusMapping }: StatusBadgeProps): react_jsx_runtime.JSX.Element;
 
 interface QuantityInputProps {
     value: number;
@@ -335,15 +338,6 @@ interface ConfirmDialogProps {
     className?: string;
 }
 declare function ConfirmDialog({ open, onClose, onConfirm, title, description, confirmText, cancelText, variant, className, }: ConfirmDialogProps): react_jsx_runtime.JSX.Element;
-
-interface SidePanelProps {
-    open: boolean;
-    onClose: () => void;
-    title: string;
-    children: React.ReactNode;
-    footer?: React.ReactNode;
-}
-declare function SidePanel({ open, onClose, title, children, footer }: SidePanelProps): react_jsx_runtime.JSX.Element;
 
 interface SelectionItem {
     id: string;
@@ -421,26 +415,76 @@ interface FilterBarProps {
 }
 declare function FilterBar({ filters, searchValue, onSearchChange, searchPlaceholder, onApply, onReset, values: controlledValues, onValuesChange, additionalFilters, filterTriggerClassName, }: FilterBarProps): react_jsx_runtime.JSX.Element;
 
-type FieldType = "text" | "number" | "select";
-interface FieldOption {
+type ValidationRule = {
+    required?: boolean;
+    minLength?: number;
+    maxLength?: number;
+    min?: number;
+    max?: number;
+    pattern?: RegExp;
+    custom?: (value: any) => boolean | string;
+};
+type OptionType = {
     label: string;
-    value: string;
+    value: string | number;
+};
+interface CustomComponentProps {
+    value: any;
+    onChange: (value: any) => void;
+    error?: string;
+    field: FieldConfig;
+    [key: string]: any;
 }
-interface FieldConfig {
+declare enum FieldType {
+    TEXT = "text",
+    NUMBER = "number",
+    DATE = "date",
+    SELECT = "select",
+    MULTI_SELECT = "multiSelect",
+    RADIO = "radio",
+    CHECKBOX = "checkbox",
+    FILE = "file",
+    CUSTOM = "custom",
+    TEXTAREA = "textarea",
+    GROUP = "group",
+    DIVIDER = "divider"
+}
+type FieldConfig = {
     name: string;
+    key: string;
     label: string;
     type: FieldType;
+    options?: OptionType[];
+    validation?: ValidationRule;
+    className?: string;
     placeholder?: string;
-    options?: FieldOption[];
-}
-interface FormBuilderProps {
-    fields: FieldConfig[];
-    values: Record<string, string>;
-    onChange: (name: string, value: string) => void;
-    onSubmit: (values: Record<string, string>) => void;
-    submitLabel?: string;
-}
-declare function FormBuilder({ fields, values, onChange, onSubmit, submitLabel }: FormBuilderProps): react_jsx_runtime.JSX.Element;
+    fieldOptions?: any[];
+    value?: any;
+    fieldProps?: any;
+    children?: FieldConfig[];
+    payloadType?: string;
+    onChange?: (value: any) => void;
+    customComponent?: (props: CustomComponentProps) => React__default.ReactElement;
+};
+type FormBuilderProps = {
+    id?: string;
+    config: FieldConfig[];
+    submitButtonText?: string;
+    cols?: {
+        sm: number;
+        md: number;
+        lg: number;
+    };
+    labelPlacement?: "outside" | "inside";
+    radioDirection?: "row" | "column";
+    onSubmit?: () => void;
+    onFormDataChange?: (fieldName: string, value: any) => void;
+    className?: string;
+    onReset?: () => void;
+    resetButtonText?: string;
+    isSubmitting?: boolean;
+};
+declare const FormBuilder: FC<FormBuilderProps>;
 
 type MultiSelectOption = string | {
     label: string;
@@ -509,21 +553,6 @@ interface DatePickerProps {
 }
 declare function DatePicker({ value, onChange, placeholder, className }: DatePickerProps): react_jsx_runtime.JSX.Element;
 
-interface DateTimePickerProps {
-    value?: Date;
-    onChange?: (date: Date | undefined) => void;
-    placeholder?: string;
-    showSeparatePickers?: boolean;
-}
-declare function DateTimePicker({ value, onChange, placeholder, showSeparatePickers }: DateTimePickerProps): react_jsx_runtime.JSX.Element;
-
-interface DateRangePickerProps {
-    className?: string;
-    date?: DateRange;
-    onDateChange?: (date: DateRange | undefined) => void;
-}
-declare function DateRangePicker({ className, date, onDateChange }: DateRangePickerProps): react_jsx_runtime.JSX.Element;
-
 declare const cardVariants: (props?: ({
     elevation?: "success" | "warning" | "error" | "default" | "resting" | "hovered" | "pressed" | "focused" | "elevated" | null | undefined;
     status?: "success" | "warning" | "error" | "info" | "neutral" | "default" | null | undefined;
@@ -550,4 +579,100 @@ declare const AccordionContent: React.ForwardRefExoticComponent<Omit<AccordionPr
 declare function showSuccess(_message?: string): void;
 declare function showError(message: string): void;
 
-export { APP_ICON_NAMES, Accordion, AccordionContent, AccordionItem, AccordionTrigger, AppIcon, type AppIconProps, Badge, type BadgeProps, Button, type ButtonProps, Calendar, type CalendarProps, Card, CardContent, CardDescription, CardFooter, CardHeader, type CardProps, CardTitle, Checkbox, type Column, ConfirmDialog, type ConfirmDialogProps, DatePicker, type DatePickerProps, DateRangePicker, type DateRangePickerProps, DateTimePicker, type DateTimePickerProps, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, type DropdownMenuItemConfig, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, DropdownMenuWrapper, type DropdownMenuWrapperProps, EmptyState, type EmptyStateProps, type FieldConfig, type FieldOption, type FieldType, FilterBar, type FilterBarProps, type FilterConfig, type FilterOption, FormBuilder, type FormBuilderProps, Input, Label, LoadingButton, type LoadingButtonProps, MultiSelect, MultiSelectBadges, type MultiSelectOption, type MultiSelectProps, Pagination, type PaginationConfig, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, Popover, PopoverAnchor, PopoverContent, PopoverTrigger, QuantityInput, type QuantityInputProps, ResponsiveTable, ScanInput, type ScanInputProps, ScrollArea, ScrollBar, SearchInput, type SearchInputProps, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, type SelectionItem, SelectionModal, type SelectionModalProps, Separator, Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetOverlay, SheetPortal, SheetTitle, SheetTrigger, SidePanel, type SidePanelProps, StatusBadge, type StatusBadgeProps, type StatusColors, type TabItem, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, Tabs, TabsContent, TabsList, TabsTrigger, TabsWrapper, type TabsWrapperProps, Textarea, TimePicker, type TimePickerProps, Toast$1 as Toast, ToastAction, type ToastActionElement, ToastClose, ToastDescription, type ToastProps, ToastProvider, ToastTitle, ToastViewport, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, badgeVariants, buttonVariants, cardVariants, cn, createExpressiveClasses, enhancedButtonClasses, enhancedStatusColors, getAnimationClasses, getButtonEnhancedClasses, getStatusClasses, showError, showSuccess, statusRingClasses, toast, useMediaQuery, useMobile, useToast };
+interface PageHeaderProps {
+    title: string;
+    description?: string;
+    icon?: ReactNode;
+    titleSuffix?: ReactNode;
+    actions?: ReactNode;
+    actionsClassName?: string;
+    className?: string;
+}
+declare function PageHeader({ title, description, icon, titleSuffix, actions, actionsClassName, className, }: PageHeaderProps): react_jsx_runtime.JSX.Element;
+interface StatsCardProps {
+    label: string;
+    value: string | number;
+    delta?: string;
+    deltaType?: "increase" | "decrease" | "neutral";
+    className?: string;
+}
+declare function StatsCard({ label, value, delta, deltaType, className }: StatsCardProps): react_jsx_runtime.JSX.Element;
+interface StatsGridProps {
+    stats: StatsCardProps[];
+    className?: string;
+}
+declare function StatsGrid({ stats, className }: StatsGridProps): react_jsx_runtime.JSX.Element;
+interface PageLayoutProps {
+    children: ReactNode;
+    header: PageHeaderProps;
+    stats?: StatsCardProps[];
+    className?: string;
+}
+declare function PageLayout({ children, header, stats, className }: PageLayoutProps): react_jsx_runtime.JSX.Element;
+interface ContentSectionProps {
+    title?: string;
+    description?: string;
+    children: ReactNode;
+    className?: string;
+    actions?: ReactNode;
+}
+declare function ContentSection({ title, description, children, className, actions }: ContentSectionProps): react_jsx_runtime.JSX.Element;
+
+interface SortOptionsProps {
+    onSortByChange?: (sortBy: string) => void;
+    onSortOrderChange?: (sortOrder: string) => void;
+    sortByOptions: {
+        label: string;
+        value: string;
+    }[];
+    sortOrderOptions: {
+        label: string;
+        value: string;
+    }[];
+    sortByValue?: string;
+    sortOrderValue?: string;
+    containerRef?: HTMLElement | undefined;
+}
+declare function SortOptions({ onSortByChange, onSortOrderChange, sortByOptions, sortOrderOptions, sortByValue, sortOrderValue, }: SortOptionsProps): react_jsx_runtime.JSX.Element;
+
+declare const RadioGroup: React.ForwardRefExoticComponent<Omit<RadioGroupPrimitive.RadioGroupProps & React.RefAttributes<HTMLDivElement>, "ref"> & React.RefAttributes<HTMLDivElement>>;
+declare const RadioGroupItem: React.ForwardRefExoticComponent<Omit<RadioGroupPrimitive.RadioGroupItemProps & React.RefAttributes<HTMLButtonElement>, "ref"> & React.RefAttributes<HTMLButtonElement>>;
+
+interface SmallToteCardProps {
+    toteId: string;
+    itemCount: number;
+    totalItems: number;
+}
+declare function SmallToteCard({ toteId, itemCount, totalItems }: SmallToteCardProps): react_jsx_runtime.JSX.Element;
+
+interface TransferItem {
+    id: string;
+    skuId: string;
+    clientSkuId?: string;
+    skuName: string;
+    totalQty: number;
+    activeQty: number;
+    cancelledQty: number;
+    orderCode?: string;
+    externalBatchId?: string;
+}
+interface QuantityInputModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    /** Opaque identifier passed back to onTransfer — may be item.id or item.skuId depending on caller */
+    itemId: string;
+    /** Caller resolves from its source container (Tote / Box) before passing in */
+    item: TransferItem | null;
+    /** Caller computes based on feature rules (activeQty vs cancelledQty vs totalQty) */
+    maxQuantity: number;
+    /** Label used in over-limit error messages. Defaults to "available quantity" */
+    maxQtyLabel?: string;
+    /** true = 3-column qty grid + order badge; false = single-row total display */
+    showOrderMappingLayout?: boolean;
+    onTransfer: (itemId: string, qty: number) => void;
+    isTransferring: boolean;
+}
+
+declare function QuantityInputModal({ isOpen, onClose, itemId, item, maxQuantity, maxQtyLabel, showOrderMappingLayout, onTransfer, isTransferring, }: QuantityInputModalProps): react_jsx_runtime.JSX.Element | null;
+
+export { APP_ICON_NAMES, Accordion, AccordionContent, AccordionItem, AccordionTrigger, AppIcon, type AppIconProps, Badge, type BadgeProps, Button, type ButtonProps, Calendar, type CalendarProps, Card, CardContent, CardDescription, CardFooter, CardHeader, type CardProps, CardTitle, Checkbox, type Column, ConfirmDialog, type ConfirmDialogProps, ContentSection, type ContentSectionProps, type CustomComponentProps, DatePicker, type DatePickerProps, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, type DropdownMenuItemConfig, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, DropdownMenuWrapper, type DropdownMenuWrapperProps, EmptyState, type EmptyStateProps, type FieldConfig, FieldType, FilterBar, type FilterBarProps, type FilterConfig, type FilterOption, FormBuilder, type FormBuilderProps, Input, Label, LoadingButton, type LoadingButtonProps, MultiSelect, MultiSelectBadges, type MultiSelectOption, type MultiSelectProps, type OptionType, PageHeader, type PageHeaderProps, PageLayout, type PageLayoutProps, Pagination, type PaginationConfig, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, Popover, PopoverAnchor, PopoverContent, PopoverTrigger, QuantityInput, QuantityInputModal, type QuantityInputModalProps, type QuantityInputProps, RadioGroup, RadioGroupItem, ResponsiveTable, ScanInput, type ScanInputProps, ScrollArea, ScrollBar, SearchInput, type SearchInputProps, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, type SelectionItem, SelectionModal, type SelectionModalProps, Separator, Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetOverlay, SheetPortal, SheetTitle, SheetTrigger, SmallToteCard, type SmallToteCardProps, SortOptions, type SortOptionsProps, StatsCard, type StatsCardProps, StatsGrid, type StatsGridProps, StatusBadge, type StatusBadgeProps, type StatusColors, type TabItem, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, Tabs, TabsContent, TabsList, TabsTrigger, TabsWrapper, type TabsWrapperProps, Textarea, TimePicker, type TimePickerProps, Toast$1 as Toast, ToastAction, type ToastActionElement, ToastClose, ToastDescription, type ToastProps, ToastProvider, ToastTitle, ToastViewport, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, type TransferItem, type ValidationRule, badgeVariants, buttonVariants, cardVariants, cn, createExpressiveClasses, enhancedButtonClasses, enhancedStatusColors, getAnimationClasses, getButtonEnhancedClasses, getStatusClasses, getStatusVariant, showError, showSuccess, statusRingClasses, toast, useMediaQuery, useMobile, useToast };

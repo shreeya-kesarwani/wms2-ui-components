@@ -1,45 +1,73 @@
 "use client";
-import * as React from "react";
+import React from "react";
 import { Badge } from "../Badge";
 import { cn } from "../../lib/utils";
 
-const LEGACY_STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  CREATED:     { label: "Created",     className: "bg-gray-100 text-gray-700 border-gray-200"   },
-  IN_PROGRESS: { label: "In Progress", className: "bg-blue-100 text-blue-700 border-blue-200"   },
-  COMPLETED:   { label: "Completed",   className: "bg-green-100 text-green-700 border-green-200" },
-  FAILED:      { label: "Failed",      className: "bg-red-100 text-red-700 border-red-200"      },
-};
-
-const LEGACY_FALLBACK = { label: null, className: "bg-gray-100 text-gray-600 border-gray-200" };
+type StatusType =
+  | "success"
+  | "warning"
+  | "error"
+  | "info"
+  | "default"
+  | "active"
+  | "inactive"
+  | "pending"
+  | "processing"
+  | "completed"
+  | "cancelled"
+  | "shipped"
+  | "delivered"
+  | "returned"
+  | "critical"
+  | "low"
+  | "medium"
+  | "high";
 
 export interface StatusBadgeProps {
-  label?: string;
+  status: string;
   className?: string;
-  status?: string;
+  size?: "sm" | "default" | "lg";
+  statusMapping?: Record<string, StatusType>;
 }
 
-export function StatusBadge({ label, className, status }: StatusBadgeProps) {
-  let resolvedLabel: string;
-  let resolvedClassName: string | undefined;
+const defaultStatusMapping: Record<string, StatusType> = {
+  active: "success",
+  inactive: "default",
+  pending: "warning",
+  processing: "info",
+  completed: "success",
+  cancelled: "error",
+  shipped: "success",
+  delivered: "success",
+  returned: "warning",
+  critical: "error",
+  low: "warning",
+  medium: "info",
+  high: "success",
+};
 
-  if (label !== undefined) {
-    resolvedLabel = label;
-    resolvedClassName = className;
-  } else if (status !== undefined) {
-    const cfg = LEGACY_STATUS_CONFIG[status] ?? LEGACY_FALLBACK;
-    resolvedLabel = cfg.label ?? status;
-    resolvedClassName = cfg.className;
-  } else {
-    resolvedLabel = "";
-    resolvedClassName = className;
-  }
+export function getStatusVariant(
+  status: string,
+  statusMapping?: Record<string, StatusType>
+): StatusType {
+  const mapping = statusMapping || defaultStatusMapping;
+  return mapping[status.toLowerCase()] || "default";
+}
+
+export function StatusBadge({ status, className, size = "default", statusMapping }: StatusBadgeProps) {
+  const sizeClasses = {
+    sm: "text-xs py-0 px-2",
+    default: "text-xs py-1 px-2.5",
+    lg: "text-sm py-1 px-3",
+  };
+
+  const variant = getStatusVariant(status, statusMapping);
 
   return (
-    <Badge
-      variant="outline"
-      className={cn("text-xs font-medium px-2 py-0.5 rounded-full border", resolvedClassName)}
-    >
-      {resolvedLabel}
+    <Badge variant={variant as any} className={cn(sizeClasses[size], className)}>
+      {status}
     </Badge>
   );
 }
+
+export default StatusBadge;

@@ -61,10 +61,9 @@ export { LoadingButton, type LoadingButtonProps } from "./components/LoadingButt
 export { SearchInput, type SearchInputProps } from "./components/SearchInput";
 export { EmptyState, type EmptyStateProps } from "./components/EmptyState";
 export { ScanInput, type ScanInputProps } from "./components/ScanInput";
-export { StatusBadge, type StatusBadgeProps } from "./components/StatusBadge";
+export { StatusBadge, type StatusBadgeProps, getStatusVariant } from "./components/StatusBadge";
 export { QuantityInput, type QuantityInputProps } from "./components/QuantityInput";
 export { ConfirmDialog, type ConfirmDialogProps } from "./components/ConfirmDialog";
-export { SidePanel, type SidePanelProps } from "./components/SidePanel";
 export {
   SelectionModal, type SelectionModalProps, type SelectionItem,
 } from "./components/SelectionModal";
@@ -75,7 +74,8 @@ export {
   FilterBar, type FilterBarProps, type FilterConfig, type FilterOption,
 } from "./components/FilterBar";
 export {
-  FormBuilder, type FormBuilderProps, type FieldConfig, type FieldType, type FieldOption,
+  FormBuilder, type FormBuilderProps, type FieldConfig, FieldType,
+  type ValidationRule, type OptionType, type CustomComponentProps,
 } from "./components/FormBuilder";
 export {
   MultiSelect, MultiSelectBadges, type MultiSelectProps, type MultiSelectOption,
@@ -87,8 +87,6 @@ export {
 export { TimePicker, type TimePickerProps } from "./components/TimePicker";
 
 export { DatePicker, type DatePickerProps } from "./components/DatePicker";
-export { DateTimePicker, type DateTimePickerProps } from "./components/DateTimePicker";
-export { DateRangePicker, type DateRangePickerProps, type DateRange } from "./components/DateRangePicker";
 
 // ── Additional Base Components ────────────────────────────────────────────────
 export {
@@ -103,6 +101,19 @@ export {
 
 // ── Toast utilities ───────────────────────────────────────────────────────────
 export { showSuccess, showError } from "./components/WmsToast";
+
+// ── Layout Components ─────────────────────────────────────────────────────────
+export {
+  PageLayout, type PageLayoutProps,
+  PageHeader, type PageHeaderProps,
+  ContentSection, type ContentSectionProps,
+  StatsCard, type StatsCardProps,
+  StatsGrid, type StatsGridProps,
+} from "./components/PageLayout";
+
+// ── Sort & Filter ─────────────────────────────────────────────────────────────
+export { SortOptions, type SortOptionsProps } from "./components/SortOptions";
+export { RadioGroup, RadioGroupItem } from "./components/RadioGroup";
 
 // ── WMS Domain Components ─────────────────────────────────────────────────────
 export { SmallToteCard, type SmallToteCardProps } from "./components/SmallToteCard";

@@ -1629,36 +1629,33 @@ function ScanInput({
 
 // src/components/StatusBadge/index.tsx
 import { jsx as jsx24 } from "react/jsx-runtime";
-var LEGACY_STATUS_CONFIG = {
-  CREATED: { label: "Created", className: "bg-gray-100 text-gray-700 border-gray-200" },
-  IN_PROGRESS: { label: "In Progress", className: "bg-blue-100 text-blue-700 border-blue-200" },
-  COMPLETED: { label: "Completed", className: "bg-green-100 text-green-700 border-green-200" },
-  FAILED: { label: "Failed", className: "bg-red-100 text-red-700 border-red-200" }
+var defaultStatusMapping = {
+  active: "success",
+  inactive: "default",
+  pending: "warning",
+  processing: "info",
+  completed: "success",
+  cancelled: "error",
+  shipped: "success",
+  delivered: "success",
+  returned: "warning",
+  critical: "error",
+  low: "warning",
+  medium: "info",
+  high: "success"
 };
-var LEGACY_FALLBACK = { label: null, className: "bg-gray-100 text-gray-600 border-gray-200" };
-function StatusBadge({ label, className, status }) {
-  var _a, _b;
-  let resolvedLabel;
-  let resolvedClassName;
-  if (label !== void 0) {
-    resolvedLabel = label;
-    resolvedClassName = className;
-  } else if (status !== void 0) {
-    const cfg = (_a = LEGACY_STATUS_CONFIG[status]) != null ? _a : LEGACY_FALLBACK;
-    resolvedLabel = (_b = cfg.label) != null ? _b : status;
-    resolvedClassName = cfg.className;
-  } else {
-    resolvedLabel = "";
-    resolvedClassName = className;
-  }
-  return /* @__PURE__ */ jsx24(
-    Badge,
-    {
-      variant: "outline",
-      className: cn("text-xs font-medium px-2 py-0.5 rounded-full border", resolvedClassName),
-      children: resolvedLabel
-    }
-  );
+function getStatusVariant(status, statusMapping) {
+  const mapping = statusMapping || defaultStatusMapping;
+  return mapping[status.toLowerCase()] || "default";
+}
+function StatusBadge({ status, className, size = "default", statusMapping }) {
+  const sizeClasses = {
+    sm: "text-xs py-0 px-2",
+    default: "text-xs py-1 px-2.5",
+    lg: "text-sm py-1 px-3"
+  };
+  const variant = getStatusVariant(status, statusMapping);
+  return /* @__PURE__ */ jsx24(Badge, { variant, className: cn(sizeClasses[size], className), children: status });
 }
 
 // src/components/QuantityInput/index.tsx
@@ -1731,30 +1728,10 @@ function ConfirmDialog({
   ] }) });
 }
 
-// src/components/SidePanel/index.tsx
-import { jsx as jsx27, jsxs as jsxs15 } from "react/jsx-runtime";
-function SidePanel({ open, onClose, title, children, footer }) {
-  return /* @__PURE__ */ jsx27(Sheet, { open, onOpenChange: (o) => {
-    if (!o) onClose();
-  }, children: /* @__PURE__ */ jsxs15(
-    SheetContent,
-    {
-      side: "right",
-      hideCloseButton: true,
-      className: "flex flex-col p-0 gap-0 max-sm:w-full max-sm:max-w-full sm:w-1/3 sm:max-w-none",
-      children: [
-        /* @__PURE__ */ jsx27("div", { className: "px-6 py-4 border-b shrink-0", children: /* @__PURE__ */ jsx27(SheetTitle, { className: "text-base font-semibold", children: title }) }),
-        /* @__PURE__ */ jsx27("div", { className: "flex-1 overflow-y-auto px-6 py-5", children }),
-        footer && /* @__PURE__ */ jsx27("div", { className: "shrink-0 border-t px-6 py-4 flex justify-end gap-2", children: footer })
-      ]
-    }
-  ) });
-}
-
 // src/components/SelectionModal/index.tsx
 import * as React21 from "react";
 import { SearchX } from "lucide-react";
-import { jsx as jsx28, jsxs as jsxs16 } from "react/jsx-runtime";
+import { jsx as jsx27, jsxs as jsxs15 } from "react/jsx-runtime";
 function SelectionModal({
   open,
   onClose,
@@ -1803,12 +1780,12 @@ function SelectionModal({
     onConfirm(data.filter((item) => selected.has(item.id)));
     onClose();
   }
-  const emptyState = /* @__PURE__ */ jsx28(EmptyState, { icon: /* @__PURE__ */ jsx28(SearchX, { className: "size-6" }), title: "No results", description: "Try a different search term.", className: "py-8" });
+  const emptyState = /* @__PURE__ */ jsx27(EmptyState, { icon: /* @__PURE__ */ jsx27(SearchX, { className: "size-6" }), title: "No results", description: "Try a different search term.", className: "py-8" });
   function renderCardItem(item) {
     const isSelected = selected.has(item.id);
     if (renderItem) return renderItem(item, isSelected, () => toggle(item.id));
     const showImage = item.imageUrl || showImagePlaceholder;
-    return /* @__PURE__ */ jsxs16(
+    return /* @__PURE__ */ jsxs15(
       "button",
       {
         type: "button",
@@ -1819,13 +1796,13 @@ function SelectionModal({
           isSelected ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border hover:border-muted-foreground/30 hover:bg-muted/40"
         ),
         children: [
-          showImage && /* @__PURE__ */ jsx28("div", { className: "shrink-0 w-20 h-20 rounded-md overflow-hidden bg-gray-100 flex items-center justify-center", children: item.imageUrl ? /* @__PURE__ */ jsx28("img", { src: item.imageUrl, alt: item.label, className: "h-full w-full object-contain" }) : /* @__PURE__ */ jsx28("span", { className: "text-xl font-bold text-gray-400 select-none", children: item.label.charAt(0).toUpperCase() }) }),
-          /* @__PURE__ */ jsxs16("div", { className: "flex flex-col min-w-0 flex-1", children: [
-            /* @__PURE__ */ jsx28("p", { className: "text-sm font-medium leading-snug truncate", children: item.label }),
-            item.sublabel && /* @__PURE__ */ jsx28("p", { className: "text-xs text-muted-foreground mt-0.5 truncate font-mono", children: item.sublabel }),
-            item.attributes && item.attributes.length > 0 && /* @__PURE__ */ jsx28("div", { className: "mt-1.5 grid grid-cols-2 gap-x-4 gap-y-1", children: item.attributes.map((attr) => /* @__PURE__ */ jsxs16("div", { className: "flex flex-col min-w-0", children: [
-              /* @__PURE__ */ jsx28("span", { className: "text-[10px] text-muted-foreground uppercase tracking-wide", children: attr.label }),
-              /* @__PURE__ */ jsx28("span", { className: "text-xs font-medium truncate", children: attr.value })
+          showImage && /* @__PURE__ */ jsx27("div", { className: "shrink-0 w-20 h-20 rounded-md overflow-hidden bg-gray-100 flex items-center justify-center", children: item.imageUrl ? /* @__PURE__ */ jsx27("img", { src: item.imageUrl, alt: item.label, className: "h-full w-full object-contain" }) : /* @__PURE__ */ jsx27("span", { className: "text-xl font-bold text-gray-400 select-none", children: item.label.charAt(0).toUpperCase() }) }),
+          /* @__PURE__ */ jsxs15("div", { className: "flex flex-col min-w-0 flex-1", children: [
+            /* @__PURE__ */ jsx27("p", { className: "text-sm font-medium leading-snug truncate", children: item.label }),
+            item.sublabel && /* @__PURE__ */ jsx27("p", { className: "text-xs text-muted-foreground mt-0.5 truncate font-mono", children: item.sublabel }),
+            item.attributes && item.attributes.length > 0 && /* @__PURE__ */ jsx27("div", { className: "mt-1.5 grid grid-cols-2 gap-x-4 gap-y-1", children: item.attributes.map((attr) => /* @__PURE__ */ jsxs15("div", { className: "flex flex-col min-w-0", children: [
+              /* @__PURE__ */ jsx27("span", { className: "text-[10px] text-muted-foreground uppercase tracking-wide", children: attr.label }),
+              /* @__PURE__ */ jsx27("span", { className: "text-xs font-medium truncate", children: attr.value })
             ] }, attr.label)) })
           ] })
         ]
@@ -1837,44 +1814,44 @@ function SelectionModal({
     const isSelected = selected.has(item.id);
     if (renderItem) return renderItem(item, isSelected, () => toggle(item.id));
     if (!multiple) {
-      return /* @__PURE__ */ jsx28(
+      return /* @__PURE__ */ jsx27(
         "button",
         {
           type: "button",
           className: "flex items-center gap-3 rounded-md px-2 py-2.5 w-full text-left cursor-pointer hover:bg-accent transition-colors",
           onClick: () => selectAndClose(item),
-          children: /* @__PURE__ */ jsxs16("div", { className: "min-w-0 flex-1", children: [
-            /* @__PURE__ */ jsx28("p", { className: "text-sm font-medium leading-none truncate", children: item.label }),
-            item.sublabel && /* @__PURE__ */ jsx28("p", { className: "text-xs text-muted-foreground mt-0.5 truncate", children: item.sublabel })
+          children: /* @__PURE__ */ jsxs15("div", { className: "min-w-0 flex-1", children: [
+            /* @__PURE__ */ jsx27("p", { className: "text-sm font-medium leading-none truncate", children: item.label }),
+            item.sublabel && /* @__PURE__ */ jsx27("p", { className: "text-xs text-muted-foreground mt-0.5 truncate", children: item.sublabel })
           ] })
         },
         item.id
       );
     }
-    return /* @__PURE__ */ jsxs16("label", { className: "flex items-center gap-3 rounded-md px-2 py-2.5 cursor-pointer hover:bg-accent transition-colors", children: [
-      /* @__PURE__ */ jsx28(Checkbox, { checked: isSelected, onCheckedChange: () => toggle(item.id) }),
-      /* @__PURE__ */ jsxs16("div", { className: "min-w-0 flex-1", children: [
-        /* @__PURE__ */ jsx28("p", { className: "text-sm font-medium leading-none truncate", children: item.label }),
-        item.sublabel && /* @__PURE__ */ jsx28("p", { className: "text-xs text-muted-foreground mt-0.5 truncate", children: item.sublabel })
+    return /* @__PURE__ */ jsxs15("label", { className: "flex items-center gap-3 rounded-md px-2 py-2.5 cursor-pointer hover:bg-accent transition-colors", children: [
+      /* @__PURE__ */ jsx27(Checkbox, { checked: isSelected, onCheckedChange: () => toggle(item.id) }),
+      /* @__PURE__ */ jsxs15("div", { className: "min-w-0 flex-1", children: [
+        /* @__PURE__ */ jsx27("p", { className: "text-sm font-medium leading-none truncate", children: item.label }),
+        item.sublabel && /* @__PURE__ */ jsx27("p", { className: "text-xs text-muted-foreground mt-0.5 truncate", children: item.sublabel })
       ] })
     ] }, item.id);
   }
-  return /* @__PURE__ */ jsx28(Dialog, { open, onOpenChange: (o) => {
+  return /* @__PURE__ */ jsx27(Dialog, { open, onOpenChange: (o) => {
     if (!o) onClose();
-  }, children: /* @__PURE__ */ jsxs16(
+  }, children: /* @__PURE__ */ jsxs15(
     DialogContent,
     {
       className: cn("w-[calc(100vw-2rem)] p-0 gap-0", variant === "card" ? "sm:max-w-lg" : "sm:max-w-md"),
       hideCloseButton: true,
       children: [
-        /* @__PURE__ */ jsx28(DialogHeader, { className: "px-6 pt-5 pb-4 border-b", children: /* @__PURE__ */ jsx28(DialogTitle, { children: title }) }),
-        /* @__PURE__ */ jsx28("div", { className: "px-6 pt-4 pb-2", children: /* @__PURE__ */ jsx28(SearchInput, { value: query, onChange: (e) => setQuery(e.target.value), placeholder: "Search..." }) }),
-        variant === "card" ? /* @__PURE__ */ jsx28("div", { className: "overflow-y-auto max-h-[420px] px-4 pb-2", children: filtered.length === 0 ? emptyState : /* @__PURE__ */ jsx28("div", { className: "flex flex-col gap-2 py-2", children: filtered.map((item) => /* @__PURE__ */ jsx28(React21.Fragment, { children: renderCardItem(item) }, item.id)) }) }) : /* @__PURE__ */ jsx28("div", { className: "overflow-y-auto max-h-[300px] px-4 pb-2", children: filtered.length === 0 ? emptyState : /* @__PURE__ */ jsx28("div", { className: "space-y-0.5 py-1", children: filtered.map((item) => /* @__PURE__ */ jsx28(React21.Fragment, { children: renderListItem(item) }, item.id)) }) }),
-        /* @__PURE__ */ jsxs16("div", { className: "flex items-center justify-between gap-3 px-6 py-4 border-t", children: [
-          multiple ? /* @__PURE__ */ jsx28("p", { className: "text-xs text-muted-foreground", children: selected.size > 0 ? `${selected.size} selected` : "None selected" }) : /* @__PURE__ */ jsx28("p", { className: "text-xs text-muted-foreground", children: "Click an item to select" }),
-          /* @__PURE__ */ jsxs16("div", { className: "flex gap-2", children: [
-            /* @__PURE__ */ jsx28(LoadingButton, { variant: "secondary", onClick: onClose, children: "Cancel" }),
-            multiple && /* @__PURE__ */ jsx28(LoadingButton, { variant: "primary", disabled: selected.size === 0, onClick: handleConfirm, children: "Confirm" })
+        /* @__PURE__ */ jsx27(DialogHeader, { className: "px-6 pt-5 pb-4 border-b", children: /* @__PURE__ */ jsx27(DialogTitle, { children: title }) }),
+        /* @__PURE__ */ jsx27("div", { className: "px-6 pt-4 pb-2", children: /* @__PURE__ */ jsx27(SearchInput, { value: query, onChange: (e) => setQuery(e.target.value), placeholder: "Search..." }) }),
+        variant === "card" ? /* @__PURE__ */ jsx27("div", { className: "overflow-y-auto max-h-[420px] px-4 pb-2", children: filtered.length === 0 ? emptyState : /* @__PURE__ */ jsx27("div", { className: "flex flex-col gap-2 py-2", children: filtered.map((item) => /* @__PURE__ */ jsx27(React21.Fragment, { children: renderCardItem(item) }, item.id)) }) }) : /* @__PURE__ */ jsx27("div", { className: "overflow-y-auto max-h-[300px] px-4 pb-2", children: filtered.length === 0 ? emptyState : /* @__PURE__ */ jsx27("div", { className: "space-y-0.5 py-1", children: filtered.map((item) => /* @__PURE__ */ jsx27(React21.Fragment, { children: renderListItem(item) }, item.id)) }) }),
+        /* @__PURE__ */ jsxs15("div", { className: "flex items-center justify-between gap-3 px-6 py-4 border-t", children: [
+          multiple ? /* @__PURE__ */ jsx27("p", { className: "text-xs text-muted-foreground", children: selected.size > 0 ? `${selected.size} selected` : "None selected" }) : /* @__PURE__ */ jsx27("p", { className: "text-xs text-muted-foreground", children: "Click an item to select" }),
+          /* @__PURE__ */ jsxs15("div", { className: "flex gap-2", children: [
+            /* @__PURE__ */ jsx27(LoadingButton, { variant: "secondary", onClick: onClose, children: "Cancel" }),
+            multiple && /* @__PURE__ */ jsx27(LoadingButton, { variant: "primary", disabled: selected.size === 0, onClick: handleConfirm, children: "Confirm" })
           ] })
         ] })
       ]
@@ -1886,7 +1863,7 @@ function SelectionModal({
 import * as React22 from "react";
 import { useState as useState5 } from "react";
 import { TableIcon, ChevronLeft as ChevronLeft4, ChevronRight as ChevronRight5, Eye as Eye2, Trash2 as Trash22, Columns2 } from "lucide-react";
-import { jsx as jsx29, jsxs as jsxs17 } from "react/jsx-runtime";
+import { jsx as jsx28, jsxs as jsxs16 } from "react/jsx-runtime";
 var ACTIONS_KEY = "__actions__";
 function TablePagination({
   page,
@@ -1898,39 +1875,39 @@ function TablePagination({
 }) {
   const isFirst = page <= 1;
   const isLast = dataLength < pageSize;
-  return /* @__PURE__ */ jsxs17("div", { className: "flex items-center justify-between px-4 py-3 border-t", children: [
-    onPageSizeChange ? /* @__PURE__ */ jsxs17("div", { className: "flex items-center gap-2", children: [
-      /* @__PURE__ */ jsx29("span", { className: "text-xs text-muted-foreground", children: "Rows per page" }),
-      /* @__PURE__ */ jsxs17(Select, { value: String(pageSize), onValueChange: (v) => {
+  return /* @__PURE__ */ jsxs16("div", { className: "flex items-center justify-between px-4 py-3 border-t", children: [
+    onPageSizeChange ? /* @__PURE__ */ jsxs16("div", { className: "flex items-center gap-2", children: [
+      /* @__PURE__ */ jsx28("span", { className: "text-xs text-muted-foreground", children: "Rows per page" }),
+      /* @__PURE__ */ jsxs16(Select, { value: String(pageSize), onValueChange: (v) => {
         onPageSizeChange(Number(v));
         onPageChange(1);
       }, children: [
-        /* @__PURE__ */ jsx29(SelectTrigger, { className: "h-7 w-[64px] text-xs", children: /* @__PURE__ */ jsx29(SelectValue, {}) }),
-        /* @__PURE__ */ jsx29(SelectContent, { children: (pageSizeOptions != null ? pageSizeOptions : [10, 20, 50]).map((size) => /* @__PURE__ */ jsx29(SelectItem, { value: String(size), className: "text-xs", children: size }, size)) })
+        /* @__PURE__ */ jsx28(SelectTrigger, { className: "h-7 w-[64px] text-xs", children: /* @__PURE__ */ jsx28(SelectValue, {}) }),
+        /* @__PURE__ */ jsx28(SelectContent, { children: (pageSizeOptions != null ? pageSizeOptions : [10, 20, 50]).map((size) => /* @__PURE__ */ jsx28(SelectItem, { value: String(size), className: "text-xs", children: size }, size)) })
       ] })
-    ] }) : /* @__PURE__ */ jsx29("div", {}),
-    /* @__PURE__ */ jsxs17("div", { className: "flex items-center gap-1", children: [
-      /* @__PURE__ */ jsxs17(Button, { variant: "outline", size: "sm", className: "h-7 px-2.5 text-xs gap-1", onClick: () => onPageChange(page - 1), disabled: isFirst, children: [
-        /* @__PURE__ */ jsx29(ChevronLeft4, { className: "h-3.5 w-3.5" }),
+    ] }) : /* @__PURE__ */ jsx28("div", {}),
+    /* @__PURE__ */ jsxs16("div", { className: "flex items-center gap-1", children: [
+      /* @__PURE__ */ jsxs16(Button, { variant: "outline", size: "sm", className: "h-7 px-2.5 text-xs gap-1", onClick: () => onPageChange(page - 1), disabled: isFirst, children: [
+        /* @__PURE__ */ jsx28(ChevronLeft4, { className: "h-3.5 w-3.5" }),
         "Prev"
       ] }),
-      /* @__PURE__ */ jsxs17(Button, { variant: "outline", size: "sm", className: "h-7 px-2.5 text-xs gap-1", onClick: () => {
+      /* @__PURE__ */ jsxs16(Button, { variant: "outline", size: "sm", className: "h-7 px-2.5 text-xs gap-1", onClick: () => {
         if (!isLast) onPageChange(page + 1);
       }, disabled: isLast, children: [
         "Next",
-        /* @__PURE__ */ jsx29(ChevronRight5, { className: "h-3.5 w-3.5" })
+        /* @__PURE__ */ jsx28(ChevronRight5, { className: "h-3.5 w-3.5" })
       ] })
     ] })
   ] });
 }
 function RowActions({ row, onView, onDelete }) {
-  return /* @__PURE__ */ jsxs17("div", { className: "flex items-center gap-1.5", children: [
-    onView && /* @__PURE__ */ jsxs17(Button, { variant: "ghost", size: "sm", className: "h-7 px-2 text-xs gap-1", onClick: () => onView(row), children: [
-      /* @__PURE__ */ jsx29(Eye2, { className: "h-3.5 w-3.5" }),
+  return /* @__PURE__ */ jsxs16("div", { className: "flex items-center gap-1.5", children: [
+    onView && /* @__PURE__ */ jsxs16(Button, { variant: "ghost", size: "sm", className: "h-7 px-2 text-xs gap-1", onClick: () => onView(row), children: [
+      /* @__PURE__ */ jsx28(Eye2, { className: "h-3.5 w-3.5" }),
       "View"
     ] }),
-    onDelete && /* @__PURE__ */ jsxs17(Button, { variant: "destructive", size: "sm", className: "h-7 px-2 text-xs gap-1", onClick: () => onDelete(row), children: [
-      /* @__PURE__ */ jsx29(Trash22, { className: "h-3.5 w-3.5" }),
+    onDelete && /* @__PURE__ */ jsxs16(Button, { variant: "destructive", size: "sm", className: "h-7 px-2 text-xs gap-1", onClick: () => onDelete(row), children: [
+      /* @__PURE__ */ jsx28(Trash22, { className: "h-3.5 w-3.5" }),
       "Delete"
     ] })
   ] });
@@ -1967,14 +1944,14 @@ function ResponsiveTable({
   };
   const visibleDataColumns = columns.filter((c) => visibleKeys.has(c.key));
   const showActions = hasActions && visibleKeys.has(ACTIONS_KEY);
-  const columnSelector = /* @__PURE__ */ jsxs17(DropdownMenu, { children: [
-    /* @__PURE__ */ jsx29(DropdownMenuTrigger, { asChild: true, children: /* @__PURE__ */ jsxs17(Button, { variant: "outline", size: "sm", className: "h-7 gap-1.5 text-xs", children: [
-      /* @__PURE__ */ jsx29(Columns2, { className: "h-3.5 w-3.5" }),
+  const columnSelector = /* @__PURE__ */ jsxs16(DropdownMenu, { children: [
+    /* @__PURE__ */ jsx28(DropdownMenuTrigger, { asChild: true, children: /* @__PURE__ */ jsxs16(Button, { variant: "outline", size: "sm", className: "h-7 gap-1.5 text-xs", children: [
+      /* @__PURE__ */ jsx28(Columns2, { className: "h-3.5 w-3.5" }),
       "Columns"
     ] }) }),
-    /* @__PURE__ */ jsx29(DropdownMenuContent, { align: "end", className: "w-40", children: dropdownEntries.map((entry) => {
+    /* @__PURE__ */ jsx28(DropdownMenuContent, { align: "end", className: "w-40", children: dropdownEntries.map((entry) => {
       const isForced = entry.hideable === false;
-      return /* @__PURE__ */ jsx29(
+      return /* @__PURE__ */ jsx28(
         DropdownMenuCheckboxItem,
         {
           checked: visibleKeys.has(entry.key),
@@ -1989,51 +1966,51 @@ function ResponsiveTable({
     }) })
   ] });
   if (data.length === 0) {
-    return /* @__PURE__ */ jsxs17("div", { className: "rounded-lg border", children: [
-      /* @__PURE__ */ jsx29("div", { className: "flex justify-end px-4 py-2 border-b", children: columnSelector }),
-      /* @__PURE__ */ jsx29(EmptyState, { icon: /* @__PURE__ */ jsx29(TableIcon, { className: "size-7" }), title: emptyTitle, description: emptyDescription, className: "py-12" }),
-      pagination && /* @__PURE__ */ jsx29(TablePagination, __spreadProps(__spreadValues({}, pagination), { dataLength: data.length }))
+    return /* @__PURE__ */ jsxs16("div", { className: "rounded-lg border", children: [
+      /* @__PURE__ */ jsx28("div", { className: "flex justify-end px-4 py-2 border-b", children: columnSelector }),
+      /* @__PURE__ */ jsx28(EmptyState, { icon: /* @__PURE__ */ jsx28(TableIcon, { className: "size-7" }), title: emptyTitle, description: emptyDescription, className: "py-12" }),
+      pagination && /* @__PURE__ */ jsx28(TablePagination, __spreadProps(__spreadValues({}, pagination), { dataLength: data.length }))
     ] });
   }
   if (isMobile) {
-    return /* @__PURE__ */ jsxs17("div", { className: `space-y-3 ${className != null ? className : ""}`, children: [
-      /* @__PURE__ */ jsx29("div", { className: "flex justify-end", children: columnSelector }),
-      data.map((row, i) => /* @__PURE__ */ jsxs17("div", { className: "rounded-lg border bg-card p-4 space-y-2 shadow-sm", children: [
+    return /* @__PURE__ */ jsxs16("div", { className: `space-y-3 ${className != null ? className : ""}`, children: [
+      /* @__PURE__ */ jsx28("div", { className: "flex justify-end", children: columnSelector }),
+      data.map((row, i) => /* @__PURE__ */ jsxs16("div", { className: "rounded-lg border bg-card p-4 space-y-2 shadow-sm", children: [
         visibleDataColumns.map((col) => {
           const value = row[col.key];
-          return /* @__PURE__ */ jsxs17("div", { className: "flex items-center justify-between gap-2", children: [
-            /* @__PURE__ */ jsx29("span", { className: "text-xs text-muted-foreground shrink-0", children: col.label }),
-            /* @__PURE__ */ jsx29("span", { className: "text-sm font-medium text-right", children: col.render ? col.render(value, row) : value == null ? "\u2014" : String(value) })
+          return /* @__PURE__ */ jsxs16("div", { className: "flex items-center justify-between gap-2", children: [
+            /* @__PURE__ */ jsx28("span", { className: "text-xs text-muted-foreground shrink-0", children: col.label }),
+            /* @__PURE__ */ jsx28("span", { className: "text-sm font-medium text-right", children: col.render ? col.render(value, row) : value == null ? "\u2014" : String(value) })
           ] }, col.key);
         }),
-        showActions && /* @__PURE__ */ jsx29("div", { className: "pt-2 mt-1 border-t", children: /* @__PURE__ */ jsx29(RowActions, { row, onView, onDelete }) })
+        showActions && /* @__PURE__ */ jsx28("div", { className: "pt-2 mt-1 border-t", children: /* @__PURE__ */ jsx28(RowActions, { row, onView, onDelete }) })
       ] }, i)),
-      pagination && /* @__PURE__ */ jsx29("div", { className: "rounded-lg border bg-card", children: /* @__PURE__ */ jsx29(TablePagination, __spreadProps(__spreadValues({}, pagination), { dataLength: data.length })) })
+      pagination && /* @__PURE__ */ jsx28("div", { className: "rounded-lg border bg-card", children: /* @__PURE__ */ jsx28(TablePagination, __spreadProps(__spreadValues({}, pagination), { dataLength: data.length })) })
     ] });
   }
-  return /* @__PURE__ */ jsxs17("div", { className: `rounded-lg border ${className != null ? className : ""}`, children: [
-    /* @__PURE__ */ jsx29("div", { className: "flex justify-end px-4 py-2 border-b", children: columnSelector }),
-    /* @__PURE__ */ jsx29("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxs17(Table, { children: [
-      /* @__PURE__ */ jsx29(TableHeader, { children: /* @__PURE__ */ jsxs17(TableRow, { children: [
-        visibleDataColumns.map((col) => /* @__PURE__ */ jsx29(TableHead, { children: col.label }, col.key)),
-        showActions && /* @__PURE__ */ jsx29(TableHead, { className: "w-[140px]", children: "Actions" })
+  return /* @__PURE__ */ jsxs16("div", { className: `rounded-lg border ${className != null ? className : ""}`, children: [
+    /* @__PURE__ */ jsx28("div", { className: "flex justify-end px-4 py-2 border-b", children: columnSelector }),
+    /* @__PURE__ */ jsx28("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxs16(Table, { children: [
+      /* @__PURE__ */ jsx28(TableHeader, { children: /* @__PURE__ */ jsxs16(TableRow, { children: [
+        visibleDataColumns.map((col) => /* @__PURE__ */ jsx28(TableHead, { children: col.label }, col.key)),
+        showActions && /* @__PURE__ */ jsx28(TableHead, { className: "w-[140px]", children: "Actions" })
       ] }) }),
-      /* @__PURE__ */ jsx29(TableBody, { children: data.map((row, i) => /* @__PURE__ */ jsxs17(TableRow, { children: [
+      /* @__PURE__ */ jsx28(TableBody, { children: data.map((row, i) => /* @__PURE__ */ jsxs16(TableRow, { children: [
         visibleDataColumns.map((col) => {
           const value = row[col.key];
-          return /* @__PURE__ */ jsx29(TableCell, { children: col.render ? col.render(value, row) : value == null ? "\u2014" : String(value) }, col.key);
+          return /* @__PURE__ */ jsx28(TableCell, { children: col.render ? col.render(value, row) : value == null ? "\u2014" : String(value) }, col.key);
         }),
-        showActions && /* @__PURE__ */ jsx29(TableCell, { children: /* @__PURE__ */ jsx29(RowActions, { row, onView, onDelete }) })
+        showActions && /* @__PURE__ */ jsx28(TableCell, { children: /* @__PURE__ */ jsx28(RowActions, { row, onView, onDelete }) })
       ] }, i)) })
     ] }) }),
-    pagination && /* @__PURE__ */ jsx29(TablePagination, __spreadProps(__spreadValues({}, pagination), { dataLength: data.length }))
+    pagination && /* @__PURE__ */ jsx28(TablePagination, __spreadProps(__spreadValues({}, pagination), { dataLength: data.length }))
   ] });
 }
 
 // src/components/FilterBar/index.tsx
 import * as React23 from "react";
 import { Filter as Filter2 } from "lucide-react";
-import { jsx as jsx30, jsxs as jsxs18 } from "react/jsx-runtime";
+import { jsx as jsx29, jsxs as jsxs17 } from "react/jsx-runtime";
 function FilterBar({
   filters = [],
   searchValue = "",
@@ -2066,11 +2043,11 @@ function FilterBar({
     onReset();
   }
   if (isMobile) {
-    return /* @__PURE__ */ jsxs18("div", { className: "space-y-2", children: [
-      /* @__PURE__ */ jsxs18("div", { className: "flex items-center gap-2", children: [
-        onSearchChange && /* @__PURE__ */ jsx30(SearchInput, { className: "flex-1", value: searchValue, onChange: (e) => onSearchChange(e.target.value), placeholder: searchPlaceholder }),
-        (!expanded || filters.length === 0) && /* @__PURE__ */ jsx30(LoadingButton, { variant: "primary", onClick: handleApply, children: "Search" }),
-        filters.length > 0 && /* @__PURE__ */ jsx30(
+    return /* @__PURE__ */ jsxs17("div", { className: "space-y-2", children: [
+      /* @__PURE__ */ jsxs17("div", { className: "flex items-center gap-2", children: [
+        onSearchChange && /* @__PURE__ */ jsx29(SearchInput, { className: "flex-1", value: searchValue, onChange: (e) => onSearchChange(e.target.value), placeholder: searchPlaceholder }),
+        (!expanded || filters.length === 0) && /* @__PURE__ */ jsx29(LoadingButton, { variant: "primary", onClick: handleApply, children: "Search" }),
+        filters.length > 0 && /* @__PURE__ */ jsx29(
           Button,
           {
             variant: "outline",
@@ -2079,83 +2056,358 @@ function FilterBar({
             onClick: () => setExpanded((prev) => !prev),
             "aria-expanded": expanded,
             "aria-label": "Toggle filters",
-            children: /* @__PURE__ */ jsx30(Filter2, { className: "h-4 w-4" })
+            children: /* @__PURE__ */ jsx29(Filter2, { className: "h-4 w-4" })
           }
         )
       ] }),
-      /* @__PURE__ */ jsx30("div", { className: cn("grid transition-all duration-300 ease-in-out", expanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"), children: /* @__PURE__ */ jsx30("div", { className: "overflow-hidden", children: /* @__PURE__ */ jsxs18("div", { className: "space-y-3 pt-1 pb-1", children: [
-        additionalFilters && /* @__PURE__ */ jsx30("div", { children: additionalFilters }),
+      /* @__PURE__ */ jsx29("div", { className: cn("grid transition-all duration-300 ease-in-out", expanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"), children: /* @__PURE__ */ jsx29("div", { className: "overflow-hidden", children: /* @__PURE__ */ jsxs17("div", { className: "space-y-3 pt-1 pb-1", children: [
+        additionalFilters && /* @__PURE__ */ jsx29("div", { children: additionalFilters }),
         filters.map((filter) => {
           var _a;
-          return /* @__PURE__ */ jsxs18("div", { className: "space-y-1.5", children: [
-            /* @__PURE__ */ jsx30("p", { className: "text-sm font-medium", children: filter.label }),
-            /* @__PURE__ */ jsxs18(Select, { value: (_a = filterValues[filter.key]) != null ? _a : "", onValueChange: (val) => handleFilterChange(filter.key, val), children: [
-              /* @__PURE__ */ jsx30(SelectTrigger, { className: "w-full h-9 text-sm", children: /* @__PURE__ */ jsx30(SelectValue, { placeholder: `Select ${filter.label}` }) }),
-              /* @__PURE__ */ jsx30(SelectContent, { children: filter.options.map((opt) => /* @__PURE__ */ jsx30(SelectItem, { value: opt.value, children: opt.label }, opt.value)) })
+          return /* @__PURE__ */ jsxs17("div", { className: "space-y-1.5", children: [
+            /* @__PURE__ */ jsx29("p", { className: "text-sm font-medium", children: filter.label }),
+            /* @__PURE__ */ jsxs17(Select, { value: (_a = filterValues[filter.key]) != null ? _a : "", onValueChange: (val) => handleFilterChange(filter.key, val), children: [
+              /* @__PURE__ */ jsx29(SelectTrigger, { className: "w-full h-9 text-sm", children: /* @__PURE__ */ jsx29(SelectValue, { placeholder: `Select ${filter.label}` }) }),
+              /* @__PURE__ */ jsx29(SelectContent, { children: filter.options.map((opt) => /* @__PURE__ */ jsx29(SelectItem, { value: opt.value, children: opt.label }, opt.value)) })
             ] })
           ] }, filter.key);
         }),
-        /* @__PURE__ */ jsxs18("div", { className: "pt-1 flex gap-2", children: [
-          /* @__PURE__ */ jsx30(LoadingButton, { variant: "secondary", onClick: handleReset, children: "Reset" }),
-          /* @__PURE__ */ jsx30(LoadingButton, { variant: "primary", onClick: handleApply, children: "Search" })
+        /* @__PURE__ */ jsxs17("div", { className: "pt-1 flex gap-2", children: [
+          /* @__PURE__ */ jsx29(LoadingButton, { variant: "secondary", onClick: handleReset, children: "Reset" }),
+          /* @__PURE__ */ jsx29(LoadingButton, { variant: "primary", onClick: handleApply, children: "Search" })
         ] })
       ] }) }) })
     ] });
   }
-  return /* @__PURE__ */ jsxs18("div", { className: "space-y-2", children: [
-    /* @__PURE__ */ jsxs18("div", { className: "flex flex-wrap items-center gap-2", children: [
-      onSearchChange && /* @__PURE__ */ jsx30(SearchInput, { className: "w-48", value: searchValue, onChange: (e) => onSearchChange(e.target.value), placeholder: searchPlaceholder }),
-      additionalFilters && /* @__PURE__ */ jsx30("div", { className: "shrink-0", children: additionalFilters }),
+  return /* @__PURE__ */ jsxs17("div", { className: "space-y-2", children: [
+    /* @__PURE__ */ jsxs17("div", { className: "flex flex-wrap items-center gap-2", children: [
+      onSearchChange && /* @__PURE__ */ jsx29(SearchInput, { className: "w-48", value: searchValue, onChange: (e) => onSearchChange(e.target.value), placeholder: searchPlaceholder }),
+      additionalFilters && /* @__PURE__ */ jsx29("div", { className: "shrink-0", children: additionalFilters }),
       filters.map((filter) => {
         var _a;
-        return /* @__PURE__ */ jsxs18(Select, { value: (_a = filterValues[filter.key]) != null ? _a : "", onValueChange: (val) => handleFilterChange(filter.key, val), children: [
-          /* @__PURE__ */ jsx30(SelectTrigger, { className: filterTriggerClassName, children: /* @__PURE__ */ jsx30(SelectValue, { placeholder: filter.label }) }),
-          /* @__PURE__ */ jsx30(SelectContent, { children: filter.options.map((opt) => /* @__PURE__ */ jsx30(SelectItem, { value: opt.value, children: opt.label }, opt.value)) })
+        return /* @__PURE__ */ jsxs17(Select, { value: (_a = filterValues[filter.key]) != null ? _a : "", onValueChange: (val) => handleFilterChange(filter.key, val), children: [
+          /* @__PURE__ */ jsx29(SelectTrigger, { className: filterTriggerClassName, children: /* @__PURE__ */ jsx29(SelectValue, { placeholder: filter.label }) }),
+          /* @__PURE__ */ jsx29(SelectContent, { children: filter.options.map((opt) => /* @__PURE__ */ jsx29(SelectItem, { value: opt.value, children: opt.label }, opt.value)) })
         ] }, filter.key);
       })
     ] }),
-    /* @__PURE__ */ jsxs18("div", { className: "flex gap-2 justify-end", children: [
-      /* @__PURE__ */ jsx30(LoadingButton, { variant: "secondary", onClick: handleReset, children: "Reset" }),
-      /* @__PURE__ */ jsx30(LoadingButton, { variant: "primary", onClick: handleApply, children: "Search" })
+    /* @__PURE__ */ jsxs17("div", { className: "flex gap-2 justify-end", children: [
+      /* @__PURE__ */ jsx29(LoadingButton, { variant: "secondary", onClick: handleReset, children: "Reset" }),
+      /* @__PURE__ */ jsx29(LoadingButton, { variant: "primary", onClick: handleApply, children: "Search" })
     ] })
   ] });
 }
 
 // src/components/FormBuilder/index.tsx
-import { jsx as jsx31, jsxs as jsxs19 } from "react/jsx-runtime";
-function FormBuilder({ fields, values, onChange, onSubmit, submitLabel = "Submit" }) {
-  function handleSubmit(e) {
-    e.preventDefault();
-    onSubmit(values);
-  }
-  return /* @__PURE__ */ jsxs19("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
-    fields.map((field) => {
-      var _a, _b, _c, _d, _e;
-      return /* @__PURE__ */ jsxs19("div", { className: "space-y-1.5", children: [
-        /* @__PURE__ */ jsx31(Label2, { htmlFor: field.name, children: field.label }),
-        field.type === "select" ? /* @__PURE__ */ jsxs19(Select, { value: (_a = values[field.name]) != null ? _a : "", onValueChange: (val) => onChange(field.name, val), children: [
-          /* @__PURE__ */ jsx31(SelectTrigger, { id: field.name, className: "w-full", children: /* @__PURE__ */ jsx31(SelectValue, { placeholder: (_b = field.placeholder) != null ? _b : `Select ${field.label}` }) }),
-          /* @__PURE__ */ jsx31(SelectContent, { children: ((_c = field.options) != null ? _c : []).map((opt) => /* @__PURE__ */ jsx31(SelectItem, { value: opt.value, children: opt.label }, opt.value)) })
-        ] }) : /* @__PURE__ */ jsx31(
-          Input,
-          {
-            id: field.name,
-            type: field.type,
-            value: (_d = values[field.name]) != null ? _d : "",
-            onChange: (e) => onChange(field.name, e.target.value),
-            placeholder: (_e = field.placeholder) != null ? _e : field.label
-          }
-        )
-      ] }, field.name);
-    }),
-    /* @__PURE__ */ jsx31("div", { className: "pt-1", children: /* @__PURE__ */ jsx31(LoadingButton, { type: "submit", variant: "primary", children: submitLabel }) })
+import { useState as useState7, useCallback } from "react";
+
+// src/components/Textarea/index.tsx
+import * as React24 from "react";
+import { jsx as jsx30 } from "react/jsx-runtime";
+var Textarea = React24.forwardRef((_a, ref) => {
+  var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
+  return /* @__PURE__ */ jsx30(
+    "textarea",
+    __spreadValues({
+      className: cn(
+        "flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+        className
+      ),
+      ref
+    }, props)
+  );
+});
+Textarea.displayName = "Textarea";
+
+// src/components/RadioGroup/index.tsx
+import * as React25 from "react";
+import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
+import { Circle as Circle2 } from "lucide-react";
+import { jsx as jsx31 } from "react/jsx-runtime";
+var RadioGroup2 = React25.forwardRef((_a, ref) => {
+  var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
+  return /* @__PURE__ */ jsx31(RadioGroupPrimitive.Root, __spreadProps(__spreadValues({ className: cn("grid gap-2", className) }, props), { ref }));
+});
+RadioGroup2.displayName = RadioGroupPrimitive.Root.displayName;
+var RadioGroupItem = React25.forwardRef((_a, ref) => {
+  var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
+  return /* @__PURE__ */ jsx31(
+    RadioGroupPrimitive.Item,
+    __spreadProps(__spreadValues({
+      ref,
+      className: cn(
+        "aspect-square h-4 w-4 rounded-full border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+        className
+      )
+    }, props), {
+      children: /* @__PURE__ */ jsx31(RadioGroupPrimitive.Indicator, { className: "flex items-center justify-center", children: /* @__PURE__ */ jsx31(Circle2, { className: "h-2.5 w-2.5 fill-current text-current" }) })
+    })
+  );
+});
+RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName;
+
+// src/components/FormBuilder/index.tsx
+import { jsx as jsx32, jsxs as jsxs18 } from "react/jsx-runtime";
+var FieldType = /* @__PURE__ */ ((FieldType2) => {
+  FieldType2["TEXT"] = "text";
+  FieldType2["NUMBER"] = "number";
+  FieldType2["DATE"] = "date";
+  FieldType2["SELECT"] = "select";
+  FieldType2["MULTI_SELECT"] = "multiSelect";
+  FieldType2["RADIO"] = "radio";
+  FieldType2["CHECKBOX"] = "checkbox";
+  FieldType2["FILE"] = "file";
+  FieldType2["CUSTOM"] = "custom";
+  FieldType2["TEXTAREA"] = "textarea";
+  FieldType2["GROUP"] = "group";
+  FieldType2["DIVIDER"] = "divider";
+  return FieldType2;
+})(FieldType || {});
+var FormBuilder = ({
+  config,
+  onSubmit,
+  submitButtonText = "Submit",
+  labelPlacement = "outside",
+  onFormDataChange,
+  className,
+  onReset,
+  resetButtonText = "Reset",
+  isSubmitting = false
+}) => {
+  const [errors, setErrors] = useState7({});
+  const validateField = useCallback((value, rules) => {
+    if (!rules) return "";
+    if (rules.required && !value) return "This field is required";
+    if (rules.minLength && String(value).length < rules.minLength)
+      return `Minimum length is ${rules.minLength}`;
+    if (rules.maxLength && String(value).length > rules.maxLength)
+      return `Maximum length is ${rules.maxLength}`;
+    if (rules.min && Number(value) < rules.min) return `Minimum value is ${rules.min}`;
+    if (rules.max && Number(value) > rules.max) return `Maximum value is ${rules.max}`;
+    if (rules.pattern && !rules.pattern.test(String(value))) return "Invalid format";
+    if (rules.custom) {
+      const result = rules.custom(value);
+      if (typeof result === "string") return result;
+      if (!result) return "Invalid value";
+    }
+    return "";
+  }, []);
+  const handleChange = (field, value) => {
+    var _a;
+    if (field == null ? void 0 : field.validation) {
+      const error = validateField(value, field.validation);
+      setErrors((prev) => __spreadProps(__spreadValues({}, prev), { [field.name]: error }));
+    }
+    (_a = field == null ? void 0 : field.onChange) == null ? void 0 : _a.call(
+      field,
+      field.type === "date" /* DATE */ ? new Date(value).toISOString() : field.type === "number" /* NUMBER */ ? Number(value) : value
+    );
+    onFormDataChange == null ? void 0 : onFormDataChange(field.name, value);
+  };
+  const handleSubmit = () => {
+    const newErrors = {};
+    let hasErrors = false;
+    config.forEach((field) => {
+      if (field.validation) {
+        const error = validateField(field.value, field.validation);
+        if (error) {
+          newErrors[field.name] = error;
+          hasErrors = true;
+        }
+      }
+    });
+    setErrors(newErrors);
+    if (!hasErrors) onSubmit == null ? void 0 : onSubmit();
+  };
+  const renderField = (field, index) => {
+    var _a, _b, _c, _d, _e, _f, _g, _h;
+    const uniqueKey = `${field.key || field.name || "field"}-${index}`;
+    const commonLabelProps = {
+      className: cn("text-sm font-medium", errors[field.name] && "text-destructive")
+    };
+    const renderLabel = () => {
+      var _a2;
+      return /* @__PURE__ */ jsxs18(Label2, __spreadProps(__spreadValues({}, commonLabelProps), { children: [
+        field.label,
+        ((_a2 = field.validation) == null ? void 0 : _a2.required) && /* @__PURE__ */ jsx32("span", { className: "text-destructive", children: " *" })
+      ] }));
+    };
+    const renderError = () => errors[field.name] ? /* @__PURE__ */ jsx32("p", { className: "text-xs text-destructive mt-1", children: errors[field.name] }) : null;
+    switch (field.type) {
+      case "text":
+      case "date":
+      case "number":
+        return /* @__PURE__ */ jsxs18("div", { className: cn("space-y-2", field.className), children: [
+          renderLabel(),
+          /* @__PURE__ */ jsx32(
+            Input,
+            __spreadValues({
+              type: field.type,
+              name: field.name,
+              value: (field == null ? void 0 : field.value) || "",
+              onChange: (e) => handleChange(field, e.target.value),
+              placeholder: field.placeholder || `Enter ${field.label}`,
+              className: cn(errors[field.name] && "border-destructive")
+            }, field.fieldProps)
+          ),
+          renderError()
+        ] }, uniqueKey);
+      case "divider":
+        return /* @__PURE__ */ jsx32("div", { className: "my-4 border-b border-gray-200 col-span-full" }, uniqueKey);
+      case "textarea":
+        return /* @__PURE__ */ jsxs18("div", { className: cn("space-y-2", field.className), children: [
+          renderLabel(),
+          /* @__PURE__ */ jsx32(
+            Textarea,
+            __spreadValues({
+              name: field.name,
+              value: (field == null ? void 0 : field.value) || "",
+              onChange: (e) => handleChange(field, e.target.value),
+              placeholder: field.placeholder,
+              className: cn(errors[field.name] && "border-destructive")
+            }, field.fieldProps)
+          ),
+          renderError()
+        ] }, uniqueKey);
+      case "select":
+        return /* @__PURE__ */ jsxs18("div", { className: cn("space-y-2", field.className), children: [
+          renderLabel(),
+          /* @__PURE__ */ jsxs18(
+            Select,
+            __spreadProps(__spreadValues({
+              name: field.name,
+              value: field.value || "",
+              onValueChange: (value) => handleChange(field, value)
+            }, field.fieldProps), {
+              children: [
+                /* @__PURE__ */ jsx32(SelectTrigger, { className: cn(errors[field.name] && "border-destructive"), children: /* @__PURE__ */ jsx32(SelectValue, { placeholder: `Select ${field.label}` }) }),
+                /* @__PURE__ */ jsx32(SelectContent, { children: ((_a = field.options) == null ? void 0 : _a.filter((option) => option.value != null).map((option) => /* @__PURE__ */ jsx32(
+                  SelectItem,
+                  {
+                    value: option.value.toString(),
+                    children: option.label
+                  },
+                  `${uniqueKey}-option-${option.value}`
+                ))) || [] })
+              ]
+            })
+          ),
+          renderError()
+        ] }, uniqueKey);
+      case "radio":
+        if (field.name === "actionType") {
+          const numOptions = ((_b = field.options) == null ? void 0 : _b.length) || 0;
+          return /* @__PURE__ */ jsxs18("div", { className: cn("space-y-4", field.className), children: [
+            renderLabel(),
+            /* @__PURE__ */ jsx32(
+              Tabs,
+              {
+                value: (_c = field == null ? void 0 : field.value) == null ? void 0 : _c.toString(),
+                onValueChange: (value) => handleChange(field, value),
+                className: "w-full",
+                children: /* @__PURE__ */ jsx32(
+                  TabsList,
+                  {
+                    className: cn(
+                      "inline-flex flex-wrap md:flex-nowrap h-auto w-full rounded-lg bg-slate-100 p-0.5",
+                      numOptions === 2 && "grid-cols-2",
+                      numOptions === 3 && "grid-cols-3",
+                      numOptions === 4 && "grid-cols-4"
+                    ),
+                    children: (_d = field.options) == null ? void 0 : _d.map((option) => /* @__PURE__ */ jsx32(
+                      TabsTrigger,
+                      {
+                        value: option.value.toString(),
+                        className: "flex-1 min-w-[calc(50%-4px)] md:min-w-0 m-0.5 rounded-md py-1.5 px-2 text-sm font-normal text-gray-600 ring-offset-background transition-all whitespace-normal break-words text-center data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-blue-500",
+                        children: option.label
+                      },
+                      `${uniqueKey}-tab-${option.value}`
+                    ))
+                  }
+                )
+              }
+            ),
+            renderError()
+          ] }, uniqueKey);
+        }
+        return /* @__PURE__ */ jsxs18("div", { className: cn("space-y-2", field.className), children: [
+          renderLabel(),
+          /* @__PURE__ */ jsx32(
+            RadioGroup2,
+            __spreadProps(__spreadValues({
+              name: field.name,
+              value: (_e = field == null ? void 0 : field.value) == null ? void 0 : _e.toString(),
+              onValueChange: (value) => handleChange(field, value),
+              className: "flex gap-4"
+            }, field.fieldProps), {
+              children: (_f = field.options) == null ? void 0 : _f.map((option) => /* @__PURE__ */ jsxs18("div", { className: "flex items-center space-x-2", children: [
+                /* @__PURE__ */ jsx32(RadioGroupItem, { value: option.value.toString(), id: `${field.name}-${option.value}` }),
+                /* @__PURE__ */ jsx32(Label2, { htmlFor: `${field.name}-${option.value}`, children: option.label })
+              ] }, `${uniqueKey}-radio-${option.value}`))
+            })
+          ),
+          renderError()
+        ] }, uniqueKey);
+      case "checkbox":
+        return /* @__PURE__ */ jsxs18("div", { className: cn("flex items-center space-x-2", field.className), children: [
+          /* @__PURE__ */ jsx32(
+            Checkbox,
+            __spreadValues({
+              id: field.name,
+              name: field.name,
+              checked: (field == null ? void 0 : field.value) || false,
+              onCheckedChange: (checked) => handleChange(field, checked)
+            }, field.fieldProps)
+          ),
+          /* @__PURE__ */ jsxs18(Label2, __spreadProps(__spreadValues({ htmlFor: field.name }, commonLabelProps), { children: [
+            field.label,
+            ((_g = field.validation) == null ? void 0 : _g.required) && /* @__PURE__ */ jsx32("span", { className: "text-destructive", children: " *" })
+          ] })),
+          renderError()
+        ] }, uniqueKey);
+      case "file":
+        return /* @__PURE__ */ jsxs18("div", { className: cn("space-y-2", field.className), children: [
+          renderLabel(),
+          /* @__PURE__ */ jsx32(
+            Input,
+            __spreadValues({
+              type: "file",
+              name: field.name,
+              onChange: (e) => {
+                var _a2;
+                return handleChange(field, (_a2 = e.target.files) == null ? void 0 : _a2[0]);
+              },
+              className: cn(errors[field.name] && "border-destructive")
+            }, field.fieldProps)
+          ),
+          renderError()
+        ] }, uniqueKey);
+      case "custom":
+        return (field == null ? void 0 : field.customComponent) && typeof (field == null ? void 0 : field.customComponent) === "function" ? field == null ? void 0 : field.customComponent(__spreadValues({
+          key: uniqueKey,
+          value: field == null ? void 0 : field.value,
+          onChange: (value) => handleChange(field, value),
+          error: errors[field.name],
+          fieldOptions: field == null ? void 0 : field.fieldOptions,
+          field
+        }, field.fieldProps)) : (_h = field == null ? void 0 : field.customComponent) != null ? _h : null;
+      default:
+        return /* @__PURE__ */ jsx32("div", {}, uniqueKey);
+    }
+  };
+  return /* @__PURE__ */ jsxs18("div", { className: "space-y-4", children: [
+    /* @__PURE__ */ jsx32("div", { className, children: config.map((field, index) => renderField(field, index.toString())) }),
+    /* @__PURE__ */ jsxs18("div", { className: "flex gap-2", children: [
+      submitButtonText && /* @__PURE__ */ jsx32(Button, { type: "submit", onClick: handleSubmit, disabled: isSubmitting, children: submitButtonText }),
+      resetButtonText && onReset && /* @__PURE__ */ jsx32(Button, { variant: "outline", onClick: onReset, disabled: isSubmitting, children: resetButtonText })
+    ] })
   ] });
-}
+};
 
 // src/components/MultiSelect/index.tsx
-import * as React24 from "react";
+import * as React27 from "react";
 import { Check as Check5, ChevronsUpDown, X as X5 } from "lucide-react";
-import { jsx as jsx32, jsxs as jsxs20 } from "react/jsx-runtime";
+import { jsx as jsx33, jsxs as jsxs19 } from "react/jsx-runtime";
 function normalize(options) {
   return options.map((o) => typeof o === "string" ? { label: o, value: o } : o);
 }
@@ -2169,7 +2421,7 @@ function MultiSelect({
   contentClassName,
   maxHeight = "200px"
 }) {
-  const [open, setOpen] = React24.useState(false);
+  const [open, setOpen] = React27.useState(false);
   const normalized = normalize(options);
   const handleSelectAll = () => onChange(normalized.map((o) => o.value));
   const handleClearAll = () => onChange([]);
@@ -2182,27 +2434,27 @@ function MultiSelect({
   });
   const triggerLabel = selected.length === 0 ? placeholder : selected.length === normalized.length && normalized.length > 1 ? "All selected" : selected.length === 1 ? selectedLabels[0] : `${selected.length} selected`;
   const tooltipLabel = selected.length === 0 ? placeholder : selected.length === 1 ? selectedLabels[0] : selectedLabels.join(", ");
-  return /* @__PURE__ */ jsxs20(Popover, { open, onOpenChange: setOpen, children: [
-    /* @__PURE__ */ jsx32(TooltipProvider, { delayDuration: 300, children: /* @__PURE__ */ jsxs20(Tooltip, { children: [
-      /* @__PURE__ */ jsx32(TooltipTrigger, { asChild: true, children: /* @__PURE__ */ jsx32(PopoverTrigger, { asChild: true, children: /* @__PURE__ */ jsxs20(Button, { variant: "outline", role: "combobox", "aria-expanded": open, className: cn("w-full justify-between min-w-0", triggerClassName), children: [
-        /* @__PURE__ */ jsx32("span", { className: "min-w-0 truncate text-left", children: triggerLabel }),
-        /* @__PURE__ */ jsx32(ChevronsUpDown, { className: "ml-2 h-4 w-4 shrink-0 opacity-50" })
+  return /* @__PURE__ */ jsxs19(Popover, { open, onOpenChange: setOpen, children: [
+    /* @__PURE__ */ jsx33(TooltipProvider, { delayDuration: 300, children: /* @__PURE__ */ jsxs19(Tooltip, { children: [
+      /* @__PURE__ */ jsx33(TooltipTrigger, { asChild: true, children: /* @__PURE__ */ jsx33(PopoverTrigger, { asChild: true, children: /* @__PURE__ */ jsxs19(Button, { variant: "outline", role: "combobox", "aria-expanded": open, className: cn("w-full justify-between min-w-0", triggerClassName), children: [
+        /* @__PURE__ */ jsx33("span", { className: "min-w-0 truncate text-left", children: triggerLabel }),
+        /* @__PURE__ */ jsx33(ChevronsUpDown, { className: "ml-2 h-4 w-4 shrink-0 opacity-50" })
       ] }) }) }),
-      /* @__PURE__ */ jsx32(TooltipContent, { side: "bottom", className: "max-w-[320px] break-words", children: /* @__PURE__ */ jsx32("p", { children: tooltipLabel }) })
+      /* @__PURE__ */ jsx33(TooltipContent, { side: "bottom", className: "max-w-[320px] break-words", children: /* @__PURE__ */ jsx33("p", { children: tooltipLabel }) })
     ] }) }),
-    /* @__PURE__ */ jsxs20(PopoverContent, { className: cn("p-0", contentClassName), style: { width: "var(--radix-popover-trigger-width)" }, align: "start", sideOffset: 5, children: [
-      /* @__PURE__ */ jsx32("div", { className: "p-2 border-b", children: /* @__PURE__ */ jsxs20("div", { className: "flex justify-between items-center", children: [
-        /* @__PURE__ */ jsx32(Button, { variant: "ghost", size: "sm", className: "text-xs h-8 px-2", onClick: handleSelectAll, children: "Select All" }),
-        /* @__PURE__ */ jsx32(Button, { variant: "ghost", size: "sm", className: "text-xs h-8 px-2 text-destructive", onClick: handleClearAll, children: "Clear All" })
+    /* @__PURE__ */ jsxs19(PopoverContent, { className: cn("p-0", contentClassName), style: { width: "var(--radix-popover-trigger-width)" }, align: "start", sideOffset: 5, children: [
+      /* @__PURE__ */ jsx33("div", { className: "p-2 border-b", children: /* @__PURE__ */ jsxs19("div", { className: "flex justify-between items-center", children: [
+        /* @__PURE__ */ jsx33(Button, { variant: "ghost", size: "sm", className: "text-xs h-8 px-2", onClick: handleSelectAll, children: "Select All" }),
+        /* @__PURE__ */ jsx33(Button, { variant: "ghost", size: "sm", className: "text-xs h-8 px-2 text-destructive", onClick: handleClearAll, children: "Clear All" })
       ] }) }),
-      /* @__PURE__ */ jsx32("div", { className: cn("overflow-y-auto", className), style: { maxHeight }, children: normalized.map(({ label, value }) => /* @__PURE__ */ jsxs20(
+      /* @__PURE__ */ jsx33("div", { className: cn("overflow-y-auto", className), style: { maxHeight }, children: normalized.map(({ label, value }) => /* @__PURE__ */ jsxs19(
         "div",
         {
           className: "relative flex items-center justify-between rounded-sm py-1.5 px-2 text-sm outline-none hover:bg-accent cursor-pointer",
           onClick: () => handleToggleOption(value),
           children: [
-            /* @__PURE__ */ jsx32("span", { children: label }),
-            selected.includes(value) && /* @__PURE__ */ jsx32(Check5, { className: "h-4 w-4 flex-shrink-0 text-primary" })
+            /* @__PURE__ */ jsx33("span", { children: label }),
+            selected.includes(value) && /* @__PURE__ */ jsx33(Check5, { className: "h-4 w-4 flex-shrink-0 text-primary" })
           ]
         },
         value
@@ -2212,44 +2464,44 @@ function MultiSelect({
 }
 function MultiSelectBadges({ selected, onRemove, className }) {
   if (selected.length === 0) return null;
-  return /* @__PURE__ */ jsx32("div", { className: cn("flex flex-wrap gap-2", className), children: selected.map((value) => /* @__PURE__ */ jsx32(TooltipProvider, { delayDuration: 300, children: /* @__PURE__ */ jsxs20(Tooltip, { children: [
-    /* @__PURE__ */ jsx32(TooltipTrigger, { asChild: true, children: /* @__PURE__ */ jsxs20(Badge, { variant: "outline", className: "flex items-center gap-1 max-w-[220px] cursor-default", children: [
-      /* @__PURE__ */ jsx32("span", { className: "min-w-0 truncate", children: value }),
-      /* @__PURE__ */ jsx32(X5, { className: "h-3 w-3 shrink-0 cursor-pointer", onClick: (e) => {
+  return /* @__PURE__ */ jsx33("div", { className: cn("flex flex-wrap gap-2", className), children: selected.map((value) => /* @__PURE__ */ jsx33(TooltipProvider, { delayDuration: 300, children: /* @__PURE__ */ jsxs19(Tooltip, { children: [
+    /* @__PURE__ */ jsx33(TooltipTrigger, { asChild: true, children: /* @__PURE__ */ jsxs19(Badge, { variant: "outline", className: "flex items-center gap-1 max-w-[220px] cursor-default", children: [
+      /* @__PURE__ */ jsx33("span", { className: "min-w-0 truncate", children: value }),
+      /* @__PURE__ */ jsx33(X5, { className: "h-3 w-3 shrink-0 cursor-pointer", onClick: (e) => {
         e.stopPropagation();
         onRemove(value);
       } })
     ] }) }),
-    /* @__PURE__ */ jsx32(TooltipContent, { side: "bottom", className: "max-w-[320px] break-words", children: /* @__PURE__ */ jsx32("p", { children: value }) })
+    /* @__PURE__ */ jsx33(TooltipContent, { side: "bottom", className: "max-w-[320px] break-words", children: /* @__PURE__ */ jsx33("p", { children: value }) })
   ] }) }, value)) });
 }
 
 // src/components/TabsWrapper/index.tsx
-import * as React25 from "react";
-import { Fragment as Fragment2, jsx as jsx33, jsxs as jsxs21 } from "react/jsx-runtime";
+import * as React28 from "react";
+import { Fragment as Fragment2, jsx as jsx34, jsxs as jsxs20 } from "react/jsx-runtime";
 function TabsWrapper({ tabs, defaultValue, onChange, className, responsive = false }) {
   var _a;
   const initial = defaultValue != null ? defaultValue : (_a = tabs[0]) == null ? void 0 : _a.value;
-  const [value, setValue] = React25.useState(initial);
+  const [value, setValue] = React28.useState(initial);
   function handleChange(next) {
     setValue(next);
     onChange == null ? void 0 : onChange(next);
   }
-  return /* @__PURE__ */ jsxs21(Tabs, { value, onValueChange: handleChange, className, children: [
-    responsive ? /* @__PURE__ */ jsxs21(Fragment2, { children: [
-      /* @__PURE__ */ jsx33("div", { className: "block sm:hidden mb-3", children: /* @__PURE__ */ jsxs21(Select, { value, onValueChange: handleChange, children: [
-        /* @__PURE__ */ jsx33(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx33(SelectValue, {}) }),
-        /* @__PURE__ */ jsx33(SelectContent, { children: tabs.map((tab) => /* @__PURE__ */ jsx33(SelectItem, { value: tab.value, children: tab.label }, tab.value)) })
+  return /* @__PURE__ */ jsxs20(Tabs, { value, onValueChange: handleChange, className, children: [
+    responsive ? /* @__PURE__ */ jsxs20(Fragment2, { children: [
+      /* @__PURE__ */ jsx34("div", { className: "block sm:hidden mb-3", children: /* @__PURE__ */ jsxs20(Select, { value, onValueChange: handleChange, children: [
+        /* @__PURE__ */ jsx34(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx34(SelectValue, {}) }),
+        /* @__PURE__ */ jsx34(SelectContent, { children: tabs.map((tab) => /* @__PURE__ */ jsx34(SelectItem, { value: tab.value, children: tab.label }, tab.value)) })
       ] }) }),
-      /* @__PURE__ */ jsx33("div", { className: "hidden sm:block", children: /* @__PURE__ */ jsx33(TabsList, { children: tabs.map((tab) => /* @__PURE__ */ jsx33(TabsTrigger, { value: tab.value, children: tab.label }, tab.value)) }) })
-    ] }) : /* @__PURE__ */ jsx33(TabsList, { children: tabs.map((tab) => /* @__PURE__ */ jsx33(TabsTrigger, { value: tab.value, children: tab.label }, tab.value)) }),
-    tabs.map((tab) => /* @__PURE__ */ jsx33(TabsContent, { value: tab.value, children: tab.content }, tab.value))
+      /* @__PURE__ */ jsx34("div", { className: "hidden sm:block", children: /* @__PURE__ */ jsx34(TabsList, { children: tabs.map((tab) => /* @__PURE__ */ jsx34(TabsTrigger, { value: tab.value, children: tab.label }, tab.value)) }) })
+    ] }) : /* @__PURE__ */ jsx34(TabsList, { children: tabs.map((tab) => /* @__PURE__ */ jsx34(TabsTrigger, { value: tab.value, children: tab.label }, tab.value)) }),
+    tabs.map((tab) => /* @__PURE__ */ jsx34(TabsContent, { value: tab.value, children: tab.content }, tab.value))
   ] });
 }
 
 // src/components/DropdownMenuWrapper/index.tsx
-import * as React26 from "react";
-import { jsx as jsx34, jsxs as jsxs22 } from "react/jsx-runtime";
+import * as React29 from "react";
+import { jsx as jsx35, jsxs as jsxs21 } from "react/jsx-runtime";
 var OPEN_STATE_CLASSES = {
   outline: "data-[state=open]:bg-gray-100",
   ghost: "data-[state=open]:bg-gray-100",
@@ -2267,8 +2519,8 @@ function DropdownMenuWrapper({
   const isMobile = useMobile();
   const effectiveAlign = isMobile ? "center" : align;
   const openStateClass = OPEN_STATE_CLASSES[triggerVariant != null ? triggerVariant : "outline"];
-  return /* @__PURE__ */ jsxs22(DropdownMenu, { children: [
-    /* @__PURE__ */ jsx34(DropdownMenuTrigger, { asChild: true, children: /* @__PURE__ */ jsx34(
+  return /* @__PURE__ */ jsxs21(DropdownMenu, { children: [
+    /* @__PURE__ */ jsx35(DropdownMenuTrigger, { asChild: true, children: /* @__PURE__ */ jsx35(
       LoadingButton,
       {
         variant: triggerVariant,
@@ -2276,15 +2528,15 @@ function DropdownMenuWrapper({
         children: label
       }
     ) }),
-    /* @__PURE__ */ jsx34(DropdownMenuContent, { align: effectiveAlign, className: "min-w-[160px]", children: items.map((item, i) => /* @__PURE__ */ jsxs22(React26.Fragment, { children: [
-      item.separator && /* @__PURE__ */ jsx34(DropdownMenuSeparator, {}),
-      /* @__PURE__ */ jsxs22(
+    /* @__PURE__ */ jsx35(DropdownMenuContent, { align: effectiveAlign, className: "min-w-[160px]", children: items.map((item, i) => /* @__PURE__ */ jsxs21(React29.Fragment, { children: [
+      item.separator && /* @__PURE__ */ jsx35(DropdownMenuSeparator, {}),
+      /* @__PURE__ */ jsxs21(
         DropdownMenuItem,
         {
           onClick: item.onClick,
           className: item.variant === "destructive" ? "text-destructive focus:text-destructive" : void 0,
           children: [
-            item.icon && /* @__PURE__ */ jsx34("span", { className: "mr-2 flex items-center", children: item.icon }),
+            item.icon && /* @__PURE__ */ jsx35("span", { className: "mr-2 flex items-center", children: item.icon }),
             item.label
           ]
         }
@@ -2294,12 +2546,12 @@ function DropdownMenuWrapper({
 }
 
 // src/components/TimePicker/index.tsx
-import * as React27 from "react";
+import * as React30 from "react";
 import { Clock as Clock2 } from "lucide-react";
 import { format as format2 } from "date-fns";
 
 // src/components/TimeSelector/index.tsx
-import { jsx as jsx35, jsxs as jsxs23 } from "react/jsx-runtime";
+import { jsx as jsx36, jsxs as jsxs22 } from "react/jsx-runtime";
 function TimeSelector({ value, onChange, height = "h-[300px]", isMobile = false }) {
   const hours = Array.from({ length: 12 }, (_, i) => i + 1);
   const minutes = Array.from({ length: 60 }, (_, i) => i);
@@ -2325,8 +2577,8 @@ function TimeSelector({ value, onChange, height = "h-[300px]", isMobile = false 
     }
     onChange == null ? void 0 : onChange(newTime);
   };
-  return /* @__PURE__ */ jsxs23("div", { className: cn("flex gap-2", height), children: [
-    /* @__PURE__ */ jsx35(ScrollArea, { className: cn("h-full w-16 border rounded-md", isMobile && "flex-1 w-auto"), children: /* @__PURE__ */ jsx35("div", { className: "flex flex-col p-1 gap-1", children: hours.map((hour) => /* @__PURE__ */ jsx35(
+  return /* @__PURE__ */ jsxs22("div", { className: cn("flex gap-2", height), children: [
+    /* @__PURE__ */ jsx36(ScrollArea, { className: cn("h-full w-16 border rounded-md", isMobile && "flex-1 w-auto"), children: /* @__PURE__ */ jsx36("div", { className: "flex flex-col p-1 gap-1", children: hours.map((hour) => /* @__PURE__ */ jsx36(
       Button,
       {
         size: "sm",
@@ -2338,7 +2590,7 @@ function TimeSelector({ value, onChange, height = "h-[300px]", isMobile = false 
       },
       hour
     )) }) }),
-    /* @__PURE__ */ jsx35(ScrollArea, { className: cn("h-full w-20 border rounded-md", isMobile && "flex-1 w-auto"), children: /* @__PURE__ */ jsx35("div", { className: "flex flex-col p-1 gap-1", children: minutes.map((minute) => /* @__PURE__ */ jsx35(
+    /* @__PURE__ */ jsx36(ScrollArea, { className: cn("h-full w-20 border rounded-md", isMobile && "flex-1 w-auto"), children: /* @__PURE__ */ jsx36("div", { className: "flex flex-col p-1 gap-1", children: minutes.map((minute) => /* @__PURE__ */ jsx36(
       Button,
       {
         size: "sm",
@@ -2350,7 +2602,7 @@ function TimeSelector({ value, onChange, height = "h-[300px]", isMobile = false 
       },
       minute
     )) }) }),
-    /* @__PURE__ */ jsx35("div", { className: "flex flex-col gap-2", children: ["AM", "PM"].map((ampm) => /* @__PURE__ */ jsx35(
+    /* @__PURE__ */ jsx36("div", { className: "flex flex-col gap-2", children: ["AM", "PM"].map((ampm) => /* @__PURE__ */ jsx36(
       Button,
       {
         size: "sm",
@@ -2366,187 +2618,66 @@ function TimeSelector({ value, onChange, height = "h-[300px]", isMobile = false 
 }
 
 // src/components/TimePicker/index.tsx
-import { jsx as jsx36, jsxs as jsxs24 } from "react/jsx-runtime";
+import { jsx as jsx37, jsxs as jsxs23 } from "react/jsx-runtime";
 function TimePicker({ value, onChange, placeholder = "Pick time", disabled = false }) {
-  const [time, setTime] = React27.useState(value);
-  const [isOpen, setIsOpen] = React27.useState(false);
-  React27.useEffect(() => {
+  const [time, setTime] = React30.useState(value);
+  const [isOpen, setIsOpen] = React30.useState(false);
+  React30.useEffect(() => {
     setTime(value);
   }, [value]);
   const handleTimeChange = (newTime) => {
     setTime(newTime);
     onChange == null ? void 0 : onChange(newTime);
   };
-  return /* @__PURE__ */ jsxs24(Popover, { open: isOpen, onOpenChange: setIsOpen, children: [
-    /* @__PURE__ */ jsx36(PopoverTrigger, { asChild: true, children: /* @__PURE__ */ jsxs24(Button, { variant: "outline", disabled, className: cn("w-full justify-start text-left font-normal", !time && "text-muted-foreground"), children: [
-      /* @__PURE__ */ jsx36(Clock2, { className: "mr-2 h-4 w-4" }),
-      time ? format2(time, "h:mm a") : /* @__PURE__ */ jsx36("span", { children: placeholder })
+  return /* @__PURE__ */ jsxs23(Popover, { open: isOpen, onOpenChange: setIsOpen, children: [
+    /* @__PURE__ */ jsx37(PopoverTrigger, { asChild: true, children: /* @__PURE__ */ jsxs23(Button, { variant: "outline", disabled, className: cn("w-full justify-start text-left font-normal", !time && "text-muted-foreground"), children: [
+      /* @__PURE__ */ jsx37(Clock2, { className: "mr-2 h-4 w-4" }),
+      time ? format2(time, "h:mm a") : /* @__PURE__ */ jsx37("span", { children: placeholder })
     ] }) }),
-    /* @__PURE__ */ jsx36(PopoverContent, { className: "w-auto p-0", align: "start", children: /* @__PURE__ */ jsxs24("div", { className: "flex flex-col gap-4 p-4 min-w-[200px]", children: [
-      /* @__PURE__ */ jsxs24("div", { className: "flex items-center gap-2 text-sm font-medium text-muted-foreground", children: [
-        /* @__PURE__ */ jsx36(Clock2, { className: "h-4 w-4" }),
-        /* @__PURE__ */ jsx36("span", { children: "Time" })
+    /* @__PURE__ */ jsx37(PopoverContent, { className: "w-auto p-0", align: "start", children: /* @__PURE__ */ jsxs23("div", { className: "flex flex-col gap-4 p-4 min-w-[200px]", children: [
+      /* @__PURE__ */ jsxs23("div", { className: "flex items-center gap-2 text-sm font-medium text-muted-foreground", children: [
+        /* @__PURE__ */ jsx37(Clock2, { className: "h-4 w-4" }),
+        /* @__PURE__ */ jsx37("span", { children: "Time" })
       ] }),
-      /* @__PURE__ */ jsx36(TimeSelector, { value: time, onChange: handleTimeChange })
+      /* @__PURE__ */ jsx37(TimeSelector, { value: time, onChange: handleTimeChange })
     ] }) })
   ] });
 }
 
 // src/components/DatePicker/index.tsx
-import * as React28 from "react";
+import * as React31 from "react";
 import { CalendarIcon } from "lucide-react";
 import { format as format3 } from "date-fns";
-import { jsx as jsx37, jsxs as jsxs25 } from "react/jsx-runtime";
+import { jsx as jsx38, jsxs as jsxs24 } from "react/jsx-runtime";
 function DatePicker({ value, onChange, placeholder = "Pick date", className }) {
-  const [date, setDate] = React28.useState(value);
-  React28.useEffect(() => {
+  const [date, setDate] = React31.useState(value);
+  React31.useEffect(() => {
     setDate(value);
   }, [value]);
   const handleSelect = (selected) => {
     setDate(selected);
     onChange == null ? void 0 : onChange(selected);
   };
-  return /* @__PURE__ */ jsxs25(Popover, { children: [
-    /* @__PURE__ */ jsx37(PopoverTrigger, { asChild: true, children: /* @__PURE__ */ jsxs25(
+  return /* @__PURE__ */ jsxs24(Popover, { children: [
+    /* @__PURE__ */ jsx38(PopoverTrigger, { asChild: true, children: /* @__PURE__ */ jsxs24(
       Button,
       {
         variant: "outline",
         className: cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground", className),
         children: [
-          /* @__PURE__ */ jsx37(CalendarIcon, { className: "mr-2 h-4 w-4" }),
-          date ? format3(date, "PPP") : /* @__PURE__ */ jsx37("span", { children: placeholder })
+          /* @__PURE__ */ jsx38(CalendarIcon, { className: "mr-2 h-4 w-4" }),
+          date ? format3(date, "PPP") : /* @__PURE__ */ jsx38("span", { children: placeholder })
         ]
       }
     ) }),
-    /* @__PURE__ */ jsx37(PopoverContent, { className: "w-auto p-0", align: "start", children: /* @__PURE__ */ jsx37(Calendar, { mode: "single", selected: date, onSelect: (d) => handleSelect(d), initialFocus: true }) })
+    /* @__PURE__ */ jsx38(PopoverContent, { className: "w-auto p-0", align: "start", children: /* @__PURE__ */ jsx38(Calendar, { mode: "single", selected: date, onSelect: (d) => handleSelect(d), initialFocus: true }) })
   ] });
-}
-
-// src/components/DateTimePicker/index.tsx
-import * as React29 from "react";
-import { CalendarIcon as CalendarIcon2, Clock as Clock3 } from "lucide-react";
-import { format as format4 } from "date-fns";
-import { jsx as jsx38, jsxs as jsxs26 } from "react/jsx-runtime";
-function DateTimePicker({ value, onChange, placeholder = "Pick date and time", showSeparatePickers = false }) {
-  const isMobile = useMobile();
-  const [date, setDate] = React29.useState(value);
-  const [dateOpen, setDateOpen] = React29.useState(false);
-  React29.useEffect(() => {
-    setDate(value);
-  }, [value]);
-  const handleDateSelect = (selectedDate) => {
-    if (selectedDate) {
-      const newDate = new Date(selectedDate);
-      if (date) {
-        newDate.setHours(date.getHours());
-        newDate.setMinutes(date.getMinutes());
-        newDate.setSeconds(date.getSeconds());
-      } else {
-        const now = /* @__PURE__ */ new Date();
-        newDate.setHours(now.getHours());
-        newDate.setMinutes(now.getMinutes());
-        newDate.setSeconds(now.getSeconds());
-      }
-      setDate(newDate);
-      onChange == null ? void 0 : onChange(newDate);
-    } else {
-      setDate(void 0);
-      onChange == null ? void 0 : onChange(void 0);
-    }
-  };
-  const handleTimeSelect = (selectedTime) => {
-    if (selectedTime) {
-      const newDate = date ? new Date(date) : /* @__PURE__ */ new Date();
-      newDate.setHours(selectedTime.getHours());
-      newDate.setMinutes(selectedTime.getMinutes());
-      newDate.setSeconds(selectedTime.getSeconds());
-      setDate(newDate);
-      onChange == null ? void 0 : onChange(newDate);
-    }
-  };
-  if (showSeparatePickers) {
-    return /* @__PURE__ */ jsxs26("div", { className: cn("flex gap-2", isMobile && "flex-col"), children: [
-      /* @__PURE__ */ jsxs26(Popover, { open: dateOpen, onOpenChange: setDateOpen, children: [
-        /* @__PURE__ */ jsx38(PopoverTrigger, { asChild: true, children: /* @__PURE__ */ jsxs26(Button, { variant: "outline", className: cn("flex-1 justify-start text-left font-normal", !date && "text-muted-foreground"), children: [
-          /* @__PURE__ */ jsx38(CalendarIcon2, { className: "mr-2 h-4 w-4" }),
-          date ? format4(date, "PPP") : /* @__PURE__ */ jsx38("span", { children: "Pick date" })
-        ] }) }),
-        /* @__PURE__ */ jsx38(PopoverContent, { className: "w-auto p-0", align: "start", children: /* @__PURE__ */ jsx38(Calendar, { mode: "single", selected: date, onSelect: (date2) => handleDateSelect(date2), initialFocus: true }) })
-      ] }),
-      /* @__PURE__ */ jsx38(TimePicker, { value: date, onChange: handleTimeSelect, placeholder: "Pick time" })
-    ] });
-  }
-  return /* @__PURE__ */ jsxs26(Popover, { children: [
-    /* @__PURE__ */ jsx38(PopoverTrigger, { asChild: true, children: /* @__PURE__ */ jsxs26(Button, { variant: "outline", className: cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground"), children: [
-      /* @__PURE__ */ jsx38(CalendarIcon2, { className: "mr-2 h-4 w-4" }),
-      date ? format4(date, "PPP p") : /* @__PURE__ */ jsx38("span", { children: placeholder })
-    ] }) }),
-    /* @__PURE__ */ jsx38(PopoverContent, { className: cn("p-0", isMobile ? "w-[calc(100vw-2rem)]" : "w-auto"), align: "start", children: /* @__PURE__ */ jsxs26("div", { className: cn("flex flex-row gap-2 p-2", isMobile && "flex-col gap-0 p-0"), children: [
-      /* @__PURE__ */ jsx38("div", { className: cn("flex-1", isMobile && "p-2 pb-0"), children: /* @__PURE__ */ jsx38(Calendar, { mode: "single", selected: date, onSelect: (date2) => handleDateSelect(date2), initialFocus: true }) }),
-      /* @__PURE__ */ jsxs26("div", { className: cn("flex flex-col border-l pl-4 pr-2 py-2 gap-4 min-w-[200px]", isMobile && "border-l-0 border-t px-3 py-3 gap-3 min-w-0"), children: [
-        /* @__PURE__ */ jsxs26("div", { className: "flex items-center gap-2 text-sm font-medium text-muted-foreground", children: [
-          /* @__PURE__ */ jsx38(Clock3, { className: "h-4 w-4" }),
-          /* @__PURE__ */ jsx38("span", { children: "Time" })
-        ] }),
-        /* @__PURE__ */ jsx38(TimeSelector, { value: date, onChange: handleTimeSelect, height: isMobile ? "h-[180px]" : "h-[300px]", isMobile })
-      ] })
-    ] }) })
-  ] });
-}
-
-// src/components/DateRangePicker/index.tsx
-import { format as format5 } from "date-fns";
-import { Calendar as CalendarIcon3 } from "lucide-react";
-import { Fragment as Fragment4, jsx as jsx39, jsxs as jsxs27 } from "react/jsx-runtime";
-function DateRangePicker({ className, date, onDateChange }) {
-  const isMobile = useMobile();
-  return /* @__PURE__ */ jsx39("div", { className: cn("w-full", className), children: /* @__PURE__ */ jsxs27(Popover, { children: [
-    /* @__PURE__ */ jsx39(PopoverTrigger, { asChild: true, children: /* @__PURE__ */ jsxs27(
-      Button,
-      {
-        id: "date",
-        variant: "outline",
-        className: cn(
-          "w-full h-9 justify-start text-left font-normal whitespace-nowrap overflow-hidden",
-          !date && "text-muted-foreground"
-        ),
-        children: [
-          /* @__PURE__ */ jsx39(CalendarIcon3, { className: "mr-2 h-4 w-4" }),
-          (date == null ? void 0 : date.from) ? date.to ? /* @__PURE__ */ jsxs27(Fragment4, { children: [
-            format5(date.from, "LLL dd, y"),
-            " - ",
-            format5(date.to, "LLL dd, y")
-          ] }) : format5(date.from, "LLL dd, y") : /* @__PURE__ */ jsx39("span", { children: "Pick a date range" })
-        ]
-      }
-    ) }),
-    /* @__PURE__ */ jsx39(
-      PopoverContent,
-      {
-        className: cn(
-          "p-0",
-          isMobile ? "w-[calc(100vw-2rem)]" : "w-auto"
-        ),
-        align: "start",
-        children: /* @__PURE__ */ jsx39(
-          Calendar,
-          {
-            mode: "range",
-            defaultMonth: date == null ? void 0 : date.from,
-            selected: date,
-            onSelect: (range) => onDateChange == null ? void 0 : onDateChange(range),
-            numberOfMonths: isMobile ? 1 : 2
-          }
-        )
-      }
-    )
-  ] }) });
 }
 
 // src/components/Card/index.tsx
-import * as React30 from "react";
+import * as React32 from "react";
 import { cva as cva6 } from "class-variance-authority";
-import { jsx as jsx40 } from "react/jsx-runtime";
+import { jsx as jsx39 } from "react/jsx-runtime";
 var cardVariants = cva6(
   "rounded-lg border bg-card text-card-foreground shadow-sm",
   {
@@ -2582,7 +2713,7 @@ var cardVariants = cva6(
     }
   }
 );
-var Card = React30.forwardRef(
+var Card = React32.forwardRef(
   (_a, ref) => {
     var _b = _a, { className, elevation, status, interactive } = _b, props = __objRest(_b, ["className", "elevation", "status", "interactive"]);
     let enhancedClasses = "";
@@ -2593,7 +2724,7 @@ var Card = React30.forwardRef(
         interactive: Boolean(interactive)
       });
     }
-    return /* @__PURE__ */ jsx40(
+    return /* @__PURE__ */ jsx39(
       "div",
       __spreadValues({
         ref,
@@ -2607,9 +2738,9 @@ var Card = React30.forwardRef(
   }
 );
 Card.displayName = "Card";
-var CardHeader = React30.forwardRef((_a, ref) => {
+var CardHeader = React32.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
-  return /* @__PURE__ */ jsx40(
+  return /* @__PURE__ */ jsx39(
     "div",
     __spreadValues({
       ref,
@@ -2618,9 +2749,9 @@ var CardHeader = React30.forwardRef((_a, ref) => {
   );
 });
 CardHeader.displayName = "CardHeader";
-var CardTitle = React30.forwardRef((_a, ref) => {
+var CardTitle = React32.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
-  return /* @__PURE__ */ jsx40(
+  return /* @__PURE__ */ jsx39(
     "div",
     __spreadValues({
       ref,
@@ -2629,9 +2760,9 @@ var CardTitle = React30.forwardRef((_a, ref) => {
   );
 });
 CardTitle.displayName = "CardTitle";
-var CardDescription = React30.forwardRef((_a, ref) => {
+var CardDescription = React32.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
-  return /* @__PURE__ */ jsx40(
+  return /* @__PURE__ */ jsx39(
     "div",
     __spreadValues({
       ref,
@@ -2640,14 +2771,14 @@ var CardDescription = React30.forwardRef((_a, ref) => {
   );
 });
 CardDescription.displayName = "CardDescription";
-var CardContent = React30.forwardRef((_a, ref) => {
+var CardContent = React32.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
-  return /* @__PURE__ */ jsx40("div", __spreadValues({ ref, className: cn("p-6 pt-0", className) }, props));
+  return /* @__PURE__ */ jsx39("div", __spreadValues({ ref, className: cn("p-6 pt-0", className) }, props));
 });
 CardContent.displayName = "CardContent";
-var CardFooter = React30.forwardRef((_a, ref) => {
+var CardFooter = React32.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
-  return /* @__PURE__ */ jsx40(
+  return /* @__PURE__ */ jsx39(
     "div",
     __spreadValues({
       ref,
@@ -2658,13 +2789,13 @@ var CardFooter = React30.forwardRef((_a, ref) => {
 CardFooter.displayName = "CardFooter";
 
 // src/components/Separator/index.tsx
-import * as React31 from "react";
+import * as React33 from "react";
 import * as SeparatorPrimitive from "@radix-ui/react-separator";
-import { jsx as jsx41 } from "react/jsx-runtime";
-var Separator3 = React31.forwardRef(
+import { jsx as jsx40 } from "react/jsx-runtime";
+var Separator3 = React33.forwardRef(
   (_a, ref) => {
     var _b = _a, { className, orientation = "horizontal", decorative = true } = _b, props = __objRest(_b, ["className", "orientation", "decorative"]);
-    return /* @__PURE__ */ jsx41(
+    return /* @__PURE__ */ jsx40(
       SeparatorPrimitive.Root,
       __spreadValues({
         ref,
@@ -2681,33 +2812,15 @@ var Separator3 = React31.forwardRef(
 );
 Separator3.displayName = SeparatorPrimitive.Root.displayName;
 
-// src/components/Textarea/index.tsx
-import * as React32 from "react";
-import { jsx as jsx42 } from "react/jsx-runtime";
-var Textarea = React32.forwardRef((_a, ref) => {
-  var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
-  return /* @__PURE__ */ jsx42(
-    "textarea",
-    __spreadValues({
-      className: cn(
-        "flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        className
-      ),
-      ref
-    }, props)
-  );
-});
-Textarea.displayName = "Textarea";
-
 // src/components/Accordion/index.tsx
-import * as React33 from "react";
+import * as React34 from "react";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronDown as ChevronDown3 } from "lucide-react";
-import { jsx as jsx43, jsxs as jsxs28 } from "react/jsx-runtime";
+import { jsx as jsx41, jsxs as jsxs25 } from "react/jsx-runtime";
 var Accordion = AccordionPrimitive.Root;
-var AccordionItem = React33.forwardRef((_a, ref) => {
+var AccordionItem = React34.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
-  return /* @__PURE__ */ jsx43(
+  return /* @__PURE__ */ jsx41(
     AccordionPrimitive.Item,
     __spreadValues({
       ref,
@@ -2716,9 +2829,9 @@ var AccordionItem = React33.forwardRef((_a, ref) => {
   );
 });
 AccordionItem.displayName = "AccordionItem";
-var AccordionTrigger = React33.forwardRef((_a, ref) => {
+var AccordionTrigger = React34.forwardRef((_a, ref) => {
   var _b = _a, { className, children } = _b, props = __objRest(_b, ["className", "children"]);
-  return /* @__PURE__ */ jsx43(AccordionPrimitive.Header, { className: "flex", children: /* @__PURE__ */ jsxs28(
+  return /* @__PURE__ */ jsx41(AccordionPrimitive.Header, { className: "flex", children: /* @__PURE__ */ jsxs25(
     AccordionPrimitive.Trigger,
     __spreadProps(__spreadValues({
       ref,
@@ -2729,38 +2842,38 @@ var AccordionTrigger = React33.forwardRef((_a, ref) => {
     }, props), {
       children: [
         children,
-        /* @__PURE__ */ jsx43(ChevronDown3, { className: "h-4 w-4 shrink-0 transition-transform duration-200" })
+        /* @__PURE__ */ jsx41(ChevronDown3, { className: "h-4 w-4 shrink-0 transition-transform duration-200" })
       ]
     })
   ) });
 });
 AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName;
-var AccordionContent = React33.forwardRef((_a, ref) => {
+var AccordionContent = React34.forwardRef((_a, ref) => {
   var _b = _a, { className, children } = _b, props = __objRest(_b, ["className", "children"]);
-  return /* @__PURE__ */ jsx43(
+  return /* @__PURE__ */ jsx41(
     AccordionPrimitive.Content,
     __spreadProps(__spreadValues({
       ref,
       className: "overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
     }, props), {
-      children: /* @__PURE__ */ jsx43("div", { className: cn("pb-4 pt-0", className), children })
+      children: /* @__PURE__ */ jsx41("div", { className: cn("pb-4 pt-0", className), children })
     })
   );
 });
 AccordionContent.displayName = AccordionPrimitive.Content.displayName;
 
 // src/components/WmsToast/index.tsx
-import React34 from "react";
-import { jsx as jsx44, jsxs as jsxs29 } from "react/jsx-runtime";
+import React35 from "react";
+import { jsx as jsx42, jsxs as jsxs26 } from "react/jsx-runtime";
 function CopyButton({ message }) {
-  const [copied, setCopied] = React34.useState(false);
+  const [copied, setCopied] = React35.useState(false);
   const handleCopy = () => {
     navigator.clipboard.writeText(message).catch(() => {
     });
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
-  return /* @__PURE__ */ jsx44(
+  return /* @__PURE__ */ jsx42(
     "button",
     {
       type: "button",
@@ -2781,16 +2894,320 @@ function showError(message) {
   const { dismiss } = toast({
     variant: "destructive",
     className: "bg-red-600 border-red-700 text-white",
-    title: /* @__PURE__ */ jsxs29("div", { className: "space-y-1", children: [
-      /* @__PURE__ */ jsxs29("div", { className: "flex items-baseline gap-2 flex-wrap", children: [
-        /* @__PURE__ */ jsx44("span", { className: "font-bold text-sm tracking-wide", children: "ERROR" }),
-        /* @__PURE__ */ jsx44("span", { className: "text-[11px] text-red-200 font-normal", children: headerTimestamp })
+    title: /* @__PURE__ */ jsxs26("div", { className: "space-y-1", children: [
+      /* @__PURE__ */ jsxs26("div", { className: "flex items-baseline gap-2 flex-wrap", children: [
+        /* @__PURE__ */ jsx42("span", { className: "font-bold text-sm tracking-wide", children: "ERROR" }),
+        /* @__PURE__ */ jsx42("span", { className: "text-[11px] text-red-200 font-normal", children: headerTimestamp })
       ] }),
-      /* @__PURE__ */ jsx44("p", { className: "text-sm text-white font-normal leading-snug", children: message })
+      /* @__PURE__ */ jsx42("p", { className: "text-sm text-white font-normal leading-snug", children: message })
     ] }),
-    description: /* @__PURE__ */ jsx44("div", { className: "mt-3", children: /* @__PURE__ */ jsx44(CopyButton, { message }) })
+    description: /* @__PURE__ */ jsx42("div", { className: "mt-3", children: /* @__PURE__ */ jsx42(CopyButton, { message }) })
   });
   setTimeout(() => dismiss(), 5e3);
+}
+
+// src/components/PageLayout/index.tsx
+import { jsx as jsx43, jsxs as jsxs27 } from "react/jsx-runtime";
+function PageHeader({
+  title,
+  description,
+  icon,
+  titleSuffix,
+  actions,
+  actionsClassName,
+  className
+}) {
+  return /* @__PURE__ */ jsxs27("div", { className: cn("flex flex-col md:flex-row justify-between items-start md:items-center mb-3", className), children: [
+    /* @__PURE__ */ jsxs27("div", { children: [
+      /* @__PURE__ */ jsxs27("h1", { className: "text-2xl font-bold flex items-center gap-2", children: [
+        icon && /* @__PURE__ */ jsx43("span", { className: "mr-2", children: icon }),
+        title,
+        titleSuffix
+      ] }),
+      description && /* @__PURE__ */ jsx43("p", { className: "text-sm text-muted-foreground mt-1", children: description })
+    ] }),
+    actions && /* @__PURE__ */ jsx43("div", { className: cn("mt-4 md:mt-0 flex items-center gap-2", actionsClassName), children: actions })
+  ] });
+}
+function StatsCard({ label, value, delta, deltaType = "neutral", className }) {
+  const deltaColor = deltaType === "increase" ? "text-green-500" : deltaType === "decrease" ? "text-red-500" : "text-gray-500";
+  return /* @__PURE__ */ jsx43("div", { className: cn("p-4 border rounded-lg bg-card", className), children: /* @__PURE__ */ jsxs27("div", { className: "flex flex-col", children: [
+    /* @__PURE__ */ jsx43("span", { className: "text-sm text-gray-500", children: label }),
+    /* @__PURE__ */ jsxs27("div", { className: "flex items-end justify-between", children: [
+      /* @__PURE__ */ jsx43("span", { className: "text-2xl font-bold", children: value }),
+      delta && /* @__PURE__ */ jsx43("span", { className: `text-sm ${deltaColor}`, children: delta })
+    ] })
+  ] }) });
+}
+function StatsGrid({ stats, className }) {
+  return /* @__PURE__ */ jsx43("div", { className: cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6", className), children: stats.map((stat, index) => /* @__PURE__ */ jsx43(StatsCard, __spreadValues({}, stat), index)) });
+}
+function PageLayout({ children, header, stats, className }) {
+  return /* @__PURE__ */ jsxs27("div", { className: cn("p-6", className), children: [
+    /* @__PURE__ */ jsx43(PageHeader, __spreadValues({}, header)),
+    stats && stats.length > 0 && /* @__PURE__ */ jsx43(StatsGrid, { stats }),
+    /* @__PURE__ */ jsx43("div", { className: "space-y-6", children })
+  ] });
+}
+function ContentSection({ title, description, children, className, actions }) {
+  return /* @__PURE__ */ jsxs27("div", { className: cn("space-y-4", className), children: [
+    (title || actions) && /* @__PURE__ */ jsxs27("div", { className: "flex items-center justify-between", children: [
+      /* @__PURE__ */ jsxs27("div", { children: [
+        title && /* @__PURE__ */ jsx43("h2", { className: "text-lg font-semibold", children: title }),
+        description && /* @__PURE__ */ jsx43("p", { className: "text-sm text-muted-foreground mt-1", children: description })
+      ] }),
+      actions && /* @__PURE__ */ jsx43("div", { className: "flex items-center gap-2", children: actions })
+    ] }),
+    children
+  ] });
+}
+
+// src/components/SortOptions/index.tsx
+import { useCallback as useCallback2, useEffect as useEffect8, useState as useState12 } from "react";
+import { ArrowUpDown } from "lucide-react";
+import { jsx as jsx44, jsxs as jsxs28 } from "react/jsx-runtime";
+function SortOptions({
+  onSortByChange,
+  onSortOrderChange,
+  sortByOptions,
+  sortOrderOptions,
+  sortByValue,
+  sortOrderValue
+}) {
+  var _a, _b;
+  const [selectedSortBy, setSelectedSortBy] = useState12(
+    sortByValue || ((_a = sortByOptions == null ? void 0 : sortByOptions[0]) == null ? void 0 : _a.value)
+  );
+  const [selectedOrder, setSelectedOrder] = useState12(
+    sortOrderValue || ((_b = sortOrderOptions == null ? void 0 : sortOrderOptions[0]) == null ? void 0 : _b.value)
+  );
+  useEffect8(() => {
+    if (sortByValue) setSelectedSortBy(sortByValue);
+  }, [sortByValue]);
+  useEffect8(() => {
+    if (sortOrderValue) setSelectedOrder(sortOrderValue);
+  }, [sortOrderValue]);
+  const handleSortByChange = useCallback2(
+    (value) => {
+      setSelectedSortBy(value);
+      onSortByChange == null ? void 0 : onSortByChange(value);
+    },
+    [onSortByChange]
+  );
+  const handleOrderChange = useCallback2(
+    (value) => {
+      setSelectedOrder(value);
+      onSortOrderChange == null ? void 0 : onSortOrderChange(value);
+    },
+    [onSortOrderChange]
+  );
+  return /* @__PURE__ */ jsxs28(Popover, { children: [
+    /* @__PURE__ */ jsx44(PopoverTrigger, { asChild: true, children: /* @__PURE__ */ jsx44(Button, { variant: "ghost", size: "icon", children: /* @__PURE__ */ jsx44(ArrowUpDown, { className: "h-4 w-4" }) }) }),
+    /* @__PURE__ */ jsx44(PopoverContent, { className: "w-56", align: "start", children: /* @__PURE__ */ jsxs28("div", { className: "space-y-4", children: [
+      /* @__PURE__ */ jsxs28("div", { children: [
+        /* @__PURE__ */ jsx44("h4", { className: "font-medium mb-2", children: "Sort by" }),
+        /* @__PURE__ */ jsx44(RadioGroup2, { value: selectedSortBy, onValueChange: handleSortByChange, className: "space-y-1", children: sortByOptions.map((option) => /* @__PURE__ */ jsxs28("div", { className: "flex items-center space-x-2", children: [
+          /* @__PURE__ */ jsx44(RadioGroupItem, { value: option.value, id: `sort-by-${option.value}` }),
+          /* @__PURE__ */ jsx44(Label2, { htmlFor: `sort-by-${option.value}`, children: option.label })
+        ] }, option.value)) })
+      ] }),
+      /* @__PURE__ */ jsxs28("div", { children: [
+        /* @__PURE__ */ jsx44("h4", { className: "font-medium mb-2", children: "Order" }),
+        /* @__PURE__ */ jsx44(RadioGroup2, { value: selectedOrder, onValueChange: handleOrderChange, className: "space-y-1", children: sortOrderOptions.map((option) => /* @__PURE__ */ jsxs28("div", { className: "flex items-center space-x-2", children: [
+          /* @__PURE__ */ jsx44(RadioGroupItem, { value: option.value, id: `sort-order-${option.value}` }),
+          /* @__PURE__ */ jsx44(Label2, { htmlFor: `sort-order-${option.value}`, children: option.label })
+        ] }, option.value)) })
+      ] })
+    ] }) })
+  ] });
+}
+
+// src/components/SmallToteCard/index.tsx
+import { PackageIcon } from "lucide-react";
+import { jsx as jsx45, jsxs as jsxs29 } from "react/jsx-runtime";
+function SmallToteCard({ toteId, itemCount, totalItems }) {
+  const progressPercentage = totalItems > 0 ? itemCount / totalItems * 100 : 0;
+  return /* @__PURE__ */ jsx45(Card, { className: "w-auto", children: /* @__PURE__ */ jsx45(CardContent, { className: "p-3", children: /* @__PURE__ */ jsxs29("div", { className: "flex items-center gap-3", children: [
+    /* @__PURE__ */ jsx45("div", { className: "flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg", children: /* @__PURE__ */ jsx45(PackageIcon, { className: "h-5 w-5 text-blue-600" }) }),
+    /* @__PURE__ */ jsxs29("div", { className: "space-y-1", children: [
+      /* @__PURE__ */ jsx45("div", { className: "text-sm font-semibold text-gray-900", children: toteId }),
+      /* @__PURE__ */ jsxs29("div", { className: "text-xs text-gray-600", children: [
+        itemCount,
+        " / ",
+        totalItems,
+        " items"
+      ] }),
+      /* @__PURE__ */ jsx45("div", { className: "w-20 bg-gray-200 rounded-full h-1.5", children: /* @__PURE__ */ jsx45(
+        "div",
+        {
+          className: "bg-blue-600 h-1.5 rounded-full transition-all duration-300",
+          style: { width: `${progressPercentage}%` }
+        }
+      ) })
+    ] })
+  ] }) }) });
+}
+
+// src/components/QuantityInputModal/index.tsx
+import { useState as useState13, useEffect as useEffect9 } from "react";
+import { Package as Package2, X as X6 } from "lucide-react";
+import { jsx as jsx46, jsxs as jsxs30 } from "react/jsx-runtime";
+function QuantityInputModal({
+  isOpen,
+  onClose,
+  itemId,
+  item,
+  maxQuantity,
+  maxQtyLabel = "available quantity",
+  showOrderMappingLayout = false,
+  onTransfer,
+  isTransferring
+}) {
+  const [quantity, setQuantity] = useState13("");
+  const [error, setError] = useState13("");
+  useEffect9(() => {
+    if (isOpen) {
+      setQuantity("");
+      setError("");
+    }
+  }, [isOpen]);
+  if (!item) {
+    return null;
+  }
+  const handleQuantityChange = (value) => {
+    const numValue = parseInt(value);
+    setQuantity(value);
+    setError("");
+    if (value && (isNaN(numValue) || numValue <= 0)) {
+      setError("Please enter a valid positive number");
+    } else if (value && numValue > maxQuantity) {
+      setError(`Quantity cannot exceed ${maxQtyLabel} (${maxQuantity})`);
+    }
+  };
+  const handleTransfer = () => {
+    const numQuantity = parseInt(quantity);
+    if (!quantity || isNaN(numQuantity) || numQuantity <= 0) {
+      setError("Please enter a valid quantity");
+      return;
+    }
+    if (numQuantity > maxQuantity) {
+      setError(`Quantity cannot exceed ${maxQtyLabel} (${maxQuantity})`);
+      return;
+    }
+    onTransfer(itemId, numQuantity);
+  };
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !error && quantity) {
+      handleTransfer();
+    }
+  };
+  return /* @__PURE__ */ jsx46(Dialog, { open: isOpen, onOpenChange: onClose, children: /* @__PURE__ */ jsxs30(DialogContent, { className: "sm:max-w-md", children: [
+    /* @__PURE__ */ jsx46(DialogHeader, { children: /* @__PURE__ */ jsxs30(DialogTitle, { className: "flex items-center gap-2", children: [
+      /* @__PURE__ */ jsx46(Package2, { className: "h-5 w-5" }),
+      "Transfer Partial Quantity"
+    ] }) }),
+    /* @__PURE__ */ jsxs30("div", { className: showOrderMappingLayout ? "space-y-4" : "space-y-3", children: [
+      /* @__PURE__ */ jsxs30("div", { className: showOrderMappingLayout ? "p-4 border rounded-lg bg-muted/50" : "p-3 border rounded-lg bg-muted/50", children: [
+        /* @__PURE__ */ jsxs30("div", { className: "flex items-center justify-between mb-2", children: [
+          /* @__PURE__ */ jsx46("div", { className: "font-medium", children: item.clientSkuId || item.skuId }),
+          /* @__PURE__ */ jsxs30("div", { className: "flex gap-1", children: [
+            item.externalBatchId && /* @__PURE__ */ jsxs30(Badge, { color: "secondary", className: "text-xs", children: [
+              "Batch: ",
+              item.externalBatchId
+            ] }),
+            showOrderMappingLayout && item.orderCode && /* @__PURE__ */ jsx46(Badge, { variant: "outline", children: item.orderCode })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsx46("div", { className: showOrderMappingLayout ? "text-sm text-muted-foreground mb-3" : "text-sm text-muted-foreground mb-2", children: item.skuName }),
+        showOrderMappingLayout ? /* @__PURE__ */ jsxs30("div", { className: "grid grid-cols-3 gap-4 text-sm", children: [
+          /* @__PURE__ */ jsxs30("div", { className: "text-center", children: [
+            /* @__PURE__ */ jsx46("div", { className: "font-semibold", children: item.totalQty }),
+            /* @__PURE__ */ jsx46("div", { className: "text-muted-foreground", children: "Total" })
+          ] }),
+          /* @__PURE__ */ jsxs30("div", { className: "text-center", children: [
+            /* @__PURE__ */ jsx46("div", { className: "font-semibold text-green-600", children: item.activeQty }),
+            /* @__PURE__ */ jsx46("div", { className: "text-muted-foreground", children: "Active" })
+          ] }),
+          /* @__PURE__ */ jsxs30("div", { className: "text-center", children: [
+            /* @__PURE__ */ jsx46("div", { className: "font-semibold text-red-600", children: item.cancelledQty }),
+            /* @__PURE__ */ jsx46("div", { className: "text-muted-foreground", children: "Cancelled" })
+          ] })
+        ] }) : /* @__PURE__ */ jsxs30("div", { className: "flex items-center justify-between bg-background px-3 py-2 rounded border", children: [
+          /* @__PURE__ */ jsx46("span", { className: "text-sm text-muted-foreground", children: "Total Quantity:" }),
+          /* @__PURE__ */ jsx46("span", { className: "font-semibold text-base text-blue-600", children: item.totalQty })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs30("div", { className: "space-y-2", children: [
+        /* @__PURE__ */ jsx46(Label2, { htmlFor: "transfer-quantity", children: "Transfer Quantity" }),
+        /* @__PURE__ */ jsx46(
+          Input,
+          {
+            id: "transfer-quantity",
+            type: "number",
+            min: "1",
+            max: maxQuantity,
+            value: quantity,
+            onChange: (e) => handleQuantityChange(e.target.value),
+            onKeyPress: handleKeyPress,
+            placeholder: `Enter quantity (max: ${maxQuantity})`,
+            className: "text-center text-lg font-medium"
+          }
+        ),
+        error && /* @__PURE__ */ jsxs30("p", { className: "text-sm text-destructive flex items-center gap-1", children: [
+          /* @__PURE__ */ jsx46(X6, { className: "h-4 w-4 shrink-0" }),
+          error
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs30("div", { className: "flex gap-2 justify-center", children: [
+        [1, 2, 5].map((qty) => /* @__PURE__ */ jsx46(
+          Button,
+          {
+            variant: "outline",
+            size: "sm",
+            onClick: () => handleQuantityChange(qty.toString()),
+            disabled: qty > maxQuantity,
+            children: qty
+          },
+          qty
+        )),
+        /* @__PURE__ */ jsxs30(
+          Button,
+          {
+            variant: "outline",
+            size: "sm",
+            onClick: () => handleQuantityChange(maxQuantity.toString()),
+            disabled: maxQuantity === 0,
+            children: [
+              "Max (",
+              maxQuantity,
+              ")"
+            ]
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs30("div", { className: showOrderMappingLayout ? "flex gap-2 pt-4" : "flex gap-2 pt-2", children: [
+        /* @__PURE__ */ jsx46(
+          Button,
+          {
+            variant: "outline",
+            onClick: onClose,
+            disabled: isTransferring,
+            className: "flex-1 border-red-500 text-red-600 hover:bg-red-50",
+            children: "Cancel"
+          }
+        ),
+        /* @__PURE__ */ jsx46(
+          Button,
+          {
+            onClick: handleTransfer,
+            disabled: !quantity || !!error || isTransferring || maxQuantity === 0,
+            className: "flex-1",
+            children: isTransferring ? "Transferring..." : "Transfer"
+          }
+        )
+      ] })
+    ] })
+  ] }) });
 }
 export {
   APP_ICON_NAMES,
@@ -2810,9 +3227,8 @@ export {
   CardTitle,
   Checkbox,
   ConfirmDialog,
+  ContentSection,
   DatePicker,
-  DateRangePicker,
-  DateTimePicker,
   Dialog,
   DialogClose,
   DialogContent,
@@ -2840,6 +3256,7 @@ export {
   DropdownMenuTrigger,
   DropdownMenuWrapper,
   EmptyState,
+  FieldType,
   FilterBar,
   FormBuilder,
   Input,
@@ -2847,6 +3264,8 @@ export {
   LoadingButton,
   MultiSelect,
   MultiSelectBadges,
+  PageHeader,
+  PageLayout,
   Pagination,
   PaginationContent,
   PaginationEllipsis,
@@ -2859,6 +3278,9 @@ export {
   PopoverContent,
   PopoverTrigger,
   QuantityInput,
+  QuantityInputModal,
+  RadioGroup2 as RadioGroup,
+  RadioGroupItem,
   ResponsiveTable,
   ScanInput,
   ScrollArea,
@@ -2886,7 +3308,10 @@ export {
   SheetPortal,
   SheetTitle,
   SheetTrigger,
-  SidePanel,
+  SmallToteCard,
+  SortOptions,
+  StatsCard,
+  StatsGrid,
   StatusBadge,
   Table,
   TableBody,
@@ -2925,6 +3350,7 @@ export {
   getAnimationClasses,
   getButtonEnhancedClasses,
   getStatusClasses,
+  getStatusVariant,
   showError,
   showSuccess,
   statusRingClasses,

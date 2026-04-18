@@ -86,7 +86,7 @@ export function QuantityInputModal({
               <div className="font-medium">{item.clientSkuId || item.skuId}</div>
               <div className="flex gap-1">
                 {item.externalBatchId && (
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge color="secondary" className="text-xs">
                     Batch: {item.externalBatchId}
                   </Badge>
                 )}
