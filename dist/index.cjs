@@ -2181,8 +2181,8 @@ function FilterBar({
     return /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "space-y-2", children: [
       /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "flex items-center gap-2", children: [
         onSearchChange && /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(SearchInput, { className: "flex-1", value: searchValue, onChange: (e) => onSearchChange(e.target.value), placeholder: searchPlaceholder }),
-        (!expanded || filters.length === 0) && /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(LoadingButton, { variant: "primary", onClick: handleApply, children: "Search" }),
-        filters.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(
+        (!expanded || filters.length === 0 && !additionalFilters) && /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(LoadingButton, { variant: "primary", onClick: handleApply, children: "Search" }),
+        (filters.length > 0 || !!additionalFilters) && /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(
           Button,
           {
             variant: "outline",
@@ -2217,7 +2217,7 @@ function FilterBar({
   return /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "space-y-2", children: [
     /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)("div", { className: "flex flex-wrap items-center gap-2", children: [
       onSearchChange && /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(SearchInput, { className: "w-48", value: searchValue, onChange: (e) => onSearchChange(e.target.value), placeholder: searchPlaceholder }),
-      additionalFilters && /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("div", { className: "shrink-0", children: additionalFilters }),
+      additionalFilters && /* @__PURE__ */ (0, import_jsx_runtime29.jsx)("div", { className: "min-w-0", children: additionalFilters }),
       filters.map((filter) => {
         var _a;
         return /* @__PURE__ */ (0, import_jsx_runtime29.jsxs)(Select, { value: (_a = filterValues[filter.key]) != null ? _a : "", onValueChange: (val) => handleFilterChange(filter.key, val), children: [

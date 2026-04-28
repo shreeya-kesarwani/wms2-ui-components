@@ -59,10 +59,10 @@ export function FilterBar({
           {onSearchChange && (
             <SearchInput className="flex-1" value={searchValue} onChange={(e) => onSearchChange(e.target.value)} placeholder={searchPlaceholder} />
           )}
-          {(!expanded || filters.length === 0) && (
+          {(!expanded || (filters.length === 0 && !additionalFilters)) && (
             <LoadingButton variant="primary" onClick={handleApply}>Search</LoadingButton>
           )}
-          {filters.length > 0 && (
+          {(filters.length > 0 || !!additionalFilters) && (
             <Button
               variant="outline" size="icon"
               className={cn("h-9 w-9 shrink-0 transition-colors", expanded && "bg-accent text-accent-foreground border-accent")}
@@ -105,7 +105,7 @@ export function FilterBar({
         {onSearchChange && (
           <SearchInput className="w-48" value={searchValue} onChange={(e) => onSearchChange(e.target.value)} placeholder={searchPlaceholder} />
         )}
-        {additionalFilters && <div className="shrink-0">{additionalFilters}</div>}
+        {additionalFilters && <div className="min-w-0">{additionalFilters}</div>}
         {filters.map((filter) => (
           <Select key={filter.key} value={filterValues[filter.key] ?? ""} onValueChange={(val) => handleFilterChange(filter.key, val)}>
             <SelectTrigger className={filterTriggerClassName}><SelectValue placeholder={filter.label} /></SelectTrigger>
