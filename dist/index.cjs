@@ -158,6 +158,7 @@ __export(index_exports, {
   SheetPortal: () => SheetPortal,
   SheetTitle: () => SheetTitle,
   SheetTrigger: () => SheetTrigger,
+  SkuProductDetails: () => SkuProductDetails,
   SmallToteCard: () => SmallToteCard,
   SortOptions: () => SortOptions,
   StatsCard: () => StatsCard,
@@ -3157,22 +3158,257 @@ function SortOptions({
   ] });
 }
 
-// src/components/SmallToteCard/index.tsx
+// src/components/SkuProductDetails/index.tsx
+var import_react6 = require("react");
 var import_lucide_react23 = require("lucide-react");
+var import_date_fns4 = require("date-fns");
 var import_jsx_runtime45 = require("react/jsx-runtime");
+function SkuProductDetails({ skuDetails, batchInfo, compact = false }) {
+  var _a, _b, _c, _d;
+  const [lightboxOpen, setLightboxOpen] = (0, import_react6.useState)(false);
+  const [showAllAttributes, setShowAllAttributes] = (0, import_react6.useState)(false);
+  const [imgIndex, setImgIndex] = (0, import_react6.useState)(0);
+  if (!skuDetails) {
+    return /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "flex-1 flex items-center justify-center rounded-xl border border-dashed text-sm text-gray-300 min-h-[180px]", children: "Scan a SKU to see product details" });
+  }
+  const resolvedUrls = ((_a = skuDetails.imageUrls) == null ? void 0 : _a.filter(Boolean).length) ? skuDetails.imageUrls.filter(Boolean) : skuDetails.imageUrl ? [skuDetails.imageUrl] : ((_c = (_b = skuDetails.displayableAttributes) == null ? void 0 : _b["Image URL"]) == null ? void 0 : _c.trim()) ? [skuDetails.displayableAttributes["Image URL"].trim()] : [];
+  const displayUrls = resolvedUrls;
+  const currentImageUrl = (_d = displayUrls[imgIndex]) != null ? _d : null;
+  const getMrp = () => {
+    var _a2;
+    const entry = Object.entries(skuDetails.displayableAttributes).find(([key]) => key.toLowerCase().includes("mrp") || key.toLowerCase().includes("price"));
+    return entry ? (_a2 = entry[1]) == null ? void 0 : _a2.toString() : null;
+  };
+  const getAttributeItems = () => Object.entries(skuDetails.displayableAttributes).filter(([key]) => {
+    const k = key.toLowerCase();
+    return !(k.includes("image") || k.includes("mrp") || k.includes("price") || k.includes("brand") || k.includes("color") || k.includes("size") || k.includes("category") || k.includes("name"));
+  }).map(([key, value]) => ({ key, value: (value == null ? void 0 : value.toString()) || "-" }));
+  const extraAttributes = getAttributeItems();
+  const initialVisibleCount = 6;
+  const visibleAttributes = showAllAttributes ? extraAttributes : extraAttributes.slice(0, initialVisibleCount);
+  const NoImagePlaceholder = () => /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "w-full aspect-square bg-gray-100 border border-gray-200 flex flex-col items-center justify-center rounded-lg gap-1", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-8 w-8 text-gray-300", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.5", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("rect", { x: "3", y: "3", width: "18", height: "18", rx: "2" }),
+      /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("circle", { cx: "8.5", cy: "8.5", r: "1.5" }),
+      /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("path", { d: "M21 15l-5-5L5 21" })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("span", { className: "text-[9px] text-gray-400 uppercase tracking-wide", children: "No image" })
+  ] });
+  return /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)(import_jsx_runtime45.Fragment, { children: [
+    lightboxOpen && currentImageUrl && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)(
+      "div",
+      {
+        className: "fixed inset-0 z-50 flex items-center justify-center bg-black/80",
+        onClick: () => setLightboxOpen(false),
+        children: [
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+            "button",
+            {
+              className: "absolute top-4 right-4 text-white bg-black/50 rounded-full p-1.5",
+              onClick: () => setLightboxOpen(false),
+              children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(import_lucide_react23.X, { className: "h-5 w-5" })
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+            "img",
+            {
+              src: currentImageUrl,
+              alt: skuDetails.name || skuDetails.skuData.clientSkuId || "Product",
+              className: "max-h-[90vh] max-w-[90vw] object-contain rounded-lg",
+              onClick: (e) => e.stopPropagation()
+            }
+          ),
+          displayUrls.length > 1 && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)(import_jsx_runtime45.Fragment, { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+              "button",
+              {
+                className: "absolute left-4 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/70 rounded-full p-1.5 disabled:opacity-30",
+                disabled: imgIndex === 0,
+                onClick: (e) => {
+                  e.stopPropagation();
+                  setImgIndex((i) => i - 1);
+                },
+                children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(import_lucide_react23.ChevronLeft, { className: "h-5 w-5" })
+              }
+            ),
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("span", { className: "absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-xs bg-black/50 px-2 py-0.5 rounded-full", children: [
+              imgIndex + 1,
+              " / ",
+              displayUrls.length
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+              "button",
+              {
+                className: "absolute right-4 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/70 rounded-full p-1.5 disabled:opacity-30",
+                disabled: imgIndex === displayUrls.length - 1,
+                onClick: (e) => {
+                  e.stopPropagation();
+                  setImgIndex((i) => i + 1);
+                },
+                children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(import_lucide_react23.ChevronRight, { className: "h-5 w-5" })
+              }
+            )
+          ] })
+        ]
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "flex flex-col md:flex-row gap-3 md:gap-4 w-full", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "w-full md:w-3/4", children: /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: `grid gap-2 md:gap-4 ${compact ? "grid-cols-[80px_1fr]" : "grid-cols-[100px_1fr] md:grid-cols-[160px_1fr]"}`, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "flex flex-col items-center gap-1", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "relative w-full", children: [
+            currentImageUrl ? /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+              "img",
+              {
+                src: currentImageUrl,
+                alt: skuDetails.name || skuDetails.skuData.clientSkuId || "Product",
+                className: "w-full aspect-square object-contain rounded-lg border bg-gray-50 cursor-zoom-in",
+                onClick: () => setLightboxOpen(true)
+              }
+            ) : /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(NoImagePlaceholder, {}),
+            displayUrls.length > 1 && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)(import_jsx_runtime45.Fragment, { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+                "button",
+                {
+                  className: "absolute left-0 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-r p-0.5 disabled:opacity-20",
+                  disabled: imgIndex === 0,
+                  onClick: () => setImgIndex((i) => i - 1),
+                  children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(import_lucide_react23.ChevronLeft, { className: "h-3 w-3" })
+                }
+              ),
+              /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("span", { className: "absolute bottom-1 left-1/2 -translate-x-1/2 bg-black/40 text-white text-[8px] px-1 rounded", children: [
+                imgIndex + 1,
+                "/",
+                displayUrls.length
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+                "button",
+                {
+                  className: "absolute right-0 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-l p-0.5 disabled:opacity-20",
+                  disabled: imgIndex === displayUrls.length - 1,
+                  onClick: () => setImgIndex((i) => i + 1),
+                  children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(import_lucide_react23.ChevronRight, { className: "h-3 w-3" })
+                }
+              )
+            ] })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "bg-gray-800/70 text-white px-1.5 py-0.5 text-[9px] rounded w-full text-center truncate", children: skuDetails.skuData.clientSkuId })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: `grid gap-1.5 content-start ${compact ? "grid-cols-1" : "grid-cols-2 md:gap-2"}`, children: [
+          skuDetails.uomDefinition && skuDetails.skuData.isUom && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "col-span-2 bg-amber-50 border border-amber-200 rounded-lg p-1.5 md:p-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-[10px] text-amber-600 uppercase tracking-wide font-semibold", children: "Type" }),
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "text-sm font-medium text-amber-800", children: [
+              "Carton \xB7 ",
+              skuDetails.uomDefinition.eachQuantity,
+              " pcs"
+            ] })
+          ] }),
+          skuDetails.uomDefinition && skuDetails.skuData.isPartOfUom && !skuDetails.skuData.isUom && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "col-span-2 bg-blue-50 border border-blue-200 rounded-lg p-1.5 md:p-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-[10px] text-blue-600 uppercase tracking-wide font-semibold", children: "Type" }),
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-sm font-medium text-blue-800", children: "Individual Unit \xB7 part of carton" })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "bg-gray-50 rounded-lg p-1.5 md:p-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-[10px] text-gray-400 uppercase tracking-wide", children: "Brand" }),
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-sm font-medium truncate", children: skuDetails.brandId || "-" })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "bg-gray-50 rounded-lg p-1.5 md:p-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-[10px] text-gray-400 uppercase tracking-wide", children: "MRP" }),
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-sm font-medium", children: getMrp() ? `\u20B9${getMrp()}` : "-" })
+          ] }),
+          skuDetails.category && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "bg-gray-50 rounded-lg p-1.5 md:p-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-[10px] text-gray-400 uppercase tracking-wide", children: "Category" }),
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-sm font-medium truncate", children: skuDetails.category })
+          ] }),
+          skuDetails.color && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "bg-gray-50 rounded-lg p-1.5 md:p-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-[10px] text-gray-400 uppercase tracking-wide", children: "Color" }),
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-sm font-medium truncate", children: skuDetails.color })
+          ] }),
+          skuDetails.size && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "hidden md:block bg-gray-50 rounded-lg p-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-[10px] text-gray-400 uppercase tracking-wide", children: "Size" }),
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-sm font-medium truncate", children: skuDetails.size })
+          ] }),
+          visibleAttributes.map((attr) => /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "hidden md:block bg-gray-50 rounded-lg p-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-[10px] text-gray-400 uppercase tracking-wide truncate", children: attr.key }),
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-sm font-medium truncate", children: attr.value || "-" })
+          ] }, attr.key)),
+          extraAttributes.length > initialVisibleCount && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+            "button",
+            {
+              className: "col-span-2 hidden md:flex text-xs text-blue-500 hover:text-blue-700 items-center gap-0.5 mt-1",
+              onClick: () => setShowAllAttributes(!showAllAttributes),
+              children: showAllAttributes ? "Show less" : `Show ${extraAttributes.length - visibleAttributes.length} more attributes`
+            }
+          )
+        ] }),
+        (skuDetails.size || visibleAttributes.length > 0) && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: `${compact ? "hidden" : "col-span-2 md:hidden"}`, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "grid grid-cols-2 gap-1.5", children: [
+            skuDetails.size && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "bg-gray-50 rounded-lg p-1.5", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-[10px] text-gray-400 uppercase tracking-wide", children: "Size" }),
+              /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-sm font-medium truncate", children: skuDetails.size })
+            ] }),
+            visibleAttributes.map((attr) => /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "bg-gray-50 rounded-lg p-1.5", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-[10px] text-gray-400 uppercase tracking-wide truncate", children: attr.key }),
+              /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-sm font-medium truncate", children: attr.value || "-" })
+            ] }, attr.key))
+          ] }),
+          extraAttributes.length > initialVisibleCount && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+            "button",
+            {
+              className: "text-xs text-blue-500 hover:text-blue-700 flex items-center gap-0.5 mt-2",
+              onClick: () => setShowAllAttributes(!showAllAttributes),
+              children: showAllAttributes ? "Show less" : `Show ${extraAttributes.length - visibleAttributes.length} more attributes`
+            }
+          )
+        ] })
+      ] }) }),
+      batchInfo && /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "w-full md:w-1/4", children: /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "rounded-lg border border-blue-200 bg-blue-50/60 p-2.5", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "flex items-center gap-1.5 mb-1.5 text-blue-700", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(import_lucide_react23.Package, { className: "h-3.5 w-3.5" }),
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("span", { className: "text-xs font-semibold uppercase tracking-wide", children: "Batch Information" })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "flex flex-col gap-1.5 text-xs", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("span", { className: "text-gray-500", children: "Batch ID: " }),
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("span", { className: "font-medium", children: batchInfo.externalBatchId || (batchInfo.batchId ? `#${batchInfo.batchId}` : "-") })
+          ] }),
+          batchInfo.mrp > 0 && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("span", { className: "text-gray-500", children: "MRP: " }),
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("span", { className: "font-medium", children: [
+              "\u20B9",
+              batchInfo.mrp
+            ] })
+          ] }),
+          batchInfo.mfgDate && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "flex items-center gap-1", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(import_lucide_react23.Calendar, { className: "h-3 w-3 text-gray-400" }),
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("span", { className: "text-gray-500", children: "Mfg: " }),
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("span", { className: "font-medium", children: (0, import_date_fns4.format)(batchInfo.mfgDate, "dd MMM yyyy") })
+          ] }),
+          batchInfo.expiryDate && /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "flex items-center gap-1", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(import_lucide_react23.Calendar, { className: "h-3 w-3 text-gray-400" }),
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("span", { className: "text-gray-500", children: "Exp: " }),
+            /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("span", { className: "font-medium", children: (0, import_date_fns4.format)(batchInfo.expiryDate, "dd MMM yyyy") })
+          ] })
+        ] })
+      ] }) })
+    ] })
+  ] });
+}
+
+// src/components/SmallToteCard/index.tsx
+var import_lucide_react24 = require("lucide-react");
+var import_jsx_runtime46 = require("react/jsx-runtime");
 function SmallToteCard({ toteId, itemCount, totalItems }) {
   const progressPercentage = totalItems > 0 ? itemCount / totalItems * 100 : 0;
-  return /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(Card, { className: "w-auto", children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(CardContent, { className: "p-3", children: /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "flex items-center gap-3", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg", children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(import_lucide_react23.PackageIcon, { className: "h-5 w-5 text-blue-600" }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "space-y-1", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "text-sm font-semibold text-gray-900", children: toteId }),
-      /* @__PURE__ */ (0, import_jsx_runtime45.jsxs)("div", { className: "text-xs text-gray-600", children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(Card, { className: "w-auto", children: /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(CardContent, { className: "p-3", children: /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "flex items-center gap-3", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("div", { className: "flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg", children: /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(import_lucide_react24.PackageIcon, { className: "h-5 w-5 text-blue-600" }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "space-y-1", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("div", { className: "text-sm font-semibold text-gray-900", children: toteId }),
+      /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "text-xs text-gray-600", children: [
         itemCount,
         " / ",
         totalItems,
         " items"
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime45.jsx)("div", { className: "w-20 bg-gray-200 rounded-full h-1.5", children: /* @__PURE__ */ (0, import_jsx_runtime45.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("div", { className: "w-20 bg-gray-200 rounded-full h-1.5", children: /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(
         "div",
         {
           className: "bg-blue-600 h-1.5 rounded-full transition-all duration-300",
@@ -3184,9 +3420,9 @@ function SmallToteCard({ toteId, itemCount, totalItems }) {
 }
 
 // src/components/QuantityInputModal/index.tsx
-var import_react6 = require("react");
-var import_lucide_react24 = require("lucide-react");
-var import_jsx_runtime46 = require("react/jsx-runtime");
+var import_react7 = require("react");
+var import_lucide_react25 = require("lucide-react");
+var import_jsx_runtime47 = require("react/jsx-runtime");
 function QuantityInputModal({
   isOpen,
   onClose,
@@ -3198,9 +3434,9 @@ function QuantityInputModal({
   onTransfer,
   isTransferring
 }) {
-  const [quantity, setQuantity] = (0, import_react6.useState)("");
-  const [error, setError] = (0, import_react6.useState)("");
-  (0, import_react6.useEffect)(() => {
+  const [quantity, setQuantity] = (0, import_react7.useState)("");
+  const [error, setError] = (0, import_react7.useState)("");
+  (0, import_react7.useEffect)(() => {
     if (isOpen) {
       setQuantity("");
       setError("");
@@ -3236,45 +3472,45 @@ function QuantityInputModal({
       handleTransfer();
     }
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(Dialog, { open: isOpen, onOpenChange: onClose, children: /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)(DialogContent, { className: "sm:max-w-md", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)(DialogTitle, { className: "flex items-center gap-2", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(import_lucide_react24.Package, { className: "h-5 w-5" }),
+  return /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(Dialog, { open: isOpen, onOpenChange: onClose, children: /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)(DialogContent, { className: "sm:max-w-md", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)(DialogTitle, { className: "flex items-center gap-2", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(import_lucide_react25.Package, { className: "h-5 w-5" }),
       "Transfer Partial Quantity"
     ] }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: showOrderMappingLayout ? "space-y-4" : "space-y-3", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: showOrderMappingLayout ? "p-4 border rounded-lg bg-muted/50" : "p-3 border rounded-lg bg-muted/50", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "flex items-center justify-between mb-2", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("div", { className: "font-medium", children: item.clientSkuId || item.skuId }),
-          /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "flex gap-1", children: [
-            item.externalBatchId && /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)(Badge, { color: "secondary", className: "text-xs", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: showOrderMappingLayout ? "space-y-4" : "space-y-3", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: showOrderMappingLayout ? "p-4 border rounded-lg bg-muted/50" : "p-3 border rounded-lg bg-muted/50", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "flex items-center justify-between mb-2", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: "font-medium", children: item.clientSkuId || item.skuId }),
+          /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "flex gap-1", children: [
+            item.externalBatchId && /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)(Badge, { color: "secondary", className: "text-xs", children: [
               "Batch: ",
               item.externalBatchId
             ] }),
-            showOrderMappingLayout && item.orderCode && /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(Badge, { variant: "outline", children: item.orderCode })
+            showOrderMappingLayout && item.orderCode && /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(Badge, { variant: "outline", children: item.orderCode })
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("div", { className: showOrderMappingLayout ? "text-sm text-muted-foreground mb-3" : "text-sm text-muted-foreground mb-2", children: item.skuName }),
-        showOrderMappingLayout ? /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "grid grid-cols-3 gap-4 text-sm", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "text-center", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("div", { className: "font-semibold", children: item.totalQty }),
-            /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("div", { className: "text-muted-foreground", children: "Total" })
+        /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: showOrderMappingLayout ? "text-sm text-muted-foreground mb-3" : "text-sm text-muted-foreground mb-2", children: item.skuName }),
+        showOrderMappingLayout ? /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "grid grid-cols-3 gap-4 text-sm", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "text-center", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: "font-semibold", children: item.totalQty }),
+            /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: "text-muted-foreground", children: "Total" })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "text-center", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("div", { className: "font-semibold text-green-600", children: item.activeQty }),
-            /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("div", { className: "text-muted-foreground", children: "Active" })
+          /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "text-center", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: "font-semibold text-green-600", children: item.activeQty }),
+            /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: "text-muted-foreground", children: "Active" })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "text-center", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("div", { className: "font-semibold text-red-600", children: item.cancelledQty }),
-            /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("div", { className: "text-muted-foreground", children: "Cancelled" })
+          /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "text-center", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: "font-semibold text-red-600", children: item.cancelledQty }),
+            /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("div", { className: "text-muted-foreground", children: "Cancelled" })
           ] })
-        ] }) : /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "flex items-center justify-between bg-background px-3 py-2 rounded border", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("span", { className: "text-sm text-muted-foreground", children: "Total Quantity:" }),
-          /* @__PURE__ */ (0, import_jsx_runtime46.jsx)("span", { className: "font-semibold text-base text-blue-600", children: item.totalQty })
+        ] }) : /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "flex items-center justify-between bg-background px-3 py-2 rounded border", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("span", { className: "text-sm text-muted-foreground", children: "Total Quantity:" }),
+          /* @__PURE__ */ (0, import_jsx_runtime47.jsx)("span", { className: "font-semibold text-base text-blue-600", children: item.totalQty })
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "space-y-2", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(Label2, { htmlFor: "transfer-quantity", children: "Transfer Quantity" }),
-        /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "space-y-2", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(Label2, { htmlFor: "transfer-quantity", children: "Transfer Quantity" }),
+        /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(
           Input,
           {
             id: "transfer-quantity",
@@ -3288,13 +3524,13 @@ function QuantityInputModal({
             className: "text-center text-lg font-medium"
           }
         ),
-        error && /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("p", { className: "text-sm text-destructive flex items-center gap-1", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(import_lucide_react24.X, { className: "h-4 w-4 shrink-0" }),
+        error && /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("p", { className: "text-sm text-destructive flex items-center gap-1", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(import_lucide_react25.X, { className: "h-4 w-4 shrink-0" }),
           error
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: "flex gap-2 justify-center", children: [
-        [1, 2, 5].map((qty) => /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: "flex gap-2 justify-center", children: [
+        [1, 2, 5].map((qty) => /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(
           Button,
           {
             variant: "outline",
@@ -3305,7 +3541,7 @@ function QuantityInputModal({
           },
           qty
         )),
-        /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)(
+        /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)(
           Button,
           {
             variant: "outline",
@@ -3320,8 +3556,8 @@ function QuantityInputModal({
           }
         )
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime46.jsxs)("div", { className: showOrderMappingLayout ? "flex gap-2 pt-4" : "flex gap-2 pt-2", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime47.jsxs)("div", { className: showOrderMappingLayout ? "flex gap-2 pt-4" : "flex gap-2 pt-2", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(
           Button,
           {
             variant: "outline",
@@ -3331,7 +3567,7 @@ function QuantityInputModal({
             children: "Cancel"
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime46.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime47.jsx)(
           Button,
           {
             onClick: handleTransfer,
@@ -3444,6 +3680,7 @@ function QuantityInputModal({
   SheetPortal,
   SheetTitle,
   SheetTrigger,
+  SkuProductDetails,
   SmallToteCard,
   SortOptions,
   StatsCard,

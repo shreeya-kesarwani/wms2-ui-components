@@ -116,6 +116,11 @@ export { SortOptions, type SortOptionsProps } from "./components/SortOptions";
 export { RadioGroup, RadioGroupItem } from "./components/RadioGroup";
 
 // ── WMS Domain Components ─────────────────────────────────────────────────────
+export {
+  SkuProductDetails,
+  type SkuProductDetailsData,
+  type BatchInfo,
+} from "./components/SkuProductDetails";
 export { SmallToteCard, type SmallToteCardProps } from "./components/SmallToteCard";
 export {
   QuantityInputModal, type QuantityInputModalProps, type TransferItem,

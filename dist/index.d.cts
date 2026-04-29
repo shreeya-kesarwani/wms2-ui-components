@@ -638,6 +638,38 @@ declare function SortOptions({ onSortByChange, onSortOrderChange, sortByOptions,
 declare const RadioGroup: React.ForwardRefExoticComponent<Omit<RadioGroupPrimitive.RadioGroupProps & React.RefAttributes<HTMLDivElement>, "ref"> & React.RefAttributes<HTMLDivElement>>;
 declare const RadioGroupItem: React.ForwardRefExoticComponent<Omit<RadioGroupPrimitive.RadioGroupItemProps & React.RefAttributes<HTMLButtonElement>, "ref"> & React.RefAttributes<HTMLButtonElement>>;
 
+interface SkuProductDetailsData {
+    skuData: {
+        clientSkuId: string;
+        isUom?: boolean;
+        isPartOfUom?: boolean;
+    };
+    displayableAttributes: Record<string, unknown>;
+    imageUrls?: string[] | null;
+    imageUrl?: string | null;
+    name?: string | null;
+    brandId?: string | null;
+    color?: string | null;
+    size?: string | null;
+    category?: string | null;
+    uomDefinition?: {
+        eachQuantity: number;
+    } | null;
+}
+interface BatchInfo {
+    batchId: number | null;
+    externalBatchId: string;
+    mfgDate: Date | null;
+    expiryDate: Date | null;
+    mrp: number;
+}
+interface SkuProductDetailsProps {
+    skuDetails: SkuProductDetailsData | null;
+    batchInfo?: BatchInfo | null;
+    compact?: boolean;
+}
+declare function SkuProductDetails({ skuDetails, batchInfo, compact }: SkuProductDetailsProps): react_jsx_runtime.JSX.Element;
+
 interface SmallToteCardProps {
     toteId: string;
     itemCount: number;
@@ -675,4 +707,4 @@ interface QuantityInputModalProps {
 
 declare function QuantityInputModal({ isOpen, onClose, itemId, item, maxQuantity, maxQtyLabel, showOrderMappingLayout, onTransfer, isTransferring, }: QuantityInputModalProps): react_jsx_runtime.JSX.Element | null;
 
-export { APP_ICON_NAMES, Accordion, AccordionContent, AccordionItem, AccordionTrigger, AppIcon, type AppIconProps, Badge, type BadgeProps, Button, type ButtonProps, Calendar, type CalendarProps, Card, CardContent, CardDescription, CardFooter, CardHeader, type CardProps, CardTitle, Checkbox, type Column, ConfirmDialog, type ConfirmDialogProps, ContentSection, type ContentSectionProps, type CustomComponentProps, DatePicker, type DatePickerProps, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, type DropdownMenuItemConfig, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, DropdownMenuWrapper, type DropdownMenuWrapperProps, EmptyState, type EmptyStateProps, type FieldConfig, FieldType, FilterBar, type FilterBarProps, type FilterConfig, type FilterOption, FormBuilder, type FormBuilderProps, Input, Label, LoadingButton, type LoadingButtonProps, MultiSelect, MultiSelectBadges, type MultiSelectOption, type MultiSelectProps, type OptionType, PageHeader, type PageHeaderProps, PageLayout, type PageLayoutProps, Pagination, type PaginationConfig, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, Popover, PopoverAnchor, PopoverContent, PopoverTrigger, QuantityInput, QuantityInputModal, type QuantityInputModalProps, type QuantityInputProps, RadioGroup, RadioGroupItem, ResponsiveTable, ScanInput, type ScanInputProps, ScrollArea, ScrollBar, SearchInput, type SearchInputProps, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, type SelectionItem, SelectionModal, type SelectionModalProps, Separator, Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetOverlay, SheetPortal, SheetTitle, SheetTrigger, SmallToteCard, type SmallToteCardProps, SortOptions, type SortOptionsProps, StatsCard, type StatsCardProps, StatsGrid, type StatsGridProps, StatusBadge, type StatusBadgeProps, type StatusColors, type TabItem, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, Tabs, TabsContent, TabsList, TabsTrigger, TabsWrapper, type TabsWrapperProps, Textarea, TimePicker, type TimePickerProps, Toast$1 as Toast, ToastAction, type ToastActionElement, ToastClose, ToastDescription, type ToastProps, ToastProvider, ToastTitle, ToastViewport, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, type TransferItem, type ValidationRule, badgeVariants, buttonVariants, cardVariants, cn, createExpressiveClasses, enhancedButtonClasses, enhancedStatusColors, getAnimationClasses, getButtonEnhancedClasses, getStatusClasses, getStatusVariant, showError, showSuccess, statusRingClasses, toast, useMediaQuery, useMobile, useToast };
+export { APP_ICON_NAMES, Accordion, AccordionContent, AccordionItem, AccordionTrigger, AppIcon, type AppIconProps, Badge, type BadgeProps, type BatchInfo, Button, type ButtonProps, Calendar, type CalendarProps, Card, CardContent, CardDescription, CardFooter, CardHeader, type CardProps, CardTitle, Checkbox, type Column, ConfirmDialog, type ConfirmDialogProps, ContentSection, type ContentSectionProps, type CustomComponentProps, DatePicker, type DatePickerProps, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, type DropdownMenuItemConfig, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, DropdownMenuWrapper, type DropdownMenuWrapperProps, EmptyState, type EmptyStateProps, type FieldConfig, FieldType, FilterBar, type FilterBarProps, type FilterConfig, type FilterOption, FormBuilder, type FormBuilderProps, Input, Label, LoadingButton, type LoadingButtonProps, MultiSelect, MultiSelectBadges, type MultiSelectOption, type MultiSelectProps, type OptionType, PageHeader, type PageHeaderProps, PageLayout, type PageLayoutProps, Pagination, type PaginationConfig, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, Popover, PopoverAnchor, PopoverContent, PopoverTrigger, QuantityInput, QuantityInputModal, type QuantityInputModalProps, type QuantityInputProps, RadioGroup, RadioGroupItem, ResponsiveTable, ScanInput, type ScanInputProps, ScrollArea, ScrollBar, SearchInput, type SearchInputProps, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, type SelectionItem, SelectionModal, type SelectionModalProps, Separator, Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetOverlay, SheetPortal, SheetTitle, SheetTrigger, SkuProductDetails, type SkuProductDetailsData, SmallToteCard, type SmallToteCardProps, SortOptions, type SortOptionsProps, StatsCard, type StatsCardProps, StatsGrid, type StatsGridProps, StatusBadge, type StatusBadgeProps, type StatusColors, type TabItem, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, Tabs, TabsContent, TabsList, TabsTrigger, TabsWrapper, type TabsWrapperProps, Textarea, TimePicker, type TimePickerProps, Toast$1 as Toast, ToastAction, type ToastActionElement, ToastClose, ToastDescription, type ToastProps, ToastProvider, ToastTitle, ToastViewport, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, type TransferItem, type ValidationRule, badgeVariants, buttonVariants, cardVariants, cn, createExpressiveClasses, enhancedButtonClasses, enhancedStatusColors, getAnimationClasses, getButtonEnhancedClasses, getStatusClasses, getStatusVariant, showError, showSuccess, statusRingClasses, toast, useMediaQuery, useMobile, useToast };
