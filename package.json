@@ -20,7 +20,11 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint src --ext .ts,.tsx",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "release": "npm run build && npm publish"
+  },
+  "publishConfig": {
+    "registry": "https://one.increff.com/verdaccio/"
   },
   "peerDependencies": {
     "react": "^18 || ^19",
