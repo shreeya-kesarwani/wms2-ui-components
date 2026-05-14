@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, X, Package, Calendar } from 'lucide-react';
+import { Package, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
+import { ImageGallery } from '../ImageGallery';
 
 export interface SkuProductDetailsData {
   skuData: {
@@ -34,9 +35,7 @@ interface SkuProductDetailsProps {
 }
 
 export function SkuProductDetails({ skuDetails, batchInfo, compact = false }: SkuProductDetailsProps) {
-  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [showAllAttributes, setShowAllAttributes] = useState(false);
-  const [imgIndex, setImgIndex] = useState(0);
 
   if (!skuDetails) {
     return (
@@ -53,9 +52,6 @@ export function SkuProductDetails({ skuDetails, batchInfo, compact = false }: Sk
       : (skuDetails.displayableAttributes?.["Image URL"] as string)?.trim()
         ? [(skuDetails.displayableAttributes["Image URL"] as string).trim()]
         : [];
-
-  const displayUrls = resolvedUrls;
-  const currentImageUrl = displayUrls[imgIndex] ?? null;
 
   const getMrp = () => {
     const entry = Object.entries(skuDetails.displayableAttributes)
@@ -92,86 +88,21 @@ export function SkuProductDetails({ skuDetails, batchInfo, compact = false }: Sk
 
   return (
     <>
-      {lightboxOpen && currentImageUrl && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
-          onClick={() => setLightboxOpen(false)}
-        >
-          <button
-            className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-1.5"
-            onClick={() => setLightboxOpen(false)}
-          >
-            <X className="h-5 w-5" />
-          </button>
-          <img
-            src={currentImageUrl}
-            alt={skuDetails.name || skuDetails.skuData.clientSkuId || "Product"}
-            className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg"
-            onClick={(e) => e.stopPropagation()}
-          />
-          {displayUrls.length > 1 && (
-            <>
-              <button
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/70 rounded-full p-1.5 disabled:opacity-30"
-                disabled={imgIndex === 0}
-                onClick={(e) => { e.stopPropagation(); setImgIndex(i => i - 1); }}
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </button>
-              <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-xs bg-black/50 px-2 py-0.5 rounded-full">
-                {imgIndex + 1} / {displayUrls.length}
-              </span>
-              <button
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/70 rounded-full p-1.5 disabled:opacity-30"
-                disabled={imgIndex === displayUrls.length - 1}
-                onClick={(e) => { e.stopPropagation(); setImgIndex(i => i + 1); }}
-              >
-                <ChevronRight className="h-5 w-5" />
-              </button>
-            </>
-          )}
-        </div>
-      )}
-
       <div className="flex flex-col md:flex-row gap-3 md:gap-4 w-full">
         {/* SKU details */}
         <div className="w-full md:w-3/4">
           <div className={`grid gap-2 md:gap-4 ${compact ? 'grid-cols-[80px_1fr]' : 'grid-cols-[100px_1fr] md:grid-cols-[160px_1fr]'}`}>
             {/* Image */}
             <div className="flex flex-col items-center gap-1">
-              <div className="relative w-full">
-                {currentImageUrl ? (
-                  <img
-                    src={currentImageUrl}
-                    alt={skuDetails.name || skuDetails.skuData.clientSkuId || "Product"}
-                    className="w-full aspect-square object-contain rounded-lg border bg-gray-50 cursor-zoom-in"
-                    onClick={() => setLightboxOpen(true)}
-                  />
-                ) : (
-                  <NoImagePlaceholder />
-                )}
-                {displayUrls.length > 1 && (
-                  <>
-                    <button
-                      className="absolute left-0 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-r p-0.5 disabled:opacity-20"
-                      disabled={imgIndex === 0}
-                      onClick={() => setImgIndex(i => i - 1)}
-                    >
-                      <ChevronLeft className="h-3 w-3" />
-                    </button>
-                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 bg-black/40 text-white text-[8px] px-1 rounded">
-                      {imgIndex + 1}/{displayUrls.length}
-                    </span>
-                    <button
-                      className="absolute right-0 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-l p-0.5 disabled:opacity-20"
-                      disabled={imgIndex === displayUrls.length - 1}
-                      onClick={() => setImgIndex(i => i + 1)}
-                    >
-                      <ChevronRight className="h-3 w-3" />
-                    </button>
-                  </>
-                )}
-              </div>
+              {resolvedUrls.length > 0 ? (
+                <ImageGallery
+                  imageUrls={resolvedUrls}
+                  alt={skuDetails.name || skuDetails.skuData.clientSkuId || "Product"}
+                  compact
+                />
+              ) : (
+                <NoImagePlaceholder />
+              )}
               <div className="bg-gray-800/70 text-white px-1.5 py-0.5 text-[9px] rounded w-full text-center truncate">
                 {skuDetails.skuData.clientSkuId}
               </div>

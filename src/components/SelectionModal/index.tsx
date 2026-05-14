@@ -6,6 +6,7 @@ import { SearchInput } from "../SearchInput";
 import { Checkbox } from "../Checkbox";
 import { LoadingButton } from "../LoadingButton";
 import { EmptyState } from "../EmptyState";
+import { ImageGallery } from "../ImageGallery";
 import { cn } from "../../lib/utils";
 
 export interface SelectionItem {
@@ -13,6 +14,7 @@ export interface SelectionItem {
   label: string;
   sublabel?: string;
   imageUrl?: string;
+  imageUrls?: string[];
   attributes?: { label: string; value: string }[];
 }
 
@@ -66,7 +68,8 @@ export function SelectionModal({
   function renderCardItem(item: SelectionItem) {
     const isSelected = selected.has(item.id);
     if (renderItem) return renderItem(item, isSelected, () => toggle(item.id));
-    const showImage = item.imageUrl || showImagePlaceholder;
+    const resolvedUrls = item.imageUrls?.length ? item.imageUrls : item.imageUrl ? [item.imageUrl] : [];
+    const showImage = resolvedUrls.length > 0 || showImagePlaceholder;
     return (
       <button
         key={item.id} type="button"
@@ -79,8 +82,8 @@ export function SelectionModal({
       >
         {showImage && (
           <div className="shrink-0 w-20 h-20 rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
-            {item.imageUrl ? (
-              <img src={item.imageUrl} alt={item.label} className="h-full w-full object-contain" />
+            {resolvedUrls.length > 0 ? (
+              <ImageGallery imageUrls={resolvedUrls} alt={item.label} compact disableLightbox />
             ) : (
               <span className="text-xl font-bold text-gray-400 select-none">{item.label.charAt(0).toUpperCase()}</span>
             )}

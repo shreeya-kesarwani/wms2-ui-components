@@ -344,6 +344,7 @@ interface SelectionItem {
     label: string;
     sublabel?: string;
     imageUrl?: string;
+    imageUrls?: string[];
     attributes?: {
         label: string;
         value: string;
@@ -707,4 +708,82 @@ interface QuantityInputModalProps {
 
 declare function QuantityInputModal({ isOpen, onClose, itemId, item, maxQuantity, maxQtyLabel, showOrderMappingLayout, onTransfer, isTransferring, }: QuantityInputModalProps): react_jsx_runtime.JSX.Element | null;
 
-export { APP_ICON_NAMES, Accordion, AccordionContent, AccordionItem, AccordionTrigger, AppIcon, type AppIconProps, Badge, type BadgeProps, type BatchInfo, Button, type ButtonProps, Calendar, type CalendarProps, Card, CardContent, CardDescription, CardFooter, CardHeader, type CardProps, CardTitle, Checkbox, type Column, ConfirmDialog, type ConfirmDialogProps, ContentSection, type ContentSectionProps, type CustomComponentProps, DatePicker, type DatePickerProps, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, type DropdownMenuItemConfig, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, DropdownMenuWrapper, type DropdownMenuWrapperProps, EmptyState, type EmptyStateProps, type FieldConfig, FieldType, FilterBar, type FilterBarProps, type FilterConfig, type FilterOption, FormBuilder, type FormBuilderProps, Input, Label, LoadingButton, type LoadingButtonProps, MultiSelect, MultiSelectBadges, type MultiSelectOption, type MultiSelectProps, type OptionType, PageHeader, type PageHeaderProps, PageLayout, type PageLayoutProps, Pagination, type PaginationConfig, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, Popover, PopoverAnchor, PopoverContent, PopoverTrigger, QuantityInput, QuantityInputModal, type QuantityInputModalProps, type QuantityInputProps, RadioGroup, RadioGroupItem, ResponsiveTable, ScanInput, type ScanInputProps, ScrollArea, ScrollBar, SearchInput, type SearchInputProps, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, type SelectionItem, SelectionModal, type SelectionModalProps, Separator, Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetOverlay, SheetPortal, SheetTitle, SheetTrigger, SkuProductDetails, type SkuProductDetailsData, SmallToteCard, type SmallToteCardProps, SortOptions, type SortOptionsProps, StatsCard, type StatsCardProps, StatsGrid, type StatsGridProps, StatusBadge, type StatusBadgeProps, type StatusColors, type TabItem, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, Tabs, TabsContent, TabsList, TabsTrigger, TabsWrapper, type TabsWrapperProps, Textarea, TimePicker, type TimePickerProps, Toast$1 as Toast, ToastAction, type ToastActionElement, ToastClose, ToastDescription, type ToastProps, ToastProvider, ToastTitle, ToastViewport, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, type TransferItem, type ValidationRule, badgeVariants, buttonVariants, cardVariants, cn, createExpressiveClasses, enhancedButtonClasses, enhancedStatusColors, getAnimationClasses, getButtonEnhancedClasses, getStatusClasses, getStatusVariant, showError, showSuccess, statusRingClasses, toast, useMediaQuery, useMobile, useToast };
+interface ImageGalleryProps {
+    imageUrls: string[];
+    alt?: string;
+    /** className applied to the outer container div */
+    className?: string;
+    /** When provided, replaces the default img element classes (removes aspect-square constraint) */
+    imageClassName?: string;
+    /** Use smaller navigation controls — suited for compact/thumbnail contexts */
+    compact?: boolean;
+    /** Disable the lightbox that opens on image click */
+    disableLightbox?: boolean;
+}
+declare function ImageGallery({ imageUrls, alt, className, imageClassName, compact, disableLightbox, }: ImageGalleryProps): react_jsx_runtime.JSX.Element | null;
+
+interface CapturedImage {
+    id: string;
+    file: File;
+    previewUrl: string;
+    capturedAt: Date;
+}
+interface ImageCaptureConfig {
+    targetLabel?: string;
+    maxImages?: number;
+    title?: string;
+    isMandatory?: boolean;
+}
+interface ImageCaptureModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (images: CapturedImage[]) => void;
+    config: ImageCaptureConfig;
+    isUploading?: boolean;
+    uploadProgress?: {
+        current: number;
+        total: number;
+    };
+    compressionThresholdMB?: number;
+}
+interface ImageCardProps$1 {
+    image: CapturedImage;
+    onDelete: (id: string) => void;
+    onEnlarge: (image: CapturedImage) => void;
+}
+interface ImagePreviewDialogProps$1 {
+    image: CapturedImage | null;
+    isOpen: boolean;
+    onClose: () => void;
+    onDelete?: (id: string) => void;
+}
+interface ImageCaptureTriggerProps {
+    config: ImageCaptureConfig;
+    onImagesCapture: (images: CapturedImage[]) => void;
+    capturedCount?: number;
+    className?: string;
+}
+
+declare function ImageCaptureModal({ isOpen, onClose, onSubmit, config, isUploading, uploadProgress, compressionThresholdMB, }: ImageCaptureModalProps): react_jsx_runtime.JSX.Element;
+
+declare function ImageCaptureTrigger({ config, onImagesCapture, capturedCount, className }: ImageCaptureTriggerProps): react_jsx_runtime.JSX.Element;
+
+interface ImageCardProps {
+    image: CapturedImage;
+    onDelete: (id: string) => void;
+    onEnlarge: (image: CapturedImage) => void;
+}
+declare function ImageCard({ image, onDelete, onEnlarge }: ImageCardProps): react_jsx_runtime.JSX.Element;
+
+interface ImagePreviewDialogProps {
+    image: CapturedImage | null;
+    isOpen: boolean;
+    onClose: () => void;
+    onDelete?: (id: string) => void;
+}
+declare function ImagePreviewDialog({ image, isOpen, onClose, onDelete }: ImagePreviewDialogProps): react_jsx_runtime.JSX.Element | null;
+
+declare function needsCompression(file: File, thresholdMB?: number): boolean;
+declare function compressImage(file: File, thresholdMB?: number): Promise<File>;
+
+export { APP_ICON_NAMES, Accordion, AccordionContent, AccordionItem, AccordionTrigger, AppIcon, type AppIconProps, Badge, type BadgeProps, type BatchInfo, Button, type ButtonProps, Calendar, type CalendarProps, type CapturedImage, Card, CardContent, CardDescription, CardFooter, CardHeader, type CardProps, CardTitle, Checkbox, type Column, ConfirmDialog, type ConfirmDialogProps, ContentSection, type ContentSectionProps, type CustomComponentProps, DatePicker, type DatePickerProps, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, type DropdownMenuItemConfig, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, DropdownMenuWrapper, type DropdownMenuWrapperProps, EmptyState, type EmptyStateProps, type FieldConfig, FieldType, FilterBar, type FilterBarProps, type FilterConfig, type FilterOption, FormBuilder, type FormBuilderProps, type ImageCaptureConfig, ImageCaptureModal, type ImageCaptureModalProps, ImageCaptureTrigger, type ImageCaptureTriggerProps, ImageCard, type ImageCardProps$1 as ImageCardProps, ImageGallery, type ImageGalleryProps, ImagePreviewDialog, type ImagePreviewDialogProps$1 as ImagePreviewDialogProps, Input, Label, LoadingButton, type LoadingButtonProps, MultiSelect, MultiSelectBadges, type MultiSelectOption, type MultiSelectProps, type OptionType, PageHeader, type PageHeaderProps, PageLayout, type PageLayoutProps, Pagination, type PaginationConfig, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, Popover, PopoverAnchor, PopoverContent, PopoverTrigger, QuantityInput, QuantityInputModal, type QuantityInputModalProps, type QuantityInputProps, RadioGroup, RadioGroupItem, ResponsiveTable, ScanInput, type ScanInputProps, ScrollArea, ScrollBar, SearchInput, type SearchInputProps, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, type SelectionItem, SelectionModal, type SelectionModalProps, Separator, Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetOverlay, SheetPortal, SheetTitle, SheetTrigger, SkuProductDetails, type SkuProductDetailsData, SmallToteCard, type SmallToteCardProps, SortOptions, type SortOptionsProps, StatsCard, type StatsCardProps, StatsGrid, type StatsGridProps, StatusBadge, type StatusBadgeProps, type StatusColors, type TabItem, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, Tabs, TabsContent, TabsList, TabsTrigger, TabsWrapper, type TabsWrapperProps, Textarea, TimePicker, type TimePickerProps, Toast$1 as Toast, ToastAction, type ToastActionElement, ToastClose, ToastDescription, type ToastProps, ToastProvider, ToastTitle, ToastViewport, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, type TransferItem, type ValidationRule, badgeVariants, buttonVariants, cardVariants, cn, compressImage, createExpressiveClasses, enhancedButtonClasses, enhancedStatusColors, getAnimationClasses, getButtonEnhancedClasses, getStatusClasses, getStatusVariant, needsCompression, showError, showSuccess, statusRingClasses, toast, useMediaQuery, useMobile, useToast };

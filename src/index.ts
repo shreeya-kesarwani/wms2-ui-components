@@ -125,3 +125,20 @@ export { SmallToteCard, type SmallToteCardProps } from "./components/SmallToteCa
 export {
   QuantityInputModal, type QuantityInputModalProps, type TransferItem,
 } from "./components/QuantityInputModal";
+
+// ── Image Components ──────────────────────────────────────────────────────────
+export { ImageGallery, type ImageGalleryProps } from "./components/ImageGallery";
+export {
+  ImageCaptureModal,
+  ImageCaptureTrigger,
+  ImageCard,
+  ImagePreviewDialog,
+  compressImage,
+  needsCompression,
+  type CapturedImage,
+  type ImageCaptureConfig,
+  type ImageCaptureModalProps,
+  type ImageCardProps,
+  type ImagePreviewDialogProps,
+  type ImageCaptureTriggerProps,
+} from "./components/ImageCapture";
