@@ -1872,159 +1872,141 @@ function ConfirmDialog({
 }
 
 // src/components/SelectionModal/index.tsx
-var React21 = __toESM(require("react"), 1);
+var React22 = __toESM(require("react"), 1);
 var import_lucide_react15 = require("lucide-react");
 
 // src/components/ImageGallery/index.tsx
 var import_react2 = require("react");
 var import_lucide_react14 = require("lucide-react");
 var import_jsx_runtime27 = require("react/jsx-runtime");
-function ImageGallery({
+var ImageGallery = ({
   imageUrls,
-  alt = "Image",
-  className,
-  imageClassName,
+  alt,
   compact = false,
   disableLightbox = false
-}) {
-  const [index, setIndex] = (0, import_react2.useState)(0);
+}) => {
+  var _a;
+  const [activeIndex, setActiveIndex] = (0, import_react2.useState)(0);
   const [lightboxOpen, setLightboxOpen] = (0, import_react2.useState)(false);
-  const [hasError, setHasError] = (0, import_react2.useState)(false);
-  const safeIndex = Math.min(index, imageUrls.length - 1);
+  const validUrls = (_a = imageUrls == null ? void 0 : imageUrls.filter(Boolean)) != null ? _a : [];
+  const prev = (0, import_react2.useCallback)((e) => {
+    e == null ? void 0 : e.stopPropagation();
+    setActiveIndex((i) => (i - 1 + validUrls.length) % validUrls.length);
+  }, [validUrls.length]);
+  const next = (0, import_react2.useCallback)((e) => {
+    e == null ? void 0 : e.stopPropagation();
+    setActiveIndex((i) => (i + 1) % validUrls.length);
+  }, [validUrls.length]);
   (0, import_react2.useEffect)(() => {
-    setHasError(false);
-  }, [safeIndex]);
-  if (!imageUrls.length) return null;
-  const current = imageUrls[safeIndex];
-  const hasMultiple = imageUrls.length > 1;
-  const prev = (e) => {
-    e.stopPropagation();
-    setIndex((i) => Math.max(0, i - 1));
-  };
-  const next = (e) => {
-    e.stopPropagation();
-    setIndex((i) => Math.min(imageUrls.length - 1, i + 1));
-  };
-  const defaultImgClass = cn(
-    "w-full aspect-square object-contain rounded-lg border bg-gray-50",
-    !disableLightbox && "cursor-zoom-in"
-  );
-  const NavButtons = ({ size }) => /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)(import_jsx_runtime27.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
-      "button",
-      {
-        type: "button",
-        className: cn(
-          "absolute left-0 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-r disabled:opacity-20",
-          size === "sm" ? "p-0.5" : "p-1"
-        ),
-        disabled: safeIndex === 0,
-        onClick: prev,
-        children: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(import_lucide_react14.ChevronLeft, { className: size === "sm" ? "h-3 w-3" : "h-4 w-4" })
-      }
-    ),
-    /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("span", { className: cn(
-      "absolute bottom-1 left-1/2 -translate-x-1/2 bg-black/40 text-white rounded pointer-events-none",
-      size === "sm" ? "text-[8px] px-1" : "text-xs px-1.5 py-0.5"
-    ), children: [
-      safeIndex + 1,
-      "/",
-      imageUrls.length
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
-      "button",
-      {
-        type: "button",
-        className: cn(
-          "absolute right-0 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-l disabled:opacity-20",
-          size === "sm" ? "p-0.5" : "p-1"
-        ),
-        disabled: safeIndex === imageUrls.length - 1,
-        onClick: next,
-        children: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(import_lucide_react14.ChevronRight, { className: size === "sm" ? "h-3 w-3" : "h-4 w-4" })
-      }
-    )
-  ] });
+    if (!lightboxOpen) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") setLightboxOpen(false);
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "ArrowRight") next();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxOpen, prev, next]);
+  if (validUrls.length === 0) {
+    return /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("div", { className: "flex items-center justify-center w-full h-full bg-gray-100 rounded-lg", children: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(import_lucide_react14.Package, { className: "text-gray-300", size: compact ? 24 : 40 }) });
+  }
   return /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)(import_jsx_runtime27.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: cn("relative w-full", className), children: [
-      hasError ? /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: cn(
-        "w-full aspect-square bg-gray-100 border border-gray-200 flex flex-col items-center justify-center rounded-lg gap-1",
-        imageClassName
-      ), children: [
-        /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-8 w-8 text-gray-300", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.5", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("rect", { x: "3", y: "3", width: "18", height: "18", rx: "2" }),
-          /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("circle", { cx: "8.5", cy: "8.5", r: "1.5" }),
-          /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("path", { d: "M21 15l-5-5L5 21" })
-        ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("span", { className: "text-[9px] text-gray-400 uppercase tracking-wide", children: "No image" })
-      ] }) : /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
-        "img",
+    /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "relative w-full h-full flex flex-col", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)(
+        "div",
         {
-          src: current,
-          alt,
-          className: imageClassName != null ? imageClassName : defaultImgClass,
-          onError: () => setHasError(true),
-          onClick: () => !disableLightbox && setLightboxOpen(true)
+          className: `relative flex-1 overflow-hidden rounded-lg ${!disableLightbox ? "cursor-pointer" : ""}`,
+          onClick: () => !disableLightbox && setLightboxOpen(true),
+          children: [
+            /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
+              "img",
+              {
+                src: validUrls[activeIndex],
+                alt,
+                className: "w-full h-full object-contain"
+              }
+            ),
+            validUrls.length > 1 && /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)(import_jsx_runtime27.Fragment, { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
+                "button",
+                {
+                  className: "absolute left-1 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-0.5 transition",
+                  onClick: prev,
+                  children: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(import_lucide_react14.ChevronLeft, { size: 14 })
+                }
+              ),
+              /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
+                "button",
+                {
+                  className: "absolute right-1 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-0.5 transition",
+                  onClick: next,
+                  children: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(import_lucide_react14.ChevronRight, { size: 14 })
+                }
+              )
+            ] })
+          ]
         }
       ),
-      hasMultiple && /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(NavButtons, { size: compact ? "sm" : "lg" })
+      validUrls.length > 1 && /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("div", { className: "flex justify-center gap-1 mt-1", children: validUrls.map((_, i) => /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
+        "button",
+        {
+          className: `rounded-full transition-all ${i === activeIndex ? "w-3 h-1.5 bg-gray-700" : "w-1.5 h-1.5 bg-gray-300"}`,
+          onClick: () => setActiveIndex(i)
+        },
+        i
+      )) })
     ] }),
-    lightboxOpen && /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)(
+    !disableLightbox && lightboxOpen && /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)(
       "div",
       {
-        className: "fixed inset-0 z-[100] flex items-center justify-center bg-black/80",
+        className: "fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center",
         onClick: () => setLightboxOpen(false),
         children: [
           /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
             "button",
             {
-              type: "button",
-              className: "absolute top-4 right-4 text-white bg-black/50 rounded-full p-1.5 hover:bg-black/70",
+              className: "absolute top-4 right-4 text-white bg-black/40 hover:bg-black/60 rounded-full p-2 transition",
               onClick: () => setLightboxOpen(false),
-              children: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(import_lucide_react14.X, { className: "h-5 w-5" })
+              children: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(import_lucide_react14.X, { size: 20 })
             }
           ),
+          validUrls.length > 1 && /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)(import_jsx_runtime27.Fragment, { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
+              "button",
+              {
+                className: "absolute left-4 top-1/2 -translate-y-1/2 text-white bg-black/40 hover:bg-black/60 rounded-full p-2 transition",
+                onClick: prev,
+                children: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(import_lucide_react14.ChevronLeft, { size: 24 })
+              }
+            ),
+            /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
+              "button",
+              {
+                className: "absolute right-4 top-1/2 -translate-y-1/2 text-white bg-black/40 hover:bg-black/60 rounded-full p-2 transition",
+                onClick: next,
+                children: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(import_lucide_react14.ChevronRight, { size: 24 })
+              }
+            )
+          ] }),
           /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
             "img",
             {
-              src: current,
+              src: validUrls[activeIndex],
               alt,
-              className: "max-h-[90vh] max-w-[90vw] object-contain rounded-lg",
+              className: "max-w-[90vw] max-h-[90vh] object-contain",
               onClick: (e) => e.stopPropagation()
             }
           ),
-          hasMultiple && /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)(import_jsx_runtime27.Fragment, { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
-              "button",
-              {
-                type: "button",
-                className: "absolute left-4 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/70 rounded-full p-1.5 disabled:opacity-30",
-                disabled: safeIndex === 0,
-                onClick: prev,
-                children: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(import_lucide_react14.ChevronLeft, { className: "h-5 w-5" })
-              }
-            ),
-            /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("span", { className: "absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-xs bg-black/50 px-2 py-0.5 rounded-full pointer-events-none", children: [
-              safeIndex + 1,
-              " / ",
-              imageUrls.length
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(
-              "button",
-              {
-                type: "button",
-                className: "absolute right-4 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/70 rounded-full p-1.5 disabled:opacity-30",
-                disabled: safeIndex === imageUrls.length - 1,
-                onClick: next,
-                children: /* @__PURE__ */ (0, import_jsx_runtime27.jsx)(import_lucide_react14.ChevronRight, { className: "h-5 w-5" })
-              }
-            )
+          validUrls.length > 1 && /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "absolute bottom-4 text-white text-sm bg-black/40 px-3 py-1 rounded-full", children: [
+            activeIndex + 1,
+            " / ",
+            validUrls.length
           ] })
         ]
       }
     )
   ] });
-}
+};
 
 // src/components/SelectionModal/index.tsx
 var import_jsx_runtime28 = require("react/jsx-runtime");
@@ -2039,15 +2021,15 @@ function SelectionModal({
   multiple = true,
   renderItem
 }) {
-  const [query, setQuery] = React21.useState("");
-  const [selected, setSelected] = React21.useState(/* @__PURE__ */ new Set());
-  React21.useEffect(() => {
+  const [query, setQuery] = React22.useState("");
+  const [selected, setSelected] = React22.useState(/* @__PURE__ */ new Set());
+  React22.useEffect(() => {
     if (open) {
       setQuery("");
       setSelected(/* @__PURE__ */ new Set());
     }
   }, [open]);
-  const filtered = React21.useMemo(() => {
+  const filtered = React22.useMemo(() => {
     if (!query.trim()) return data;
     const lower = query.toLowerCase();
     return data.filter(
@@ -2144,7 +2126,7 @@ function SelectionModal({
       children: [
         /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(DialogHeader, { className: "px-6 pt-5 pb-4 border-b", children: /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(DialogTitle, { children: title }) }),
         /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("div", { className: "px-6 pt-4 pb-2", children: /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(SearchInput, { value: query, onChange: (e) => setQuery(e.target.value), placeholder: "Search..." }) }),
-        variant === "card" ? /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("div", { className: "overflow-y-auto max-h-[420px] px-4 pb-2", children: filtered.length === 0 ? emptyState : /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("div", { className: "flex flex-col gap-2 py-2", children: filtered.map((item) => /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(React21.Fragment, { children: renderCardItem(item) }, item.id)) }) }) : /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("div", { className: "overflow-y-auto max-h-[300px] px-4 pb-2", children: filtered.length === 0 ? emptyState : /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("div", { className: "space-y-0.5 py-1", children: filtered.map((item) => /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(React21.Fragment, { children: renderListItem(item) }, item.id)) }) }),
+        variant === "card" ? /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("div", { className: "overflow-y-auto max-h-[420px] px-4 pb-2", children: filtered.length === 0 ? emptyState : /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("div", { className: "flex flex-col gap-2 py-2", children: filtered.map((item) => /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(React22.Fragment, { children: renderCardItem(item) }, item.id)) }) }) : /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("div", { className: "overflow-y-auto max-h-[300px] px-4 pb-2", children: filtered.length === 0 ? emptyState : /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("div", { className: "space-y-0.5 py-1", children: filtered.map((item) => /* @__PURE__ */ (0, import_jsx_runtime28.jsx)(React22.Fragment, { children: renderListItem(item) }, item.id)) }) }),
         /* @__PURE__ */ (0, import_jsx_runtime28.jsxs)("div", { className: "flex items-center justify-between gap-3 px-6 py-4 border-t", children: [
           multiple ? /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("p", { className: "text-xs text-muted-foreground", children: selected.size > 0 ? `${selected.size} selected` : "None selected" }) : /* @__PURE__ */ (0, import_jsx_runtime28.jsx)("p", { className: "text-xs text-muted-foreground", children: "Click an item to select" }),
           /* @__PURE__ */ (0, import_jsx_runtime28.jsxs)("div", { className: "flex gap-2", children: [
@@ -2158,7 +2140,7 @@ function SelectionModal({
 }
 
 // src/components/ResponsiveTable/index.tsx
-var React22 = __toESM(require("react"), 1);
+var React23 = __toESM(require("react"), 1);
 var import_react3 = require("react");
 var import_lucide_react16 = require("lucide-react");
 var import_jsx_runtime29 = require("react/jsx-runtime");
@@ -2224,7 +2206,7 @@ function ResponsiveTable({
 }) {
   const isMobile = useMobile();
   const hasActions = !!(onView || onDelete);
-  const dropdownEntries = React22.useMemo(
+  const dropdownEntries = React23.useMemo(
     () => [...columns, ...hasActions ? [{ key: ACTIONS_KEY, label: "Actions", hideable: true }] : []],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [columns, hasActions]
@@ -2306,7 +2288,7 @@ function ResponsiveTable({
 }
 
 // src/components/FilterBar/index.tsx
-var React23 = __toESM(require("react"), 1);
+var React24 = __toESM(require("react"), 1);
 var import_lucide_react17 = require("lucide-react");
 var import_jsx_runtime30 = require("react/jsx-runtime");
 function FilterBar({
@@ -2322,8 +2304,8 @@ function FilterBar({
   filterTriggerClassName = "w-36 h-9 text-sm"
 }) {
   const isMobile = useMobile();
-  const [expanded, setExpanded] = React23.useState(false);
-  const [internalValues, setInternalValues] = React23.useState({});
+  const [expanded, setExpanded] = React24.useState(false);
+  const [internalValues, setInternalValues] = React24.useState({});
   const filterValues = controlledValues != null ? controlledValues : internalValues;
   function handleFilterChange(key, value) {
     const next = __spreadProps(__spreadValues({}, filterValues), { [key]: value });
@@ -2400,9 +2382,9 @@ function FilterBar({
 var import_react4 = require("react");
 
 // src/components/Textarea/index.tsx
-var React24 = __toESM(require("react"), 1);
+var React25 = __toESM(require("react"), 1);
 var import_jsx_runtime31 = require("react/jsx-runtime");
-var Textarea = React24.forwardRef((_a, ref) => {
+var Textarea = React25.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ (0, import_jsx_runtime31.jsx)(
     "textarea",
@@ -2418,16 +2400,16 @@ var Textarea = React24.forwardRef((_a, ref) => {
 Textarea.displayName = "Textarea";
 
 // src/components/RadioGroup/index.tsx
-var React25 = __toESM(require("react"), 1);
+var React26 = __toESM(require("react"), 1);
 var RadioGroupPrimitive = __toESM(require("@radix-ui/react-radio-group"), 1);
 var import_lucide_react18 = require("lucide-react");
 var import_jsx_runtime32 = require("react/jsx-runtime");
-var RadioGroup2 = React25.forwardRef((_a, ref) => {
+var RadioGroup2 = React26.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(RadioGroupPrimitive.Root, __spreadProps(__spreadValues({ className: cn("grid gap-2", className) }, props), { ref }));
 });
 RadioGroup2.displayName = RadioGroupPrimitive.Root.displayName;
-var RadioGroupItem = React25.forwardRef((_a, ref) => {
+var RadioGroupItem = React26.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ (0, import_jsx_runtime32.jsx)(
     RadioGroupPrimitive.Item,
@@ -2703,7 +2685,7 @@ var FormBuilder = ({
 };
 
 // src/components/MultiSelect/index.tsx
-var React27 = __toESM(require("react"), 1);
+var React28 = __toESM(require("react"), 1);
 var import_lucide_react19 = require("lucide-react");
 var import_jsx_runtime34 = require("react/jsx-runtime");
 function normalize(options) {
@@ -2719,7 +2701,7 @@ function MultiSelect({
   contentClassName,
   maxHeight = "200px"
 }) {
-  const [open, setOpen] = React27.useState(false);
+  const [open, setOpen] = React28.useState(false);
   const normalized = normalize(options);
   const handleSelectAll = () => onChange(normalized.map((o) => o.value));
   const handleClearAll = () => onChange([]);
@@ -2775,12 +2757,12 @@ function MultiSelectBadges({ selected, onRemove, className }) {
 }
 
 // src/components/TabsWrapper/index.tsx
-var React28 = __toESM(require("react"), 1);
+var React29 = __toESM(require("react"), 1);
 var import_jsx_runtime35 = require("react/jsx-runtime");
 function TabsWrapper({ tabs, defaultValue, onChange, className, responsive = false }) {
   var _a;
   const initial = defaultValue != null ? defaultValue : (_a = tabs[0]) == null ? void 0 : _a.value;
-  const [value, setValue] = React28.useState(initial);
+  const [value, setValue] = React29.useState(initial);
   function handleChange(next) {
     setValue(next);
     onChange == null ? void 0 : onChange(next);
@@ -2798,7 +2780,7 @@ function TabsWrapper({ tabs, defaultValue, onChange, className, responsive = fal
 }
 
 // src/components/DropdownMenuWrapper/index.tsx
-var React29 = __toESM(require("react"), 1);
+var React30 = __toESM(require("react"), 1);
 var import_jsx_runtime36 = require("react/jsx-runtime");
 var OPEN_STATE_CLASSES = {
   outline: "data-[state=open]:bg-gray-100",
@@ -2826,7 +2808,7 @@ function DropdownMenuWrapper({
         children: label
       }
     ) }),
-    /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(DropdownMenuContent, { align: effectiveAlign, className: "min-w-[160px]", children: items.map((item, i) => /* @__PURE__ */ (0, import_jsx_runtime36.jsxs)(React29.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(DropdownMenuContent, { align: effectiveAlign, className: "min-w-[160px]", children: items.map((item, i) => /* @__PURE__ */ (0, import_jsx_runtime36.jsxs)(React30.Fragment, { children: [
       item.separator && /* @__PURE__ */ (0, import_jsx_runtime36.jsx)(DropdownMenuSeparator, {}),
       /* @__PURE__ */ (0, import_jsx_runtime36.jsxs)(
         DropdownMenuItem,
@@ -2844,7 +2826,7 @@ function DropdownMenuWrapper({
 }
 
 // src/components/TimePicker/index.tsx
-var React30 = __toESM(require("react"), 1);
+var React31 = __toESM(require("react"), 1);
 var import_lucide_react20 = require("lucide-react");
 var import_date_fns2 = require("date-fns");
 
@@ -2918,9 +2900,9 @@ function TimeSelector({ value, onChange, height = "h-[300px]", isMobile = false 
 // src/components/TimePicker/index.tsx
 var import_jsx_runtime38 = require("react/jsx-runtime");
 function TimePicker({ value, onChange, placeholder = "Pick time", disabled = false }) {
-  const [time, setTime] = React30.useState(value);
-  const [isOpen, setIsOpen] = React30.useState(false);
-  React30.useEffect(() => {
+  const [time, setTime] = React31.useState(value);
+  const [isOpen, setIsOpen] = React31.useState(false);
+  React31.useEffect(() => {
     setTime(value);
   }, [value]);
   const handleTimeChange = (newTime) => {
@@ -2943,13 +2925,13 @@ function TimePicker({ value, onChange, placeholder = "Pick time", disabled = fal
 }
 
 // src/components/DatePicker/index.tsx
-var React31 = __toESM(require("react"), 1);
+var React32 = __toESM(require("react"), 1);
 var import_lucide_react21 = require("lucide-react");
 var import_date_fns3 = require("date-fns");
 var import_jsx_runtime39 = require("react/jsx-runtime");
 function DatePicker({ value, onChange, placeholder = "Pick date", className }) {
-  const [date, setDate] = React31.useState(value);
-  React31.useEffect(() => {
+  const [date, setDate] = React32.useState(value);
+  React32.useEffect(() => {
     setDate(value);
   }, [value]);
   const handleSelect = (selected) => {
@@ -2973,7 +2955,7 @@ function DatePicker({ value, onChange, placeholder = "Pick date", className }) {
 }
 
 // src/components/Card/index.tsx
-var React32 = __toESM(require("react"), 1);
+var React33 = __toESM(require("react"), 1);
 var import_class_variance_authority6 = require("class-variance-authority");
 var import_jsx_runtime40 = require("react/jsx-runtime");
 var cardVariants = (0, import_class_variance_authority6.cva)(
@@ -3011,7 +2993,7 @@ var cardVariants = (0, import_class_variance_authority6.cva)(
     }
   }
 );
-var Card = React32.forwardRef(
+var Card = React33.forwardRef(
   (_a, ref) => {
     var _b = _a, { className, elevation, status, interactive } = _b, props = __objRest(_b, ["className", "elevation", "status", "interactive"]);
     let enhancedClasses = "";
@@ -3036,7 +3018,7 @@ var Card = React32.forwardRef(
   }
 );
 Card.displayName = "Card";
-var CardHeader = React32.forwardRef((_a, ref) => {
+var CardHeader = React33.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(
     "div",
@@ -3047,7 +3029,7 @@ var CardHeader = React32.forwardRef((_a, ref) => {
   );
 });
 CardHeader.displayName = "CardHeader";
-var CardTitle = React32.forwardRef((_a, ref) => {
+var CardTitle = React33.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(
     "div",
@@ -3058,7 +3040,7 @@ var CardTitle = React32.forwardRef((_a, ref) => {
   );
 });
 CardTitle.displayName = "CardTitle";
-var CardDescription = React32.forwardRef((_a, ref) => {
+var CardDescription = React33.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(
     "div",
@@ -3069,12 +3051,12 @@ var CardDescription = React32.forwardRef((_a, ref) => {
   );
 });
 CardDescription.displayName = "CardDescription";
-var CardContent = React32.forwardRef((_a, ref) => {
+var CardContent = React33.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ (0, import_jsx_runtime40.jsx)("div", __spreadValues({ ref, className: cn("p-6 pt-0", className) }, props));
 });
 CardContent.displayName = "CardContent";
-var CardFooter = React32.forwardRef((_a, ref) => {
+var CardFooter = React33.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ (0, import_jsx_runtime40.jsx)(
     "div",
@@ -3087,10 +3069,10 @@ var CardFooter = React32.forwardRef((_a, ref) => {
 CardFooter.displayName = "CardFooter";
 
 // src/components/Separator/index.tsx
-var React33 = __toESM(require("react"), 1);
+var React34 = __toESM(require("react"), 1);
 var SeparatorPrimitive = __toESM(require("@radix-ui/react-separator"), 1);
 var import_jsx_runtime41 = require("react/jsx-runtime");
-var Separator3 = React33.forwardRef(
+var Separator3 = React34.forwardRef(
   (_a, ref) => {
     var _b = _a, { className, orientation = "horizontal", decorative = true } = _b, props = __objRest(_b, ["className", "orientation", "decorative"]);
     return /* @__PURE__ */ (0, import_jsx_runtime41.jsx)(
@@ -3111,12 +3093,12 @@ var Separator3 = React33.forwardRef(
 Separator3.displayName = SeparatorPrimitive.Root.displayName;
 
 // src/components/Accordion/index.tsx
-var React34 = __toESM(require("react"), 1);
+var React35 = __toESM(require("react"), 1);
 var AccordionPrimitive = __toESM(require("@radix-ui/react-accordion"), 1);
 var import_lucide_react22 = require("lucide-react");
 var import_jsx_runtime42 = require("react/jsx-runtime");
 var Accordion = AccordionPrimitive.Root;
-var AccordionItem = React34.forwardRef((_a, ref) => {
+var AccordionItem = React35.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ (0, import_jsx_runtime42.jsx)(
     AccordionPrimitive.Item,
@@ -3127,7 +3109,7 @@ var AccordionItem = React34.forwardRef((_a, ref) => {
   );
 });
 AccordionItem.displayName = "AccordionItem";
-var AccordionTrigger = React34.forwardRef((_a, ref) => {
+var AccordionTrigger = React35.forwardRef((_a, ref) => {
   var _b = _a, { className, children } = _b, props = __objRest(_b, ["className", "children"]);
   return /* @__PURE__ */ (0, import_jsx_runtime42.jsx)(AccordionPrimitive.Header, { className: "flex", children: /* @__PURE__ */ (0, import_jsx_runtime42.jsxs)(
     AccordionPrimitive.Trigger,
@@ -3146,7 +3128,7 @@ var AccordionTrigger = React34.forwardRef((_a, ref) => {
   ) });
 });
 AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName;
-var AccordionContent = React34.forwardRef((_a, ref) => {
+var AccordionContent = React35.forwardRef((_a, ref) => {
   var _b = _a, { className, children } = _b, props = __objRest(_b, ["className", "children"]);
   return /* @__PURE__ */ (0, import_jsx_runtime42.jsx)(
     AccordionPrimitive.Content,
@@ -3652,62 +3634,77 @@ function QuantityInputModal({
   ] }) });
 }
 
-// src/components/ImageCapture/ImageCaptureModal.tsx
+// src/components/ImageCapture/index.tsx
 var import_react9 = require("react");
-var import_lucide_react29 = require("lucide-react");
-
-// src/components/ImageCapture/ImageCard.tsx
+var import_browser_image_compression = __toESM(require("browser-image-compression"), 1);
 var import_lucide_react27 = require("lucide-react");
 var import_jsx_runtime49 = require("react/jsx-runtime");
-function ImageCard({ image, onDelete, onEnlarge }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)(
-    "div",
-    {
-      className: "relative aspect-square rounded-lg overflow-hidden border border-slate-200 bg-slate-50 cursor-pointer hover:border-slate-300 transition-colors",
-      onClick: () => onEnlarge(image),
-      children: [
-        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("img", { src: image.previewUrl, alt: "Captured", className: "w-full h-full object-cover" }),
-        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/50 to-transparent", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "flex justify-between", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(
-            Button,
-            {
-              variant: "ghost",
-              size: "icon",
-              className: "h-8 w-8 text-white hover:bg-white/20",
-              onClick: (e) => {
-                e.stopPropagation();
-                onEnlarge(image);
-              },
-              children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(import_lucide_react27.ZoomIn, { className: "h-4 w-4" })
-            }
-          ),
-          /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(
-            Button,
-            {
-              variant: "ghost",
-              size: "icon",
-              className: "h-8 w-8 text-white hover:bg-red-500/50",
-              onClick: (e) => {
-                e.stopPropagation();
-                onDelete(image.id);
-              },
-              children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(import_lucide_react27.Trash2, { className: "h-4 w-4" })
-            }
-          )
-        ] }) })
-      ]
-    }
-  );
+var COMPRESSION_THRESHOLD_MB = 2;
+function needsCompression(file) {
+  return file.size / 1024 / 1024 > COMPRESSION_THRESHOLD_MB;
 }
-
-// src/components/ImageCapture/ImagePreviewDialog.tsx
-var import_lucide_react28 = require("lucide-react");
-var import_jsx_runtime50 = require("react/jsx-runtime");
-function ImagePreviewDialog({ image, isOpen, onClose, onDelete }) {
+async function compressImage(file) {
+  if (!needsCompression(file)) return file;
+  try {
+    const compressed = await (0, import_browser_image_compression.default)(file, {
+      maxSizeMB: COMPRESSION_THRESHOLD_MB,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+      initialQuality: 0.8
+    });
+    return new File([compressed], file.name, { type: compressed.type, lastModified: Date.now() });
+  } catch (e) {
+    return file;
+  }
+}
+var ImageCard = ({ image, onDelete, onEnlarge }) => /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)(
+  "div",
+  {
+    className: "relative aspect-square rounded-lg overflow-hidden border border-slate-200 bg-slate-50 cursor-pointer hover:border-slate-300 transition-colors",
+    onClick: () => onEnlarge(image),
+    children: [
+      /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("img", { src: image.previewUrl, alt: "Captured", className: "w-full h-full object-cover" }),
+      /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/50 to-transparent", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "flex justify-between", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(
+          Button,
+          {
+            variant: "ghost",
+            size: "icon",
+            className: "h-8 w-8 text-white hover:bg-white/20",
+            onClick: (e) => {
+              e.stopPropagation();
+              onEnlarge(image);
+            },
+            children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(import_lucide_react27.ZoomIn, { size: 16 })
+          }
+        ),
+        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(
+          Button,
+          {
+            variant: "ghost",
+            size: "icon",
+            className: "h-8 w-8 text-white hover:bg-red-500/50",
+            onClick: (e) => {
+              e.stopPropagation();
+              onDelete(image.id);
+            },
+            children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(import_lucide_react27.Trash2, { size: 16 })
+          }
+        )
+      ] }) })
+    ]
+  }
+);
+var ImagePreviewDialog = ({
+  image,
+  isOpen,
+  onClose,
+  onDelete
+}) => {
   if (!image) return null;
-  return /* @__PURE__ */ (0, import_jsx_runtime50.jsx)(Dialog, { open: isOpen, onOpenChange: (open) => !open && onClose(), children: /* @__PURE__ */ (0, import_jsx_runtime50.jsxs)(DialogContent, { className: "max-w-4xl w-[96vw] sm:w-full p-0 gap-0 border bg-background overflow-hidden", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime50.jsx)("div", { className: "border-b px-4 py-3 bg-muted/30", children: /* @__PURE__ */ (0, import_jsx_runtime50.jsx)("p", { className: "text-sm font-medium text-foreground", children: "Image preview" }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime50.jsx)("div", { className: "flex items-center justify-center p-4 sm:p-6 min-h-[320px] max-h-[72vh] bg-muted/20", children: /* @__PURE__ */ (0, import_jsx_runtime50.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(Dialog, { open: isOpen, onOpenChange: (open) => !open && onClose(), children: /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)(DialogContent, { className: "max-w-4xl w-[96vw] sm:w-full p-0 gap-0 border bg-background overflow-hidden", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "border-b px-4 py-3 bg-muted/30", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("p", { className: "text-sm font-medium text-foreground", children: "Image preview" }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "flex items-center justify-center p-4 sm:p-6 min-h-[320px] max-h-[72vh] bg-muted/20", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(
       "img",
       {
         src: image.previewUrl,
@@ -3715,9 +3712,9 @@ function ImagePreviewDialog({ image, isOpen, onClose, onDelete }) {
         className: "max-w-full max-h-[calc(72vh-2rem)] object-contain rounded-md ring-1 ring-border shadow-md"
       }
     ) }),
-    /* @__PURE__ */ (0, import_jsx_runtime50.jsxs)("div", { className: "flex gap-3 p-4 border-t bg-muted/10", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime50.jsx)(Button, { variant: "outline", className: "flex-1", onClick: onClose, children: "Close" }),
-      onDelete && /* @__PURE__ */ (0, import_jsx_runtime50.jsxs)(
+    /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "flex gap-3 p-4 border-t bg-muted/10", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(Button, { variant: "outline", className: "flex-1", onClick: onClose, children: "Close" }),
+      onDelete && /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)(
         Button,
         {
           variant: "destructive",
@@ -3727,48 +3724,23 @@ function ImagePreviewDialog({ image, isOpen, onClose, onDelete }) {
             onClose();
           },
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime50.jsx)(import_lucide_react28.Trash2, { className: "mr-2 h-4 w-4" }),
+            /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(import_lucide_react27.Trash2, { size: 16, className: "mr-2" }),
             "Delete"
           ]
         }
       )
     ] })
   ] }) });
-}
-
-// src/components/ImageCapture/image-compression.ts
-var import_browser_image_compression = __toESM(require("browser-image-compression"), 1);
-var DEFAULT_THRESHOLD_MB = 2;
-function needsCompression(file, thresholdMB = DEFAULT_THRESHOLD_MB) {
-  return file.size / 1024 / 1024 > thresholdMB;
-}
-async function compressImage(file, thresholdMB = DEFAULT_THRESHOLD_MB) {
-  if (!needsCompression(file, thresholdMB)) return file;
-  try {
-    const compressed = await (0, import_browser_image_compression.default)(file, {
-      maxSizeMB: thresholdMB,
-      maxWidthOrHeight: 1920,
-      useWebWorker: true,
-      fileType: file.type,
-      initialQuality: 0.8
-    });
-    return new File([compressed], file.name, { type: compressed.type, lastModified: Date.now() });
-  } catch (e) {
-    return file;
-  }
-}
-
-// src/components/ImageCapture/ImageCaptureModal.tsx
-var import_jsx_runtime51 = require("react/jsx-runtime");
-function ImageCaptureModal({
+};
+var generateId = () => `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+var ImageCaptureModal = ({
   isOpen,
   onClose,
   onSubmit,
   config,
   isUploading = false,
-  uploadProgress,
-  compressionThresholdMB = 2
-}) {
+  uploadProgress
+}) => {
   const [images, setImages] = (0, import_react9.useState)([]);
   const [previewImage, setPreviewImage] = (0, import_react9.useState)(null);
   const [isPreviewOpen, setIsPreviewOpen] = (0, import_react9.useState)(false);
@@ -3779,39 +3751,28 @@ function ImageCaptureModal({
   const fileInputRef = (0, import_react9.useRef)(null);
   const videoRef = (0, import_react9.useRef)(null);
   const canvasRef = (0, import_react9.useRef)(null);
-  const { targetLabel, maxImages = 5, title = "Capture Images", isMandatory = false } = config;
+  const { maxImages = 5, title = "Capture Images", isMandatory = false } = config;
   const canAddMore = images.length < maxImages;
-  const generateId = () => `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  const stopCamera = (0, import_react9.useCallback)(() => {
+    cameraStream == null ? void 0 : cameraStream.getTracks().forEach((t) => t.stop());
+    setCameraStream(null);
+    setShowCamera(false);
+  }, [cameraStream]);
   const handleFileSelect = (0, import_react9.useCallback)(async (e) => {
     const files = e.target.files;
     if (!files) return;
-    const availableSlots = maxImages - images.length;
-    if (availableSlots === 0) {
-      toast({ title: "Maximum limit reached", description: `You can only upload up to ${maxImages} images.`, variant: "destructive" });
-      return;
-    }
-    const filesToProcess = Math.min(files.length, availableSlots);
+    const slots = maxImages - images.length;
+    if (slots === 0) return;
     const newImages = [];
-    for (let i = 0; i < filesToProcess; i++) {
-      let file = files[i];
-      if (needsCompression(file, compressionThresholdMB)) {
-        try {
-          file = await compressImage(file, compressionThresholdMB);
-        } catch (e2) {
-        }
-      }
-      newImages.push({ id: generateId(), file, previewUrl: URL.createObjectURL(file), capturedAt: /* @__PURE__ */ new Date() });
-    }
-    if (files.length > availableSlots) {
-      toast({
-        title: "Some images were not added",
-        description: `Only ${filesToProcess} of ${files.length} images were added. Maximum limit is ${maxImages}.`,
-        variant: "destructive"
-      });
+    const count2 = Math.min(files.length, slots);
+    for (let i = 0; i < count2; i++) {
+      const orig = files[i];
+      const processed = needsCompression(orig) ? await compressImage(orig).catch(() => orig) : orig;
+      newImages.push({ id: generateId(), file: processed, previewUrl: URL.createObjectURL(processed), capturedAt: /* @__PURE__ */ new Date() });
     }
     setImages((prev) => [...prev, ...newImages]);
     if (fileInputRef.current) fileInputRef.current.value = "";
-  }, [images.length, maxImages, compressionThresholdMB]);
+  }, [images.length, maxImages]);
   const startCamera = async () => {
     var _a;
     try {
@@ -3830,40 +3791,29 @@ function ImageCaptureModal({
       (_a = fileInputRef.current) == null ? void 0 : _a.click();
     }
   };
-  const stopCamera = (0, import_react9.useCallback)(() => {
-    cameraStream == null ? void 0 : cameraStream.getTracks().forEach((track) => track.stop());
-    setCameraStream(null);
-    setShowCamera(false);
-  }, [cameraStream]);
   const capturePhoto = (0, import_react9.useCallback)(async () => {
     var _a;
     if (!videoRef.current || !canvasRef.current || isCapturing || !canAddMore) return;
     setIsCapturing(true);
     setShowFlash(true);
     setTimeout(() => setShowFlash(false), 200);
-    const video = videoRef.current;
     const canvas = canvasRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    (_a = canvas.getContext("2d")) == null ? void 0 : _a.drawImage(video, 0, 0);
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    (_a = canvas.getContext("2d")) == null ? void 0 : _a.drawImage(videoRef.current, 0, 0);
     canvas.toBlob(async (blob) => {
       if (!blob) {
         setIsCapturing(false);
         return;
       }
       let file = new File([blob], `capture-${Date.now()}.jpg`, { type: "image/jpeg" });
-      if (needsCompression(file, compressionThresholdMB)) {
-        try {
-          file = await compressImage(file, compressionThresholdMB);
-        } catch (e) {
-        }
-      }
-      const newImages = [...images, { id: generateId(), file, previewUrl: URL.createObjectURL(file), capturedAt: /* @__PURE__ */ new Date() }];
-      setImages(newImages);
+      if (needsCompression(file)) file = await compressImage(file).catch(() => file);
+      const updated = [...images, { id: generateId(), file, previewUrl: URL.createObjectURL(file), capturedAt: /* @__PURE__ */ new Date() }];
+      setImages(updated);
       setIsCapturing(false);
-      if (newImages.length >= maxImages) stopCamera();
+      if (updated.length >= maxImages) stopCamera();
     }, "image/jpeg", 0.9);
-  }, [images, maxImages, stopCamera, isCapturing, canAddMore, compressionThresholdMB]);
+  }, [images, maxImages, stopCamera, isCapturing, canAddMore]);
   const handleDelete = (0, import_react9.useCallback)((id) => {
     setImages((prev) => {
       const img = prev.find((i) => i.id === id);
@@ -3878,99 +3828,79 @@ function ImageCaptureModal({
     stopCamera();
     onClose();
   };
-  const handleSubmit = () => {
-    stopCamera();
-    onSubmit(images);
-  };
-  return /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)(import_jsx_runtime51.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("style", { children: `@keyframes wms-flash { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }` }),
-    /* @__PURE__ */ (0, import_jsx_runtime51.jsx)(Dialog, { open: isOpen, onOpenChange: (open) => {
+  return /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)(import_jsx_runtime49.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(Dialog, { open: isOpen, onOpenChange: (open) => {
       if (!open && !isUploading) {
         stopCamera();
         setImages([]);
         onClose();
       }
-    }, children: /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)(DialogContent, { className: "max-w-3xl w-[96vw] sm:w-full p-0 gap-0 overflow-hidden flex flex-col h-[90vh]", children: [
-      !showCamera && /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)(DialogHeader, { className: "px-6 py-4 border-b", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime51.jsx)(DialogTitle, { className: "text-lg font-semibold", children: title }),
-        /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)(DialogDescription, { className: "sr-only", children: [
-          "Upload or capture images for ",
-          targetLabel
-        ] })
+    }, children: /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)(DialogContent, { className: "max-w-3xl w-[96vw] sm:w-full p-0 gap-0 overflow-hidden flex flex-col h-[90vh]", children: [
+      !showCamera && /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)(DialogHeader, { className: "px-6 py-4 border-b", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(DialogTitle, { className: "text-lg font-semibold", children: title }),
+        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(DialogDescription, { className: "sr-only", children: "Upload or capture images" })
       ] }),
-      showCamera && /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)("div", { className: "absolute inset-0 z-50 bg-black", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("video", { ref: videoRef, autoPlay: true, playsInline: true, muted: true, className: "w-full h-full object-contain" }),
-        /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("canvas", { ref: canvasRef, className: "hidden" }),
-        showFlash && /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("div", { className: "absolute inset-0 bg-white", style: { animation: "wms-flash 0.2s ease-out" } }),
-        /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("div", { className: "absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/60 to-transparent", children: /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("div", { className: "flex items-center justify-end", children: /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("button", { type: "button", onClick: stopCamera, className: "text-white p-2 hover:bg-white/20 rounded-full transition", children: /* @__PURE__ */ (0, import_jsx_runtime51.jsx)(import_lucide_react29.X, { className: "h-5 w-5" }) }) }) }),
-        images.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("div", { className: "absolute bottom-28 left-0 right-0 px-4", children: /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("div", { className: "flex gap-2 overflow-x-auto pb-2", children: images.map((img) => /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("div", { className: "flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 border-white shadow-lg", children: /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("img", { src: img.previewUrl, alt: "Captured", className: "w-full h-full object-cover" }) }, img.id)) }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("div", { className: "absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/70 to-transparent", children: /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)("div", { className: "flex items-center justify-center gap-8", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("input", { ref: fileInputRef, type: "file", accept: "image/*", multiple: true, className: "hidden", onChange: handleFileSelect }),
-          /* @__PURE__ */ (0, import_jsx_runtime51.jsx)(
+      showCamera && /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "absolute inset-0 z-50 bg-black", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("video", { ref: videoRef, autoPlay: true, playsInline: true, muted: true, className: "w-full h-full object-contain" }),
+        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("canvas", { ref: canvasRef, className: "hidden" }),
+        showFlash && /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "absolute inset-0 bg-white opacity-0 animate-ping" }),
+        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/60 to-transparent flex justify-end", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("button", { onClick: stopCamera, className: "text-white p-2 hover:bg-white/20 rounded-full transition", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(import_lucide_react27.X, { size: 20 }) }) }),
+        images.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "absolute bottom-28 left-0 right-0 px-4", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "flex gap-2 overflow-x-auto pb-2", children: images.map((img) => /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 border-white shadow-lg", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("img", { src: img.previewUrl, alt: "Captured", className: "w-full h-full object-cover" }) }, img.id)) }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/70 to-transparent", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "flex items-center justify-center gap-8", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("input", { ref: fileInputRef, type: "file", accept: "image/*", multiple: true, className: "hidden", onChange: handleFileSelect }),
+          /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("button", { onClick: () => {
+            var _a;
+            return (_a = fileInputRef.current) == null ? void 0 : _a.click();
+          }, disabled: !canAddMore, className: "text-white p-3 hover:bg-white/20 rounded-full transition disabled:opacity-40", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(import_lucide_react27.Upload, { size: 24 }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(
             "button",
             {
-              type: "button",
-              onClick: () => {
-                var _a;
-                return (_a = fileInputRef.current) == null ? void 0 : _a.click();
-              },
-              disabled: !canAddMore,
-              className: "text-white p-3 hover:bg-white/20 rounded-full transition disabled:opacity-50",
-              children: /* @__PURE__ */ (0, import_jsx_runtime51.jsx)(import_lucide_react29.FileImage, { className: "h-6 w-6" })
-            }
-          ),
-          /* @__PURE__ */ (0, import_jsx_runtime51.jsx)(
-            "button",
-            {
-              type: "button",
               onClick: capturePhoto,
               disabled: !canAddMore || isCapturing,
               className: "w-16 h-16 rounded-full bg-white hover:bg-white/90 disabled:opacity-50 shadow-xl flex items-center justify-center transition active:scale-95",
-              children: /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("div", { className: `w-14 h-14 rounded-full border-2 border-black transition ${isCapturing ? "scale-90" : ""}` })
+              children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: `w-14 h-14 rounded-full border-2 border-black transition ${isCapturing ? "scale-90" : ""}` })
             }
           ),
-          /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("div", { className: "w-12" })
+          /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "w-12" })
         ] }) })
       ] }),
-      !showCamera && /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)("div", { className: "p-6 border-b", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)("div", { className: "grid grid-cols-2 gap-4", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)(
+      !showCamera && /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "p-6 border-b", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "grid grid-cols-2 gap-4", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)(
             "button",
             {
-              type: "button",
               onClick: startCamera,
               disabled: !canAddMore || isUploading,
-              className: "h-24 rounded-lg border-2 border-dashed border-gray-300 hover:border-primary hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed flex flex-col items-center justify-center gap-2 transition-all",
+              className: "h-24 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-400 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed flex flex-col items-center justify-center gap-2 transition-all",
               children: [
-                /* @__PURE__ */ (0, import_jsx_runtime51.jsx)(import_lucide_react29.Camera, { className: "h-8 w-8 text-gray-600" }),
-                /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("span", { className: "text-sm font-medium text-gray-600", children: "Camera" })
+                /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(import_lucide_react27.Camera, { size: 28, className: "text-gray-500" }),
+                /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("span", { className: "text-sm font-medium text-gray-600", children: "Camera" })
               ]
             }
           ),
-          /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)(
+          /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)(
             "button",
             {
-              type: "button",
               onClick: () => {
                 var _a;
                 return (_a = fileInputRef.current) == null ? void 0 : _a.click();
               },
               disabled: !canAddMore || isUploading,
-              className: "h-24 rounded-lg border-2 border-dashed border-gray-300 hover:border-primary hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed flex flex-col items-center justify-center gap-2 transition-all",
+              className: "h-24 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-400 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed flex flex-col items-center justify-center gap-2 transition-all",
               children: [
-                /* @__PURE__ */ (0, import_jsx_runtime51.jsx)(import_lucide_react29.Upload, { className: "h-8 w-8 text-gray-600" }),
-                /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("span", { className: "text-sm font-medium text-gray-600", children: "Upload" })
+                /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(import_lucide_react27.Upload, { size: 28, className: "text-gray-500" }),
+                /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("span", { className: "text-sm font-medium text-gray-600", children: "Upload" })
               ]
             }
           )
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("input", { ref: fileInputRef, type: "file", accept: "image/*", multiple: true, className: "hidden", onChange: handleFileSelect })
+        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("input", { ref: fileInputRef, type: "file", accept: "image/*", multiple: true, className: "hidden", onChange: handleFileSelect })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime51.jsx)(ScrollArea, { className: "flex-1 min-h-0", children: /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("div", { className: "p-6", children: images.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)("div", { className: "flex flex-col items-center justify-center py-16 text-center", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime51.jsx)(import_lucide_react29.Images, { className: "h-16 w-16 text-gray-300 mb-3" }),
-        /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("p", { className: "text-sm font-medium text-gray-600", children: "No images captured" }),
-        /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("p", { className: "text-xs text-gray-400 mt-1", children: "Use camera or upload to add images" })
-      ] }) : /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("div", { className: "grid grid-cols-3 gap-4", children: images.map((image) => /* @__PURE__ */ (0, import_jsx_runtime51.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(ScrollArea, { className: "flex-1 min-h-0", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "p-6", children: images.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "flex flex-col items-center justify-center py-16 text-center", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(import_lucide_react27.Images, { size: 48, className: "text-gray-300 mb-3" }),
+        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("p", { className: "text-sm font-medium text-gray-600", children: "No images captured" }),
+        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("p", { className: "text-xs text-gray-400 mt-1", children: "Use camera or upload to add images" })
+      ] }) : /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "grid grid-cols-3 gap-4", children: images.map((image) => /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(
         ImageCard,
         {
           image,
@@ -3982,43 +3912,42 @@ function ImageCaptureModal({
         },
         image.id
       )) }) }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("div", { className: "p-6 border-t bg-gray-50/50", children: !isUploading ? /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)("div", { className: "flex items-center justify-between gap-4", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("span", { className: "text-sm text-gray-500", children: images.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)("span", { className: "font-medium text-gray-700", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "p-6 border-t bg-gray-50/50", children: !isUploading ? /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "flex items-center justify-between gap-4", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("span", { className: "text-sm text-gray-500", children: images.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("span", { className: "font-medium text-gray-700", children: [
           images.length,
           " ",
           images.length === 1 ? "image" : "images",
           " selected"
         ] }) : "No images selected" }),
-        /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)("div", { className: "flex gap-3", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime51.jsx)(Button, { variant: "outline", onClick: handleDiscard, disabled: isMandatory, children: "Cancel" }),
-          /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)(Button, { onClick: handleSubmit, disabled: images.length === 0, children: [
-            /* @__PURE__ */ (0, import_jsx_runtime51.jsx)(import_lucide_react29.CloudUpload, { className: "mr-2 h-4 w-4" }),
+        /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "flex gap-3", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(Button, { variant: "outline", onClick: handleDiscard, disabled: isMandatory, children: "Cancel" }),
+          /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)(Button, { onClick: () => {
+            stopCamera();
+            onSubmit(images);
+          }, disabled: images.length === 0, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(import_lucide_react27.Upload, { size: 16, className: "mr-2" }),
             "Upload"
           ] })
         ] })
-      ] }) : /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)("div", { className: "space-y-3", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)("div", { className: "flex items-center justify-between text-sm", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("div", { className: "w-2 h-2 bg-primary rounded-full animate-ping" }),
-            /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("span", { className: "font-medium text-gray-700", children: "Uploading images..." })
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime51.jsxs)("span", { className: "font-semibold text-primary", children: [
+      ] }) : /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "space-y-3", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "flex items-center justify-between text-sm", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("span", { className: "font-medium text-gray-700", children: "Uploading images..." }),
+          /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("span", { className: "font-semibold", children: [
             (uploadProgress == null ? void 0 : uploadProgress.current) || 0,
             "/",
             (uploadProgress == null ? void 0 : uploadProgress.total) || 0
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("div", { className: "relative h-2 bg-gray-200 rounded-full overflow-hidden", children: /* @__PURE__ */ (0, import_jsx_runtime51.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: "relative h-2 bg-gray-200 rounded-full overflow-hidden", children: /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(
           "div",
           {
             className: "absolute inset-y-0 left-0 bg-primary transition-all duration-300",
             style: { width: `${(uploadProgress == null ? void 0 : uploadProgress.total) ? uploadProgress.current / uploadProgress.total * 100 : 0}%` }
           }
-        ) }),
-        /* @__PURE__ */ (0, import_jsx_runtime51.jsx)("p", { className: "text-xs text-gray-500 text-center", children: "Please wait" })
+        ) })
       ] }) })
     ] }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime51.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(
       ImagePreviewDialog,
       {
         image: previewImage,
@@ -4028,38 +3957,38 @@ function ImageCaptureModal({
       }
     )
   ] });
-}
-
-// src/components/ImageCapture/ImageCaptureTrigger.tsx
-var import_react10 = require("react");
-var import_lucide_react30 = require("lucide-react");
-var import_jsx_runtime52 = require("react/jsx-runtime");
-function ImageCaptureTrigger({ config, onImagesCapture, capturedCount = 0, className }) {
-  const [isModalOpen, setIsModalOpen] = (0, import_react10.useState)(false);
-  const [localCount, setLocalCount] = (0, import_react10.useState)(capturedCount);
+};
+var ImageCaptureTrigger = ({
+  config,
+  onImagesCapture,
+  capturedCount = 0,
+  className
+}) => {
+  const [isModalOpen, setIsModalOpen] = (0, import_react9.useState)(false);
+  const [localCount, setLocalCount] = (0, import_react9.useState)(capturedCount);
   const hasImages = localCount > 0;
   const handleSubmit = (images) => {
     setLocalCount(images.length);
     onImagesCapture(images);
     setIsModalOpen(false);
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime52.jsxs)(import_jsx_runtime52.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime52.jsxs)(
+  return /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)(import_jsx_runtime49.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)(
       "div",
       {
-        className: `flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${hasImages ? "border-emerald-200 bg-emerald-50 hover:bg-emerald-100" : "border-slate-200 bg-slate-50 hover:bg-slate-100"} ${className || ""}`,
+        className: `flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${hasImages ? "border-emerald-200 bg-emerald-50 hover:bg-emerald-100" : "border-slate-200 bg-slate-50 hover:bg-slate-100"} ${className != null ? className : ""}`,
         onClick: () => setIsModalOpen(true),
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime52.jsx)("div", { className: `h-10 w-10 rounded-full flex items-center justify-center ${hasImages ? "bg-emerald-500" : "bg-slate-400"}`, children: hasImages ? /* @__PURE__ */ (0, import_jsx_runtime52.jsx)(import_lucide_react30.Check, { className: "h-5 w-5 text-white" }) : /* @__PURE__ */ (0, import_jsx_runtime52.jsx)(import_lucide_react30.Camera, { className: "h-5 w-5 text-white" }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime52.jsxs)("div", { className: "flex-1", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime52.jsx)("p", { className: "text-sm font-medium text-slate-700", children: hasImages ? `${localCount} Image${localCount > 1 ? "s" : ""} Captured` : "Capture Images" }),
-            /* @__PURE__ */ (0, import_jsx_runtime52.jsx)("p", { className: "text-xs text-slate-500", children: "Optional" })
+          /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("div", { className: `h-10 w-10 rounded-full flex items-center justify-center ${hasImages ? "bg-emerald-500" : "bg-slate-400"}`, children: hasImages ? /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(import_lucide_react27.Check, { size: 18, className: "text-white" }) : /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(import_lucide_react27.Camera, { size: 18, className: "text-white" }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime49.jsxs)("div", { className: "flex-1", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("p", { className: "text-sm font-medium text-slate-700", children: hasImages ? `${localCount} Image${localCount > 1 ? "s" : ""} Captured` : "Capture Images" }),
+            /* @__PURE__ */ (0, import_jsx_runtime49.jsx)("p", { className: "text-xs text-slate-500", children: config.isMandatory ? "Required" : "Optional" })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime52.jsx)(Button, { variant: "ghost", size: "icon", className: "h-8 w-8", children: /* @__PURE__ */ (0, import_jsx_runtime52.jsx)(import_lucide_react30.ChevronRight, { className: "h-5 w-5 text-slate-500" }) })
+          /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(import_lucide_react27.ChevronRight, { size: 18, className: "text-slate-400" })
         ]
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime52.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime49.jsx)(
       ImageCaptureModal,
       {
         isOpen: isModalOpen,
@@ -4069,7 +3998,7 @@ function ImageCaptureTrigger({ config, onImagesCapture, capturedCount = 0, class
       }
     )
   ] });
-}
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   APP_ICON_NAMES,

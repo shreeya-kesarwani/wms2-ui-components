@@ -1729,159 +1729,141 @@ function ConfirmDialog({
 }
 
 // src/components/SelectionModal/index.tsx
-import * as React21 from "react";
+import * as React22 from "react";
 import { SearchX } from "lucide-react";
 
 // src/components/ImageGallery/index.tsx
-import { useState as useState4, useEffect as useEffect5 } from "react";
-import { ChevronLeft as ChevronLeft4, ChevronRight as ChevronRight5, X as X5 } from "lucide-react";
+import { useState as useState4, useEffect as useEffect5, useCallback } from "react";
+import { ChevronLeft as ChevronLeft4, ChevronRight as ChevronRight5, X as X5, Package as Package2 } from "lucide-react";
 import { Fragment, jsx as jsx27, jsxs as jsxs15 } from "react/jsx-runtime";
-function ImageGallery({
+var ImageGallery = ({
   imageUrls,
-  alt = "Image",
-  className,
-  imageClassName,
+  alt,
   compact = false,
   disableLightbox = false
-}) {
-  const [index, setIndex] = useState4(0);
+}) => {
+  var _a;
+  const [activeIndex, setActiveIndex] = useState4(0);
   const [lightboxOpen, setLightboxOpen] = useState4(false);
-  const [hasError, setHasError] = useState4(false);
-  const safeIndex = Math.min(index, imageUrls.length - 1);
+  const validUrls = (_a = imageUrls == null ? void 0 : imageUrls.filter(Boolean)) != null ? _a : [];
+  const prev = useCallback((e) => {
+    e == null ? void 0 : e.stopPropagation();
+    setActiveIndex((i) => (i - 1 + validUrls.length) % validUrls.length);
+  }, [validUrls.length]);
+  const next = useCallback((e) => {
+    e == null ? void 0 : e.stopPropagation();
+    setActiveIndex((i) => (i + 1) % validUrls.length);
+  }, [validUrls.length]);
   useEffect5(() => {
-    setHasError(false);
-  }, [safeIndex]);
-  if (!imageUrls.length) return null;
-  const current = imageUrls[safeIndex];
-  const hasMultiple = imageUrls.length > 1;
-  const prev = (e) => {
-    e.stopPropagation();
-    setIndex((i) => Math.max(0, i - 1));
-  };
-  const next = (e) => {
-    e.stopPropagation();
-    setIndex((i) => Math.min(imageUrls.length - 1, i + 1));
-  };
-  const defaultImgClass = cn(
-    "w-full aspect-square object-contain rounded-lg border bg-gray-50",
-    !disableLightbox && "cursor-zoom-in"
-  );
-  const NavButtons = ({ size }) => /* @__PURE__ */ jsxs15(Fragment, { children: [
-    /* @__PURE__ */ jsx27(
-      "button",
-      {
-        type: "button",
-        className: cn(
-          "absolute left-0 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-r disabled:opacity-20",
-          size === "sm" ? "p-0.5" : "p-1"
-        ),
-        disabled: safeIndex === 0,
-        onClick: prev,
-        children: /* @__PURE__ */ jsx27(ChevronLeft4, { className: size === "sm" ? "h-3 w-3" : "h-4 w-4" })
-      }
-    ),
-    /* @__PURE__ */ jsxs15("span", { className: cn(
-      "absolute bottom-1 left-1/2 -translate-x-1/2 bg-black/40 text-white rounded pointer-events-none",
-      size === "sm" ? "text-[8px] px-1" : "text-xs px-1.5 py-0.5"
-    ), children: [
-      safeIndex + 1,
-      "/",
-      imageUrls.length
-    ] }),
-    /* @__PURE__ */ jsx27(
-      "button",
-      {
-        type: "button",
-        className: cn(
-          "absolute right-0 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-l disabled:opacity-20",
-          size === "sm" ? "p-0.5" : "p-1"
-        ),
-        disabled: safeIndex === imageUrls.length - 1,
-        onClick: next,
-        children: /* @__PURE__ */ jsx27(ChevronRight5, { className: size === "sm" ? "h-3 w-3" : "h-4 w-4" })
-      }
-    )
-  ] });
+    if (!lightboxOpen) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") setLightboxOpen(false);
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "ArrowRight") next();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxOpen, prev, next]);
+  if (validUrls.length === 0) {
+    return /* @__PURE__ */ jsx27("div", { className: "flex items-center justify-center w-full h-full bg-gray-100 rounded-lg", children: /* @__PURE__ */ jsx27(Package2, { className: "text-gray-300", size: compact ? 24 : 40 }) });
+  }
   return /* @__PURE__ */ jsxs15(Fragment, { children: [
-    /* @__PURE__ */ jsxs15("div", { className: cn("relative w-full", className), children: [
-      hasError ? /* @__PURE__ */ jsxs15("div", { className: cn(
-        "w-full aspect-square bg-gray-100 border border-gray-200 flex flex-col items-center justify-center rounded-lg gap-1",
-        imageClassName
-      ), children: [
-        /* @__PURE__ */ jsxs15("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-8 w-8 text-gray-300", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.5", children: [
-          /* @__PURE__ */ jsx27("rect", { x: "3", y: "3", width: "18", height: "18", rx: "2" }),
-          /* @__PURE__ */ jsx27("circle", { cx: "8.5", cy: "8.5", r: "1.5" }),
-          /* @__PURE__ */ jsx27("path", { d: "M21 15l-5-5L5 21" })
-        ] }),
-        /* @__PURE__ */ jsx27("span", { className: "text-[9px] text-gray-400 uppercase tracking-wide", children: "No image" })
-      ] }) : /* @__PURE__ */ jsx27(
-        "img",
+    /* @__PURE__ */ jsxs15("div", { className: "relative w-full h-full flex flex-col", children: [
+      /* @__PURE__ */ jsxs15(
+        "div",
         {
-          src: current,
-          alt,
-          className: imageClassName != null ? imageClassName : defaultImgClass,
-          onError: () => setHasError(true),
-          onClick: () => !disableLightbox && setLightboxOpen(true)
+          className: `relative flex-1 overflow-hidden rounded-lg ${!disableLightbox ? "cursor-pointer" : ""}`,
+          onClick: () => !disableLightbox && setLightboxOpen(true),
+          children: [
+            /* @__PURE__ */ jsx27(
+              "img",
+              {
+                src: validUrls[activeIndex],
+                alt,
+                className: "w-full h-full object-contain"
+              }
+            ),
+            validUrls.length > 1 && /* @__PURE__ */ jsxs15(Fragment, { children: [
+              /* @__PURE__ */ jsx27(
+                "button",
+                {
+                  className: "absolute left-1 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-0.5 transition",
+                  onClick: prev,
+                  children: /* @__PURE__ */ jsx27(ChevronLeft4, { size: 14 })
+                }
+              ),
+              /* @__PURE__ */ jsx27(
+                "button",
+                {
+                  className: "absolute right-1 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-0.5 transition",
+                  onClick: next,
+                  children: /* @__PURE__ */ jsx27(ChevronRight5, { size: 14 })
+                }
+              )
+            ] })
+          ]
         }
       ),
-      hasMultiple && /* @__PURE__ */ jsx27(NavButtons, { size: compact ? "sm" : "lg" })
+      validUrls.length > 1 && /* @__PURE__ */ jsx27("div", { className: "flex justify-center gap-1 mt-1", children: validUrls.map((_, i) => /* @__PURE__ */ jsx27(
+        "button",
+        {
+          className: `rounded-full transition-all ${i === activeIndex ? "w-3 h-1.5 bg-gray-700" : "w-1.5 h-1.5 bg-gray-300"}`,
+          onClick: () => setActiveIndex(i)
+        },
+        i
+      )) })
     ] }),
-    lightboxOpen && /* @__PURE__ */ jsxs15(
+    !disableLightbox && lightboxOpen && /* @__PURE__ */ jsxs15(
       "div",
       {
-        className: "fixed inset-0 z-[100] flex items-center justify-center bg-black/80",
+        className: "fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center",
         onClick: () => setLightboxOpen(false),
         children: [
           /* @__PURE__ */ jsx27(
             "button",
             {
-              type: "button",
-              className: "absolute top-4 right-4 text-white bg-black/50 rounded-full p-1.5 hover:bg-black/70",
+              className: "absolute top-4 right-4 text-white bg-black/40 hover:bg-black/60 rounded-full p-2 transition",
               onClick: () => setLightboxOpen(false),
-              children: /* @__PURE__ */ jsx27(X5, { className: "h-5 w-5" })
+              children: /* @__PURE__ */ jsx27(X5, { size: 20 })
             }
           ),
+          validUrls.length > 1 && /* @__PURE__ */ jsxs15(Fragment, { children: [
+            /* @__PURE__ */ jsx27(
+              "button",
+              {
+                className: "absolute left-4 top-1/2 -translate-y-1/2 text-white bg-black/40 hover:bg-black/60 rounded-full p-2 transition",
+                onClick: prev,
+                children: /* @__PURE__ */ jsx27(ChevronLeft4, { size: 24 })
+              }
+            ),
+            /* @__PURE__ */ jsx27(
+              "button",
+              {
+                className: "absolute right-4 top-1/2 -translate-y-1/2 text-white bg-black/40 hover:bg-black/60 rounded-full p-2 transition",
+                onClick: next,
+                children: /* @__PURE__ */ jsx27(ChevronRight5, { size: 24 })
+              }
+            )
+          ] }),
           /* @__PURE__ */ jsx27(
             "img",
             {
-              src: current,
+              src: validUrls[activeIndex],
               alt,
-              className: "max-h-[90vh] max-w-[90vw] object-contain rounded-lg",
+              className: "max-w-[90vw] max-h-[90vh] object-contain",
               onClick: (e) => e.stopPropagation()
             }
           ),
-          hasMultiple && /* @__PURE__ */ jsxs15(Fragment, { children: [
-            /* @__PURE__ */ jsx27(
-              "button",
-              {
-                type: "button",
-                className: "absolute left-4 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/70 rounded-full p-1.5 disabled:opacity-30",
-                disabled: safeIndex === 0,
-                onClick: prev,
-                children: /* @__PURE__ */ jsx27(ChevronLeft4, { className: "h-5 w-5" })
-              }
-            ),
-            /* @__PURE__ */ jsxs15("span", { className: "absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-xs bg-black/50 px-2 py-0.5 rounded-full pointer-events-none", children: [
-              safeIndex + 1,
-              " / ",
-              imageUrls.length
-            ] }),
-            /* @__PURE__ */ jsx27(
-              "button",
-              {
-                type: "button",
-                className: "absolute right-4 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/70 rounded-full p-1.5 disabled:opacity-30",
-                disabled: safeIndex === imageUrls.length - 1,
-                onClick: next,
-                children: /* @__PURE__ */ jsx27(ChevronRight5, { className: "h-5 w-5" })
-              }
-            )
+          validUrls.length > 1 && /* @__PURE__ */ jsxs15("div", { className: "absolute bottom-4 text-white text-sm bg-black/40 px-3 py-1 rounded-full", children: [
+            activeIndex + 1,
+            " / ",
+            validUrls.length
           ] })
         ]
       }
     )
   ] });
-}
+};
 
 // src/components/SelectionModal/index.tsx
 import { jsx as jsx28, jsxs as jsxs16 } from "react/jsx-runtime";
@@ -1896,15 +1878,15 @@ function SelectionModal({
   multiple = true,
   renderItem
 }) {
-  const [query, setQuery] = React21.useState("");
-  const [selected, setSelected] = React21.useState(/* @__PURE__ */ new Set());
-  React21.useEffect(() => {
+  const [query, setQuery] = React22.useState("");
+  const [selected, setSelected] = React22.useState(/* @__PURE__ */ new Set());
+  React22.useEffect(() => {
     if (open) {
       setQuery("");
       setSelected(/* @__PURE__ */ new Set());
     }
   }, [open]);
-  const filtered = React21.useMemo(() => {
+  const filtered = React22.useMemo(() => {
     if (!query.trim()) return data;
     const lower = query.toLowerCase();
     return data.filter(
@@ -2001,7 +1983,7 @@ function SelectionModal({
       children: [
         /* @__PURE__ */ jsx28(DialogHeader, { className: "px-6 pt-5 pb-4 border-b", children: /* @__PURE__ */ jsx28(DialogTitle, { children: title }) }),
         /* @__PURE__ */ jsx28("div", { className: "px-6 pt-4 pb-2", children: /* @__PURE__ */ jsx28(SearchInput, { value: query, onChange: (e) => setQuery(e.target.value), placeholder: "Search..." }) }),
-        variant === "card" ? /* @__PURE__ */ jsx28("div", { className: "overflow-y-auto max-h-[420px] px-4 pb-2", children: filtered.length === 0 ? emptyState : /* @__PURE__ */ jsx28("div", { className: "flex flex-col gap-2 py-2", children: filtered.map((item) => /* @__PURE__ */ jsx28(React21.Fragment, { children: renderCardItem(item) }, item.id)) }) }) : /* @__PURE__ */ jsx28("div", { className: "overflow-y-auto max-h-[300px] px-4 pb-2", children: filtered.length === 0 ? emptyState : /* @__PURE__ */ jsx28("div", { className: "space-y-0.5 py-1", children: filtered.map((item) => /* @__PURE__ */ jsx28(React21.Fragment, { children: renderListItem(item) }, item.id)) }) }),
+        variant === "card" ? /* @__PURE__ */ jsx28("div", { className: "overflow-y-auto max-h-[420px] px-4 pb-2", children: filtered.length === 0 ? emptyState : /* @__PURE__ */ jsx28("div", { className: "flex flex-col gap-2 py-2", children: filtered.map((item) => /* @__PURE__ */ jsx28(React22.Fragment, { children: renderCardItem(item) }, item.id)) }) }) : /* @__PURE__ */ jsx28("div", { className: "overflow-y-auto max-h-[300px] px-4 pb-2", children: filtered.length === 0 ? emptyState : /* @__PURE__ */ jsx28("div", { className: "space-y-0.5 py-1", children: filtered.map((item) => /* @__PURE__ */ jsx28(React22.Fragment, { children: renderListItem(item) }, item.id)) }) }),
         /* @__PURE__ */ jsxs16("div", { className: "flex items-center justify-between gap-3 px-6 py-4 border-t", children: [
           multiple ? /* @__PURE__ */ jsx28("p", { className: "text-xs text-muted-foreground", children: selected.size > 0 ? `${selected.size} selected` : "None selected" }) : /* @__PURE__ */ jsx28("p", { className: "text-xs text-muted-foreground", children: "Click an item to select" }),
           /* @__PURE__ */ jsxs16("div", { className: "flex gap-2", children: [
@@ -2015,7 +1997,7 @@ function SelectionModal({
 }
 
 // src/components/ResponsiveTable/index.tsx
-import * as React22 from "react";
+import * as React23 from "react";
 import { useState as useState6 } from "react";
 import { TableIcon, ChevronLeft as ChevronLeft5, ChevronRight as ChevronRight6, Eye as Eye2, Trash2 as Trash22, Columns2 } from "lucide-react";
 import { jsx as jsx29, jsxs as jsxs17 } from "react/jsx-runtime";
@@ -2081,7 +2063,7 @@ function ResponsiveTable({
 }) {
   const isMobile = useMobile();
   const hasActions = !!(onView || onDelete);
-  const dropdownEntries = React22.useMemo(
+  const dropdownEntries = React23.useMemo(
     () => [...columns, ...hasActions ? [{ key: ACTIONS_KEY, label: "Actions", hideable: true }] : []],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [columns, hasActions]
@@ -2163,7 +2145,7 @@ function ResponsiveTable({
 }
 
 // src/components/FilterBar/index.tsx
-import * as React23 from "react";
+import * as React24 from "react";
 import { Filter as Filter2 } from "lucide-react";
 import { jsx as jsx30, jsxs as jsxs18 } from "react/jsx-runtime";
 function FilterBar({
@@ -2179,8 +2161,8 @@ function FilterBar({
   filterTriggerClassName = "w-36 h-9 text-sm"
 }) {
   const isMobile = useMobile();
-  const [expanded, setExpanded] = React23.useState(false);
-  const [internalValues, setInternalValues] = React23.useState({});
+  const [expanded, setExpanded] = React24.useState(false);
+  const [internalValues, setInternalValues] = React24.useState({});
   const filterValues = controlledValues != null ? controlledValues : internalValues;
   function handleFilterChange(key, value) {
     const next = __spreadProps(__spreadValues({}, filterValues), { [key]: value });
@@ -2254,12 +2236,12 @@ function FilterBar({
 }
 
 // src/components/FormBuilder/index.tsx
-import { useState as useState8, useCallback } from "react";
+import { useState as useState8, useCallback as useCallback2 } from "react";
 
 // src/components/Textarea/index.tsx
-import * as React24 from "react";
+import * as React25 from "react";
 import { jsx as jsx31 } from "react/jsx-runtime";
-var Textarea = React24.forwardRef((_a, ref) => {
+var Textarea = React25.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ jsx31(
     "textarea",
@@ -2275,16 +2257,16 @@ var Textarea = React24.forwardRef((_a, ref) => {
 Textarea.displayName = "Textarea";
 
 // src/components/RadioGroup/index.tsx
-import * as React25 from "react";
+import * as React26 from "react";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import { Circle as Circle2 } from "lucide-react";
 import { jsx as jsx32 } from "react/jsx-runtime";
-var RadioGroup2 = React25.forwardRef((_a, ref) => {
+var RadioGroup2 = React26.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ jsx32(RadioGroupPrimitive.Root, __spreadProps(__spreadValues({ className: cn("grid gap-2", className) }, props), { ref }));
 });
 RadioGroup2.displayName = RadioGroupPrimitive.Root.displayName;
-var RadioGroupItem = React25.forwardRef((_a, ref) => {
+var RadioGroupItem = React26.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ jsx32(
     RadioGroupPrimitive.Item,
@@ -2330,7 +2312,7 @@ var FormBuilder = ({
   isSubmitting = false
 }) => {
   const [errors, setErrors] = useState8({});
-  const validateField = useCallback((value, rules) => {
+  const validateField = useCallback2((value, rules) => {
     if (!rules) return "";
     if (rules.required && !value) return "This field is required";
     if (rules.minLength && String(value).length < rules.minLength)
@@ -2560,7 +2542,7 @@ var FormBuilder = ({
 };
 
 // src/components/MultiSelect/index.tsx
-import * as React27 from "react";
+import * as React28 from "react";
 import { Check as Check5, ChevronsUpDown, X as X6 } from "lucide-react";
 import { jsx as jsx34, jsxs as jsxs20 } from "react/jsx-runtime";
 function normalize(options) {
@@ -2576,7 +2558,7 @@ function MultiSelect({
   contentClassName,
   maxHeight = "200px"
 }) {
-  const [open, setOpen] = React27.useState(false);
+  const [open, setOpen] = React28.useState(false);
   const normalized = normalize(options);
   const handleSelectAll = () => onChange(normalized.map((o) => o.value));
   const handleClearAll = () => onChange([]);
@@ -2632,12 +2614,12 @@ function MultiSelectBadges({ selected, onRemove, className }) {
 }
 
 // src/components/TabsWrapper/index.tsx
-import * as React28 from "react";
+import * as React29 from "react";
 import { Fragment as Fragment3, jsx as jsx35, jsxs as jsxs21 } from "react/jsx-runtime";
 function TabsWrapper({ tabs, defaultValue, onChange, className, responsive = false }) {
   var _a;
   const initial = defaultValue != null ? defaultValue : (_a = tabs[0]) == null ? void 0 : _a.value;
-  const [value, setValue] = React28.useState(initial);
+  const [value, setValue] = React29.useState(initial);
   function handleChange(next) {
     setValue(next);
     onChange == null ? void 0 : onChange(next);
@@ -2655,7 +2637,7 @@ function TabsWrapper({ tabs, defaultValue, onChange, className, responsive = fal
 }
 
 // src/components/DropdownMenuWrapper/index.tsx
-import * as React29 from "react";
+import * as React30 from "react";
 import { jsx as jsx36, jsxs as jsxs22 } from "react/jsx-runtime";
 var OPEN_STATE_CLASSES = {
   outline: "data-[state=open]:bg-gray-100",
@@ -2683,7 +2665,7 @@ function DropdownMenuWrapper({
         children: label
       }
     ) }),
-    /* @__PURE__ */ jsx36(DropdownMenuContent, { align: effectiveAlign, className: "min-w-[160px]", children: items.map((item, i) => /* @__PURE__ */ jsxs22(React29.Fragment, { children: [
+    /* @__PURE__ */ jsx36(DropdownMenuContent, { align: effectiveAlign, className: "min-w-[160px]", children: items.map((item, i) => /* @__PURE__ */ jsxs22(React30.Fragment, { children: [
       item.separator && /* @__PURE__ */ jsx36(DropdownMenuSeparator, {}),
       /* @__PURE__ */ jsxs22(
         DropdownMenuItem,
@@ -2701,7 +2683,7 @@ function DropdownMenuWrapper({
 }
 
 // src/components/TimePicker/index.tsx
-import * as React30 from "react";
+import * as React31 from "react";
 import { Clock as Clock2 } from "lucide-react";
 import { format as format2 } from "date-fns";
 
@@ -2775,9 +2757,9 @@ function TimeSelector({ value, onChange, height = "h-[300px]", isMobile = false 
 // src/components/TimePicker/index.tsx
 import { jsx as jsx38, jsxs as jsxs24 } from "react/jsx-runtime";
 function TimePicker({ value, onChange, placeholder = "Pick time", disabled = false }) {
-  const [time, setTime] = React30.useState(value);
-  const [isOpen, setIsOpen] = React30.useState(false);
-  React30.useEffect(() => {
+  const [time, setTime] = React31.useState(value);
+  const [isOpen, setIsOpen] = React31.useState(false);
+  React31.useEffect(() => {
     setTime(value);
   }, [value]);
   const handleTimeChange = (newTime) => {
@@ -2800,13 +2782,13 @@ function TimePicker({ value, onChange, placeholder = "Pick time", disabled = fal
 }
 
 // src/components/DatePicker/index.tsx
-import * as React31 from "react";
+import * as React32 from "react";
 import { CalendarIcon } from "lucide-react";
 import { format as format3 } from "date-fns";
 import { jsx as jsx39, jsxs as jsxs25 } from "react/jsx-runtime";
 function DatePicker({ value, onChange, placeholder = "Pick date", className }) {
-  const [date, setDate] = React31.useState(value);
-  React31.useEffect(() => {
+  const [date, setDate] = React32.useState(value);
+  React32.useEffect(() => {
     setDate(value);
   }, [value]);
   const handleSelect = (selected) => {
@@ -2830,7 +2812,7 @@ function DatePicker({ value, onChange, placeholder = "Pick date", className }) {
 }
 
 // src/components/Card/index.tsx
-import * as React32 from "react";
+import * as React33 from "react";
 import { cva as cva6 } from "class-variance-authority";
 import { jsx as jsx40 } from "react/jsx-runtime";
 var cardVariants = cva6(
@@ -2868,7 +2850,7 @@ var cardVariants = cva6(
     }
   }
 );
-var Card = React32.forwardRef(
+var Card = React33.forwardRef(
   (_a, ref) => {
     var _b = _a, { className, elevation, status, interactive } = _b, props = __objRest(_b, ["className", "elevation", "status", "interactive"]);
     let enhancedClasses = "";
@@ -2893,7 +2875,7 @@ var Card = React32.forwardRef(
   }
 );
 Card.displayName = "Card";
-var CardHeader = React32.forwardRef((_a, ref) => {
+var CardHeader = React33.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ jsx40(
     "div",
@@ -2904,7 +2886,7 @@ var CardHeader = React32.forwardRef((_a, ref) => {
   );
 });
 CardHeader.displayName = "CardHeader";
-var CardTitle = React32.forwardRef((_a, ref) => {
+var CardTitle = React33.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ jsx40(
     "div",
@@ -2915,7 +2897,7 @@ var CardTitle = React32.forwardRef((_a, ref) => {
   );
 });
 CardTitle.displayName = "CardTitle";
-var CardDescription = React32.forwardRef((_a, ref) => {
+var CardDescription = React33.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ jsx40(
     "div",
@@ -2926,12 +2908,12 @@ var CardDescription = React32.forwardRef((_a, ref) => {
   );
 });
 CardDescription.displayName = "CardDescription";
-var CardContent = React32.forwardRef((_a, ref) => {
+var CardContent = React33.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ jsx40("div", __spreadValues({ ref, className: cn("p-6 pt-0", className) }, props));
 });
 CardContent.displayName = "CardContent";
-var CardFooter = React32.forwardRef((_a, ref) => {
+var CardFooter = React33.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ jsx40(
     "div",
@@ -2944,10 +2926,10 @@ var CardFooter = React32.forwardRef((_a, ref) => {
 CardFooter.displayName = "CardFooter";
 
 // src/components/Separator/index.tsx
-import * as React33 from "react";
+import * as React34 from "react";
 import * as SeparatorPrimitive from "@radix-ui/react-separator";
 import { jsx as jsx41 } from "react/jsx-runtime";
-var Separator3 = React33.forwardRef(
+var Separator3 = React34.forwardRef(
   (_a, ref) => {
     var _b = _a, { className, orientation = "horizontal", decorative = true } = _b, props = __objRest(_b, ["className", "orientation", "decorative"]);
     return /* @__PURE__ */ jsx41(
@@ -2968,12 +2950,12 @@ var Separator3 = React33.forwardRef(
 Separator3.displayName = SeparatorPrimitive.Root.displayName;
 
 // src/components/Accordion/index.tsx
-import * as React34 from "react";
+import * as React35 from "react";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronDown as ChevronDown3 } from "lucide-react";
 import { jsx as jsx42, jsxs as jsxs26 } from "react/jsx-runtime";
 var Accordion = AccordionPrimitive.Root;
-var AccordionItem = React34.forwardRef((_a, ref) => {
+var AccordionItem = React35.forwardRef((_a, ref) => {
   var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
   return /* @__PURE__ */ jsx42(
     AccordionPrimitive.Item,
@@ -2984,7 +2966,7 @@ var AccordionItem = React34.forwardRef((_a, ref) => {
   );
 });
 AccordionItem.displayName = "AccordionItem";
-var AccordionTrigger = React34.forwardRef((_a, ref) => {
+var AccordionTrigger = React35.forwardRef((_a, ref) => {
   var _b = _a, { className, children } = _b, props = __objRest(_b, ["className", "children"]);
   return /* @__PURE__ */ jsx42(AccordionPrimitive.Header, { className: "flex", children: /* @__PURE__ */ jsxs26(
     AccordionPrimitive.Trigger,
@@ -3003,7 +2985,7 @@ var AccordionTrigger = React34.forwardRef((_a, ref) => {
   ) });
 });
 AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName;
-var AccordionContent = React34.forwardRef((_a, ref) => {
+var AccordionContent = React35.forwardRef((_a, ref) => {
   var _b = _a, { className, children } = _b, props = __objRest(_b, ["className", "children"]);
   return /* @__PURE__ */ jsx42(
     AccordionPrimitive.Content,
@@ -3018,10 +3000,10 @@ var AccordionContent = React34.forwardRef((_a, ref) => {
 AccordionContent.displayName = AccordionPrimitive.Content.displayName;
 
 // src/components/WmsToast/index.tsx
-import React35 from "react";
+import React36 from "react";
 import { jsx as jsx43, jsxs as jsxs27 } from "react/jsx-runtime";
 function CopyButton({ message }) {
-  const [copied, setCopied] = React35.useState(false);
+  const [copied, setCopied] = React36.useState(false);
   const handleCopy = () => {
     navigator.clipboard.writeText(message).catch(() => {
     });
@@ -3118,7 +3100,7 @@ function ContentSection({ title, description, children, className, actions }) {
 }
 
 // src/components/SortOptions/index.tsx
-import { useCallback as useCallback2, useEffect as useEffect9, useState as useState13 } from "react";
+import { useCallback as useCallback3, useEffect as useEffect9, useState as useState13 } from "react";
 import { ArrowUpDown } from "lucide-react";
 import { jsx as jsx45, jsxs as jsxs29 } from "react/jsx-runtime";
 function SortOptions({
@@ -3142,14 +3124,14 @@ function SortOptions({
   useEffect9(() => {
     if (sortOrderValue) setSelectedOrder(sortOrderValue);
   }, [sortOrderValue]);
-  const handleSortByChange = useCallback2(
+  const handleSortByChange = useCallback3(
     (value) => {
       setSelectedSortBy(value);
       onSortByChange == null ? void 0 : onSortByChange(value);
     },
     [onSortByChange]
   );
-  const handleOrderChange = useCallback2(
+  const handleOrderChange = useCallback3(
     (value) => {
       setSelectedOrder(value);
       onSortOrderChange == null ? void 0 : onSortOrderChange(value);
@@ -3179,7 +3161,7 @@ function SortOptions({
 
 // src/components/SkuProductDetails/index.tsx
 import { useState as useState14 } from "react";
-import { Package as Package2, Calendar as Calendar3 } from "lucide-react";
+import { Package as Package3, Calendar as Calendar3 } from "lucide-react";
 import { format as format4 } from "date-fns";
 import { Fragment as Fragment5, jsx as jsx46, jsxs as jsxs30 } from "react/jsx-runtime";
 function SkuProductDetails({ skuDetails, batchInfo, compact = false }) {
@@ -3291,7 +3273,7 @@ function SkuProductDetails({ skuDetails, batchInfo, compact = false }) {
     ] }) }),
     batchInfo && /* @__PURE__ */ jsx46("div", { className: "w-full md:w-1/4", children: /* @__PURE__ */ jsxs30("div", { className: "rounded-lg border border-blue-200 bg-blue-50/60 p-2.5", children: [
       /* @__PURE__ */ jsxs30("div", { className: "flex items-center gap-1.5 mb-1.5 text-blue-700", children: [
-        /* @__PURE__ */ jsx46(Package2, { className: "h-3.5 w-3.5" }),
+        /* @__PURE__ */ jsx46(Package3, { className: "h-3.5 w-3.5" }),
         /* @__PURE__ */ jsx46("span", { className: "text-xs font-semibold uppercase tracking-wide", children: "Batch Information" })
       ] }),
       /* @__PURE__ */ jsxs30("div", { className: "flex flex-col gap-1.5 text-xs", children: [
@@ -3349,7 +3331,7 @@ function SmallToteCard({ toteId, itemCount, totalItems }) {
 
 // src/components/QuantityInputModal/index.tsx
 import { useState as useState15, useEffect as useEffect10 } from "react";
-import { Package as Package3, X as X7 } from "lucide-react";
+import { Package as Package4, X as X7 } from "lucide-react";
 import { jsx as jsx48, jsxs as jsxs32 } from "react/jsx-runtime";
 function QuantityInputModal({
   isOpen,
@@ -3402,7 +3384,7 @@ function QuantityInputModal({
   };
   return /* @__PURE__ */ jsx48(Dialog, { open: isOpen, onOpenChange: onClose, children: /* @__PURE__ */ jsxs32(DialogContent, { className: "sm:max-w-md", children: [
     /* @__PURE__ */ jsx48(DialogHeader, { children: /* @__PURE__ */ jsxs32(DialogTitle, { className: "flex items-center gap-2", children: [
-      /* @__PURE__ */ jsx48(Package3, { className: "h-5 w-5" }),
+      /* @__PURE__ */ jsx48(Package4, { className: "h-5 w-5" }),
       "Transfer Partial Quantity"
     ] }) }),
     /* @__PURE__ */ jsxs32("div", { className: showOrderMappingLayout ? "space-y-4" : "space-y-3", children: [
@@ -3509,62 +3491,86 @@ function QuantityInputModal({
   ] }) });
 }
 
-// src/components/ImageCapture/ImageCaptureModal.tsx
-import { useState as useState16, useRef as useRef2, useCallback as useCallback3 } from "react";
-import { X as X8, FileImage, Camera, Upload as Upload2, Images, CloudUpload } from "lucide-react";
-
-// src/components/ImageCapture/ImageCard.tsx
-import { ZoomIn, Trash2 as Trash23 } from "lucide-react";
-import { jsx as jsx49, jsxs as jsxs33 } from "react/jsx-runtime";
-function ImageCard({ image, onDelete, onEnlarge }) {
-  return /* @__PURE__ */ jsxs33(
-    "div",
-    {
-      className: "relative aspect-square rounded-lg overflow-hidden border border-slate-200 bg-slate-50 cursor-pointer hover:border-slate-300 transition-colors",
-      onClick: () => onEnlarge(image),
-      children: [
-        /* @__PURE__ */ jsx49("img", { src: image.previewUrl, alt: "Captured", className: "w-full h-full object-cover" }),
-        /* @__PURE__ */ jsx49("div", { className: "absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/50 to-transparent", children: /* @__PURE__ */ jsxs33("div", { className: "flex justify-between", children: [
-          /* @__PURE__ */ jsx49(
-            Button,
-            {
-              variant: "ghost",
-              size: "icon",
-              className: "h-8 w-8 text-white hover:bg-white/20",
-              onClick: (e) => {
-                e.stopPropagation();
-                onEnlarge(image);
-              },
-              children: /* @__PURE__ */ jsx49(ZoomIn, { className: "h-4 w-4" })
-            }
-          ),
-          /* @__PURE__ */ jsx49(
-            Button,
-            {
-              variant: "ghost",
-              size: "icon",
-              className: "h-8 w-8 text-white hover:bg-red-500/50",
-              onClick: (e) => {
-                e.stopPropagation();
-                onDelete(image.id);
-              },
-              children: /* @__PURE__ */ jsx49(Trash23, { className: "h-4 w-4" })
-            }
-          )
-        ] }) })
-      ]
-    }
-  );
+// src/components/ImageCapture/index.tsx
+import { useState as useState16, useRef as useRef2, useCallback as useCallback4 } from "react";
+import imageCompression from "browser-image-compression";
+import {
+  Camera,
+  Upload as Upload2,
+  X as X8,
+  Trash2 as Trash23,
+  ZoomIn,
+  ChevronRight as ChevronRight7,
+  Check as Check6,
+  Images
+} from "lucide-react";
+import { Fragment as Fragment6, jsx as jsx49, jsxs as jsxs33 } from "react/jsx-runtime";
+var COMPRESSION_THRESHOLD_MB = 2;
+function needsCompression(file) {
+  return file.size / 1024 / 1024 > COMPRESSION_THRESHOLD_MB;
 }
-
-// src/components/ImageCapture/ImagePreviewDialog.tsx
-import { Trash2 as Trash24 } from "lucide-react";
-import { jsx as jsx50, jsxs as jsxs34 } from "react/jsx-runtime";
-function ImagePreviewDialog({ image, isOpen, onClose, onDelete }) {
+async function compressImage(file) {
+  if (!needsCompression(file)) return file;
+  try {
+    const compressed = await imageCompression(file, {
+      maxSizeMB: COMPRESSION_THRESHOLD_MB,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+      initialQuality: 0.8
+    });
+    return new File([compressed], file.name, { type: compressed.type, lastModified: Date.now() });
+  } catch (e) {
+    return file;
+  }
+}
+var ImageCard = ({ image, onDelete, onEnlarge }) => /* @__PURE__ */ jsxs33(
+  "div",
+  {
+    className: "relative aspect-square rounded-lg overflow-hidden border border-slate-200 bg-slate-50 cursor-pointer hover:border-slate-300 transition-colors",
+    onClick: () => onEnlarge(image),
+    children: [
+      /* @__PURE__ */ jsx49("img", { src: image.previewUrl, alt: "Captured", className: "w-full h-full object-cover" }),
+      /* @__PURE__ */ jsx49("div", { className: "absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/50 to-transparent", children: /* @__PURE__ */ jsxs33("div", { className: "flex justify-between", children: [
+        /* @__PURE__ */ jsx49(
+          Button,
+          {
+            variant: "ghost",
+            size: "icon",
+            className: "h-8 w-8 text-white hover:bg-white/20",
+            onClick: (e) => {
+              e.stopPropagation();
+              onEnlarge(image);
+            },
+            children: /* @__PURE__ */ jsx49(ZoomIn, { size: 16 })
+          }
+        ),
+        /* @__PURE__ */ jsx49(
+          Button,
+          {
+            variant: "ghost",
+            size: "icon",
+            className: "h-8 w-8 text-white hover:bg-red-500/50",
+            onClick: (e) => {
+              e.stopPropagation();
+              onDelete(image.id);
+            },
+            children: /* @__PURE__ */ jsx49(Trash23, { size: 16 })
+          }
+        )
+      ] }) })
+    ]
+  }
+);
+var ImagePreviewDialog = ({
+  image,
+  isOpen,
+  onClose,
+  onDelete
+}) => {
   if (!image) return null;
-  return /* @__PURE__ */ jsx50(Dialog, { open: isOpen, onOpenChange: (open) => !open && onClose(), children: /* @__PURE__ */ jsxs34(DialogContent, { className: "max-w-4xl w-[96vw] sm:w-full p-0 gap-0 border bg-background overflow-hidden", children: [
-    /* @__PURE__ */ jsx50("div", { className: "border-b px-4 py-3 bg-muted/30", children: /* @__PURE__ */ jsx50("p", { className: "text-sm font-medium text-foreground", children: "Image preview" }) }),
-    /* @__PURE__ */ jsx50("div", { className: "flex items-center justify-center p-4 sm:p-6 min-h-[320px] max-h-[72vh] bg-muted/20", children: /* @__PURE__ */ jsx50(
+  return /* @__PURE__ */ jsx49(Dialog, { open: isOpen, onOpenChange: (open) => !open && onClose(), children: /* @__PURE__ */ jsxs33(DialogContent, { className: "max-w-4xl w-[96vw] sm:w-full p-0 gap-0 border bg-background overflow-hidden", children: [
+    /* @__PURE__ */ jsx49("div", { className: "border-b px-4 py-3 bg-muted/30", children: /* @__PURE__ */ jsx49("p", { className: "text-sm font-medium text-foreground", children: "Image preview" }) }),
+    /* @__PURE__ */ jsx49("div", { className: "flex items-center justify-center p-4 sm:p-6 min-h-[320px] max-h-[72vh] bg-muted/20", children: /* @__PURE__ */ jsx49(
       "img",
       {
         src: image.previewUrl,
@@ -3572,9 +3578,9 @@ function ImagePreviewDialog({ image, isOpen, onClose, onDelete }) {
         className: "max-w-full max-h-[calc(72vh-2rem)] object-contain rounded-md ring-1 ring-border shadow-md"
       }
     ) }),
-    /* @__PURE__ */ jsxs34("div", { className: "flex gap-3 p-4 border-t bg-muted/10", children: [
-      /* @__PURE__ */ jsx50(Button, { variant: "outline", className: "flex-1", onClick: onClose, children: "Close" }),
-      onDelete && /* @__PURE__ */ jsxs34(
+    /* @__PURE__ */ jsxs33("div", { className: "flex gap-3 p-4 border-t bg-muted/10", children: [
+      /* @__PURE__ */ jsx49(Button, { variant: "outline", className: "flex-1", onClick: onClose, children: "Close" }),
+      onDelete && /* @__PURE__ */ jsxs33(
         Button,
         {
           variant: "destructive",
@@ -3584,48 +3590,23 @@ function ImagePreviewDialog({ image, isOpen, onClose, onDelete }) {
             onClose();
           },
           children: [
-            /* @__PURE__ */ jsx50(Trash24, { className: "mr-2 h-4 w-4" }),
+            /* @__PURE__ */ jsx49(Trash23, { size: 16, className: "mr-2" }),
             "Delete"
           ]
         }
       )
     ] })
   ] }) });
-}
-
-// src/components/ImageCapture/image-compression.ts
-import imageCompression from "browser-image-compression";
-var DEFAULT_THRESHOLD_MB = 2;
-function needsCompression(file, thresholdMB = DEFAULT_THRESHOLD_MB) {
-  return file.size / 1024 / 1024 > thresholdMB;
-}
-async function compressImage(file, thresholdMB = DEFAULT_THRESHOLD_MB) {
-  if (!needsCompression(file, thresholdMB)) return file;
-  try {
-    const compressed = await imageCompression(file, {
-      maxSizeMB: thresholdMB,
-      maxWidthOrHeight: 1920,
-      useWebWorker: true,
-      fileType: file.type,
-      initialQuality: 0.8
-    });
-    return new File([compressed], file.name, { type: compressed.type, lastModified: Date.now() });
-  } catch (e) {
-    return file;
-  }
-}
-
-// src/components/ImageCapture/ImageCaptureModal.tsx
-import { Fragment as Fragment6, jsx as jsx51, jsxs as jsxs35 } from "react/jsx-runtime";
-function ImageCaptureModal({
+};
+var generateId = () => `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+var ImageCaptureModal = ({
   isOpen,
   onClose,
   onSubmit,
   config,
   isUploading = false,
-  uploadProgress,
-  compressionThresholdMB = 2
-}) {
+  uploadProgress
+}) => {
   const [images, setImages] = useState16([]);
   const [previewImage, setPreviewImage] = useState16(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState16(false);
@@ -3636,39 +3617,28 @@ function ImageCaptureModal({
   const fileInputRef = useRef2(null);
   const videoRef = useRef2(null);
   const canvasRef = useRef2(null);
-  const { targetLabel, maxImages = 5, title = "Capture Images", isMandatory = false } = config;
+  const { maxImages = 5, title = "Capture Images", isMandatory = false } = config;
   const canAddMore = images.length < maxImages;
-  const generateId = () => `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  const handleFileSelect = useCallback3(async (e) => {
+  const stopCamera = useCallback4(() => {
+    cameraStream == null ? void 0 : cameraStream.getTracks().forEach((t) => t.stop());
+    setCameraStream(null);
+    setShowCamera(false);
+  }, [cameraStream]);
+  const handleFileSelect = useCallback4(async (e) => {
     const files = e.target.files;
     if (!files) return;
-    const availableSlots = maxImages - images.length;
-    if (availableSlots === 0) {
-      toast({ title: "Maximum limit reached", description: `You can only upload up to ${maxImages} images.`, variant: "destructive" });
-      return;
-    }
-    const filesToProcess = Math.min(files.length, availableSlots);
+    const slots = maxImages - images.length;
+    if (slots === 0) return;
     const newImages = [];
-    for (let i = 0; i < filesToProcess; i++) {
-      let file = files[i];
-      if (needsCompression(file, compressionThresholdMB)) {
-        try {
-          file = await compressImage(file, compressionThresholdMB);
-        } catch (e2) {
-        }
-      }
-      newImages.push({ id: generateId(), file, previewUrl: URL.createObjectURL(file), capturedAt: /* @__PURE__ */ new Date() });
-    }
-    if (files.length > availableSlots) {
-      toast({
-        title: "Some images were not added",
-        description: `Only ${filesToProcess} of ${files.length} images were added. Maximum limit is ${maxImages}.`,
-        variant: "destructive"
-      });
+    const count2 = Math.min(files.length, slots);
+    for (let i = 0; i < count2; i++) {
+      const orig = files[i];
+      const processed = needsCompression(orig) ? await compressImage(orig).catch(() => orig) : orig;
+      newImages.push({ id: generateId(), file: processed, previewUrl: URL.createObjectURL(processed), capturedAt: /* @__PURE__ */ new Date() });
     }
     setImages((prev) => [...prev, ...newImages]);
     if (fileInputRef.current) fileInputRef.current.value = "";
-  }, [images.length, maxImages, compressionThresholdMB]);
+  }, [images.length, maxImages]);
   const startCamera = async () => {
     var _a;
     try {
@@ -3687,41 +3657,30 @@ function ImageCaptureModal({
       (_a = fileInputRef.current) == null ? void 0 : _a.click();
     }
   };
-  const stopCamera = useCallback3(() => {
-    cameraStream == null ? void 0 : cameraStream.getTracks().forEach((track) => track.stop());
-    setCameraStream(null);
-    setShowCamera(false);
-  }, [cameraStream]);
-  const capturePhoto = useCallback3(async () => {
+  const capturePhoto = useCallback4(async () => {
     var _a;
     if (!videoRef.current || !canvasRef.current || isCapturing || !canAddMore) return;
     setIsCapturing(true);
     setShowFlash(true);
     setTimeout(() => setShowFlash(false), 200);
-    const video = videoRef.current;
     const canvas = canvasRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    (_a = canvas.getContext("2d")) == null ? void 0 : _a.drawImage(video, 0, 0);
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    (_a = canvas.getContext("2d")) == null ? void 0 : _a.drawImage(videoRef.current, 0, 0);
     canvas.toBlob(async (blob) => {
       if (!blob) {
         setIsCapturing(false);
         return;
       }
       let file = new File([blob], `capture-${Date.now()}.jpg`, { type: "image/jpeg" });
-      if (needsCompression(file, compressionThresholdMB)) {
-        try {
-          file = await compressImage(file, compressionThresholdMB);
-        } catch (e) {
-        }
-      }
-      const newImages = [...images, { id: generateId(), file, previewUrl: URL.createObjectURL(file), capturedAt: /* @__PURE__ */ new Date() }];
-      setImages(newImages);
+      if (needsCompression(file)) file = await compressImage(file).catch(() => file);
+      const updated = [...images, { id: generateId(), file, previewUrl: URL.createObjectURL(file), capturedAt: /* @__PURE__ */ new Date() }];
+      setImages(updated);
       setIsCapturing(false);
-      if (newImages.length >= maxImages) stopCamera();
+      if (updated.length >= maxImages) stopCamera();
     }, "image/jpeg", 0.9);
-  }, [images, maxImages, stopCamera, isCapturing, canAddMore, compressionThresholdMB]);
-  const handleDelete = useCallback3((id) => {
+  }, [images, maxImages, stopCamera, isCapturing, canAddMore]);
+  const handleDelete = useCallback4((id) => {
     setImages((prev) => {
       const img = prev.find((i) => i.id === id);
       if (img) URL.revokeObjectURL(img.previewUrl);
@@ -3735,99 +3694,79 @@ function ImageCaptureModal({
     stopCamera();
     onClose();
   };
-  const handleSubmit = () => {
-    stopCamera();
-    onSubmit(images);
-  };
-  return /* @__PURE__ */ jsxs35(Fragment6, { children: [
-    /* @__PURE__ */ jsx51("style", { children: `@keyframes wms-flash { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }` }),
-    /* @__PURE__ */ jsx51(Dialog, { open: isOpen, onOpenChange: (open) => {
+  return /* @__PURE__ */ jsxs33(Fragment6, { children: [
+    /* @__PURE__ */ jsx49(Dialog, { open: isOpen, onOpenChange: (open) => {
       if (!open && !isUploading) {
         stopCamera();
         setImages([]);
         onClose();
       }
-    }, children: /* @__PURE__ */ jsxs35(DialogContent, { className: "max-w-3xl w-[96vw] sm:w-full p-0 gap-0 overflow-hidden flex flex-col h-[90vh]", children: [
-      !showCamera && /* @__PURE__ */ jsxs35(DialogHeader, { className: "px-6 py-4 border-b", children: [
-        /* @__PURE__ */ jsx51(DialogTitle, { className: "text-lg font-semibold", children: title }),
-        /* @__PURE__ */ jsxs35(DialogDescription, { className: "sr-only", children: [
-          "Upload or capture images for ",
-          targetLabel
-        ] })
+    }, children: /* @__PURE__ */ jsxs33(DialogContent, { className: "max-w-3xl w-[96vw] sm:w-full p-0 gap-0 overflow-hidden flex flex-col h-[90vh]", children: [
+      !showCamera && /* @__PURE__ */ jsxs33(DialogHeader, { className: "px-6 py-4 border-b", children: [
+        /* @__PURE__ */ jsx49(DialogTitle, { className: "text-lg font-semibold", children: title }),
+        /* @__PURE__ */ jsx49(DialogDescription, { className: "sr-only", children: "Upload or capture images" })
       ] }),
-      showCamera && /* @__PURE__ */ jsxs35("div", { className: "absolute inset-0 z-50 bg-black", children: [
-        /* @__PURE__ */ jsx51("video", { ref: videoRef, autoPlay: true, playsInline: true, muted: true, className: "w-full h-full object-contain" }),
-        /* @__PURE__ */ jsx51("canvas", { ref: canvasRef, className: "hidden" }),
-        showFlash && /* @__PURE__ */ jsx51("div", { className: "absolute inset-0 bg-white", style: { animation: "wms-flash 0.2s ease-out" } }),
-        /* @__PURE__ */ jsx51("div", { className: "absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/60 to-transparent", children: /* @__PURE__ */ jsx51("div", { className: "flex items-center justify-end", children: /* @__PURE__ */ jsx51("button", { type: "button", onClick: stopCamera, className: "text-white p-2 hover:bg-white/20 rounded-full transition", children: /* @__PURE__ */ jsx51(X8, { className: "h-5 w-5" }) }) }) }),
-        images.length > 0 && /* @__PURE__ */ jsx51("div", { className: "absolute bottom-28 left-0 right-0 px-4", children: /* @__PURE__ */ jsx51("div", { className: "flex gap-2 overflow-x-auto pb-2", children: images.map((img) => /* @__PURE__ */ jsx51("div", { className: "flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 border-white shadow-lg", children: /* @__PURE__ */ jsx51("img", { src: img.previewUrl, alt: "Captured", className: "w-full h-full object-cover" }) }, img.id)) }) }),
-        /* @__PURE__ */ jsx51("div", { className: "absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/70 to-transparent", children: /* @__PURE__ */ jsxs35("div", { className: "flex items-center justify-center gap-8", children: [
-          /* @__PURE__ */ jsx51("input", { ref: fileInputRef, type: "file", accept: "image/*", multiple: true, className: "hidden", onChange: handleFileSelect }),
-          /* @__PURE__ */ jsx51(
+      showCamera && /* @__PURE__ */ jsxs33("div", { className: "absolute inset-0 z-50 bg-black", children: [
+        /* @__PURE__ */ jsx49("video", { ref: videoRef, autoPlay: true, playsInline: true, muted: true, className: "w-full h-full object-contain" }),
+        /* @__PURE__ */ jsx49("canvas", { ref: canvasRef, className: "hidden" }),
+        showFlash && /* @__PURE__ */ jsx49("div", { className: "absolute inset-0 bg-white opacity-0 animate-ping" }),
+        /* @__PURE__ */ jsx49("div", { className: "absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/60 to-transparent flex justify-end", children: /* @__PURE__ */ jsx49("button", { onClick: stopCamera, className: "text-white p-2 hover:bg-white/20 rounded-full transition", children: /* @__PURE__ */ jsx49(X8, { size: 20 }) }) }),
+        images.length > 0 && /* @__PURE__ */ jsx49("div", { className: "absolute bottom-28 left-0 right-0 px-4", children: /* @__PURE__ */ jsx49("div", { className: "flex gap-2 overflow-x-auto pb-2", children: images.map((img) => /* @__PURE__ */ jsx49("div", { className: "flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 border-white shadow-lg", children: /* @__PURE__ */ jsx49("img", { src: img.previewUrl, alt: "Captured", className: "w-full h-full object-cover" }) }, img.id)) }) }),
+        /* @__PURE__ */ jsx49("div", { className: "absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/70 to-transparent", children: /* @__PURE__ */ jsxs33("div", { className: "flex items-center justify-center gap-8", children: [
+          /* @__PURE__ */ jsx49("input", { ref: fileInputRef, type: "file", accept: "image/*", multiple: true, className: "hidden", onChange: handleFileSelect }),
+          /* @__PURE__ */ jsx49("button", { onClick: () => {
+            var _a;
+            return (_a = fileInputRef.current) == null ? void 0 : _a.click();
+          }, disabled: !canAddMore, className: "text-white p-3 hover:bg-white/20 rounded-full transition disabled:opacity-40", children: /* @__PURE__ */ jsx49(Upload2, { size: 24 }) }),
+          /* @__PURE__ */ jsx49(
             "button",
             {
-              type: "button",
-              onClick: () => {
-                var _a;
-                return (_a = fileInputRef.current) == null ? void 0 : _a.click();
-              },
-              disabled: !canAddMore,
-              className: "text-white p-3 hover:bg-white/20 rounded-full transition disabled:opacity-50",
-              children: /* @__PURE__ */ jsx51(FileImage, { className: "h-6 w-6" })
-            }
-          ),
-          /* @__PURE__ */ jsx51(
-            "button",
-            {
-              type: "button",
               onClick: capturePhoto,
               disabled: !canAddMore || isCapturing,
               className: "w-16 h-16 rounded-full bg-white hover:bg-white/90 disabled:opacity-50 shadow-xl flex items-center justify-center transition active:scale-95",
-              children: /* @__PURE__ */ jsx51("div", { className: `w-14 h-14 rounded-full border-2 border-black transition ${isCapturing ? "scale-90" : ""}` })
+              children: /* @__PURE__ */ jsx49("div", { className: `w-14 h-14 rounded-full border-2 border-black transition ${isCapturing ? "scale-90" : ""}` })
             }
           ),
-          /* @__PURE__ */ jsx51("div", { className: "w-12" })
+          /* @__PURE__ */ jsx49("div", { className: "w-12" })
         ] }) })
       ] }),
-      !showCamera && /* @__PURE__ */ jsxs35("div", { className: "p-6 border-b", children: [
-        /* @__PURE__ */ jsxs35("div", { className: "grid grid-cols-2 gap-4", children: [
-          /* @__PURE__ */ jsxs35(
+      !showCamera && /* @__PURE__ */ jsxs33("div", { className: "p-6 border-b", children: [
+        /* @__PURE__ */ jsxs33("div", { className: "grid grid-cols-2 gap-4", children: [
+          /* @__PURE__ */ jsxs33(
             "button",
             {
-              type: "button",
               onClick: startCamera,
               disabled: !canAddMore || isUploading,
-              className: "h-24 rounded-lg border-2 border-dashed border-gray-300 hover:border-primary hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed flex flex-col items-center justify-center gap-2 transition-all",
+              className: "h-24 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-400 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed flex flex-col items-center justify-center gap-2 transition-all",
               children: [
-                /* @__PURE__ */ jsx51(Camera, { className: "h-8 w-8 text-gray-600" }),
-                /* @__PURE__ */ jsx51("span", { className: "text-sm font-medium text-gray-600", children: "Camera" })
+                /* @__PURE__ */ jsx49(Camera, { size: 28, className: "text-gray-500" }),
+                /* @__PURE__ */ jsx49("span", { className: "text-sm font-medium text-gray-600", children: "Camera" })
               ]
             }
           ),
-          /* @__PURE__ */ jsxs35(
+          /* @__PURE__ */ jsxs33(
             "button",
             {
-              type: "button",
               onClick: () => {
                 var _a;
                 return (_a = fileInputRef.current) == null ? void 0 : _a.click();
               },
               disabled: !canAddMore || isUploading,
-              className: "h-24 rounded-lg border-2 border-dashed border-gray-300 hover:border-primary hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed flex flex-col items-center justify-center gap-2 transition-all",
+              className: "h-24 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-400 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed flex flex-col items-center justify-center gap-2 transition-all",
               children: [
-                /* @__PURE__ */ jsx51(Upload2, { className: "h-8 w-8 text-gray-600" }),
-                /* @__PURE__ */ jsx51("span", { className: "text-sm font-medium text-gray-600", children: "Upload" })
+                /* @__PURE__ */ jsx49(Upload2, { size: 28, className: "text-gray-500" }),
+                /* @__PURE__ */ jsx49("span", { className: "text-sm font-medium text-gray-600", children: "Upload" })
               ]
             }
           )
         ] }),
-        /* @__PURE__ */ jsx51("input", { ref: fileInputRef, type: "file", accept: "image/*", multiple: true, className: "hidden", onChange: handleFileSelect })
+        /* @__PURE__ */ jsx49("input", { ref: fileInputRef, type: "file", accept: "image/*", multiple: true, className: "hidden", onChange: handleFileSelect })
       ] }),
-      /* @__PURE__ */ jsx51(ScrollArea, { className: "flex-1 min-h-0", children: /* @__PURE__ */ jsx51("div", { className: "p-6", children: images.length === 0 ? /* @__PURE__ */ jsxs35("div", { className: "flex flex-col items-center justify-center py-16 text-center", children: [
-        /* @__PURE__ */ jsx51(Images, { className: "h-16 w-16 text-gray-300 mb-3" }),
-        /* @__PURE__ */ jsx51("p", { className: "text-sm font-medium text-gray-600", children: "No images captured" }),
-        /* @__PURE__ */ jsx51("p", { className: "text-xs text-gray-400 mt-1", children: "Use camera or upload to add images" })
-      ] }) : /* @__PURE__ */ jsx51("div", { className: "grid grid-cols-3 gap-4", children: images.map((image) => /* @__PURE__ */ jsx51(
+      /* @__PURE__ */ jsx49(ScrollArea, { className: "flex-1 min-h-0", children: /* @__PURE__ */ jsx49("div", { className: "p-6", children: images.length === 0 ? /* @__PURE__ */ jsxs33("div", { className: "flex flex-col items-center justify-center py-16 text-center", children: [
+        /* @__PURE__ */ jsx49(Images, { size: 48, className: "text-gray-300 mb-3" }),
+        /* @__PURE__ */ jsx49("p", { className: "text-sm font-medium text-gray-600", children: "No images captured" }),
+        /* @__PURE__ */ jsx49("p", { className: "text-xs text-gray-400 mt-1", children: "Use camera or upload to add images" })
+      ] }) : /* @__PURE__ */ jsx49("div", { className: "grid grid-cols-3 gap-4", children: images.map((image) => /* @__PURE__ */ jsx49(
         ImageCard,
         {
           image,
@@ -3839,43 +3778,42 @@ function ImageCaptureModal({
         },
         image.id
       )) }) }) }),
-      /* @__PURE__ */ jsx51("div", { className: "p-6 border-t bg-gray-50/50", children: !isUploading ? /* @__PURE__ */ jsxs35("div", { className: "flex items-center justify-between gap-4", children: [
-        /* @__PURE__ */ jsx51("span", { className: "text-sm text-gray-500", children: images.length > 0 ? /* @__PURE__ */ jsxs35("span", { className: "font-medium text-gray-700", children: [
+      /* @__PURE__ */ jsx49("div", { className: "p-6 border-t bg-gray-50/50", children: !isUploading ? /* @__PURE__ */ jsxs33("div", { className: "flex items-center justify-between gap-4", children: [
+        /* @__PURE__ */ jsx49("span", { className: "text-sm text-gray-500", children: images.length > 0 ? /* @__PURE__ */ jsxs33("span", { className: "font-medium text-gray-700", children: [
           images.length,
           " ",
           images.length === 1 ? "image" : "images",
           " selected"
         ] }) : "No images selected" }),
-        /* @__PURE__ */ jsxs35("div", { className: "flex gap-3", children: [
-          /* @__PURE__ */ jsx51(Button, { variant: "outline", onClick: handleDiscard, disabled: isMandatory, children: "Cancel" }),
-          /* @__PURE__ */ jsxs35(Button, { onClick: handleSubmit, disabled: images.length === 0, children: [
-            /* @__PURE__ */ jsx51(CloudUpload, { className: "mr-2 h-4 w-4" }),
+        /* @__PURE__ */ jsxs33("div", { className: "flex gap-3", children: [
+          /* @__PURE__ */ jsx49(Button, { variant: "outline", onClick: handleDiscard, disabled: isMandatory, children: "Cancel" }),
+          /* @__PURE__ */ jsxs33(Button, { onClick: () => {
+            stopCamera();
+            onSubmit(images);
+          }, disabled: images.length === 0, children: [
+            /* @__PURE__ */ jsx49(Upload2, { size: 16, className: "mr-2" }),
             "Upload"
           ] })
         ] })
-      ] }) : /* @__PURE__ */ jsxs35("div", { className: "space-y-3", children: [
-        /* @__PURE__ */ jsxs35("div", { className: "flex items-center justify-between text-sm", children: [
-          /* @__PURE__ */ jsxs35("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ jsx51("div", { className: "w-2 h-2 bg-primary rounded-full animate-ping" }),
-            /* @__PURE__ */ jsx51("span", { className: "font-medium text-gray-700", children: "Uploading images..." })
-          ] }),
-          /* @__PURE__ */ jsxs35("span", { className: "font-semibold text-primary", children: [
+      ] }) : /* @__PURE__ */ jsxs33("div", { className: "space-y-3", children: [
+        /* @__PURE__ */ jsxs33("div", { className: "flex items-center justify-between text-sm", children: [
+          /* @__PURE__ */ jsx49("span", { className: "font-medium text-gray-700", children: "Uploading images..." }),
+          /* @__PURE__ */ jsxs33("span", { className: "font-semibold", children: [
             (uploadProgress == null ? void 0 : uploadProgress.current) || 0,
             "/",
             (uploadProgress == null ? void 0 : uploadProgress.total) || 0
           ] })
         ] }),
-        /* @__PURE__ */ jsx51("div", { className: "relative h-2 bg-gray-200 rounded-full overflow-hidden", children: /* @__PURE__ */ jsx51(
+        /* @__PURE__ */ jsx49("div", { className: "relative h-2 bg-gray-200 rounded-full overflow-hidden", children: /* @__PURE__ */ jsx49(
           "div",
           {
             className: "absolute inset-y-0 left-0 bg-primary transition-all duration-300",
             style: { width: `${(uploadProgress == null ? void 0 : uploadProgress.total) ? uploadProgress.current / uploadProgress.total * 100 : 0}%` }
           }
-        ) }),
-        /* @__PURE__ */ jsx51("p", { className: "text-xs text-gray-500 text-center", children: "Please wait" })
+        ) })
       ] }) })
     ] }) }),
-    /* @__PURE__ */ jsx51(
+    /* @__PURE__ */ jsx49(
       ImagePreviewDialog,
       {
         image: previewImage,
@@ -3885,38 +3823,38 @@ function ImageCaptureModal({
       }
     )
   ] });
-}
-
-// src/components/ImageCapture/ImageCaptureTrigger.tsx
-import { useState as useState17 } from "react";
-import { Camera as Camera2, ChevronRight as ChevronRight7, Check as Check6 } from "lucide-react";
-import { Fragment as Fragment7, jsx as jsx52, jsxs as jsxs36 } from "react/jsx-runtime";
-function ImageCaptureTrigger({ config, onImagesCapture, capturedCount = 0, className }) {
-  const [isModalOpen, setIsModalOpen] = useState17(false);
-  const [localCount, setLocalCount] = useState17(capturedCount);
+};
+var ImageCaptureTrigger = ({
+  config,
+  onImagesCapture,
+  capturedCount = 0,
+  className
+}) => {
+  const [isModalOpen, setIsModalOpen] = useState16(false);
+  const [localCount, setLocalCount] = useState16(capturedCount);
   const hasImages = localCount > 0;
   const handleSubmit = (images) => {
     setLocalCount(images.length);
     onImagesCapture(images);
     setIsModalOpen(false);
   };
-  return /* @__PURE__ */ jsxs36(Fragment7, { children: [
-    /* @__PURE__ */ jsxs36(
+  return /* @__PURE__ */ jsxs33(Fragment6, { children: [
+    /* @__PURE__ */ jsxs33(
       "div",
       {
-        className: `flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${hasImages ? "border-emerald-200 bg-emerald-50 hover:bg-emerald-100" : "border-slate-200 bg-slate-50 hover:bg-slate-100"} ${className || ""}`,
+        className: `flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${hasImages ? "border-emerald-200 bg-emerald-50 hover:bg-emerald-100" : "border-slate-200 bg-slate-50 hover:bg-slate-100"} ${className != null ? className : ""}`,
         onClick: () => setIsModalOpen(true),
         children: [
-          /* @__PURE__ */ jsx52("div", { className: `h-10 w-10 rounded-full flex items-center justify-center ${hasImages ? "bg-emerald-500" : "bg-slate-400"}`, children: hasImages ? /* @__PURE__ */ jsx52(Check6, { className: "h-5 w-5 text-white" }) : /* @__PURE__ */ jsx52(Camera2, { className: "h-5 w-5 text-white" }) }),
-          /* @__PURE__ */ jsxs36("div", { className: "flex-1", children: [
-            /* @__PURE__ */ jsx52("p", { className: "text-sm font-medium text-slate-700", children: hasImages ? `${localCount} Image${localCount > 1 ? "s" : ""} Captured` : "Capture Images" }),
-            /* @__PURE__ */ jsx52("p", { className: "text-xs text-slate-500", children: "Optional" })
+          /* @__PURE__ */ jsx49("div", { className: `h-10 w-10 rounded-full flex items-center justify-center ${hasImages ? "bg-emerald-500" : "bg-slate-400"}`, children: hasImages ? /* @__PURE__ */ jsx49(Check6, { size: 18, className: "text-white" }) : /* @__PURE__ */ jsx49(Camera, { size: 18, className: "text-white" }) }),
+          /* @__PURE__ */ jsxs33("div", { className: "flex-1", children: [
+            /* @__PURE__ */ jsx49("p", { className: "text-sm font-medium text-slate-700", children: hasImages ? `${localCount} Image${localCount > 1 ? "s" : ""} Captured` : "Capture Images" }),
+            /* @__PURE__ */ jsx49("p", { className: "text-xs text-slate-500", children: config.isMandatory ? "Required" : "Optional" })
           ] }),
-          /* @__PURE__ */ jsx52(Button, { variant: "ghost", size: "icon", className: "h-8 w-8", children: /* @__PURE__ */ jsx52(ChevronRight7, { className: "h-5 w-5 text-slate-500" }) })
+          /* @__PURE__ */ jsx49(ChevronRight7, { size: 18, className: "text-slate-400" })
         ]
       }
     ),
-    /* @__PURE__ */ jsx52(
+    /* @__PURE__ */ jsx49(
       ImageCaptureModal,
       {
         isOpen: isModalOpen,
@@ -3926,7 +3864,7 @@ function ImageCaptureTrigger({ config, onImagesCapture, capturedCount = 0, class
       }
     )
   ] });
-}
+};
 export {
   APP_ICON_NAMES,
   Accordion,
